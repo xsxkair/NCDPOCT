@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDialog?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="root" prefHeight="250.0" prefWidth="527.0" style="-fx-background-radius: 10; -fx-background-color: #205890; -fx-background-image: url(&quot;src/RES/logo1.png&quot;);" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane fx:id="GB_RootStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+	         <JFXDialog fx:id="GB_LogDialog">
+	               <JFXDialogLayout>
+						<heading>
+							<Label fx:id="logHeadLabel" />
+						</heading>
+						<body>
+							 <Label fx:id="logContentLabel" />
+						</body>
+						<actions>
+							<JFXButton fx:id="acceptButton" styleClass="dialog-accept">确定</JFXButton>
+						</actions>
+					</JFXDialogLayout>
+	            </JFXDialog>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="90.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ImageView fitHeight="62.0" fitWidth="81.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../RES/logo1.png" />
+                           </image>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </ImageView>
+                     </children>
+                  </VBox>
+                  <ImageView fx:id="GB_CloseButton" fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                     <image>
+                        <Image url="@../../../../RES/close1.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <VBox alignment="CENTER" prefHeight="250.0" prefWidth="500.0" spacing="20.0" style="-fx-background-color: #FDFDFD;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="WELCOME">
+                           <font>
+                              <Font name="Bodoni MT Bold" size="25.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Text>
+                        <TextField fx:id="UserNameText" prefHeight="35.0" promptText="Your username" style="-fx-background-radius: 5;">
+                           <VBox.margin>
+                              <Insets left="65.0" right="65.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <PasswordField fx:id="UserPasswordText" prefHeight="35.0" promptText="Your password" style="-fx-background-radius: 5;">
+                           <VBox.margin>
+                              <Insets left="65.0" right="65.0" />
+                           </VBox.margin>
+                        </PasswordField>
+                        <JFXButton fx:id="LoginButton" buttonType="RAISED" defaultButton="true" prefHeight="32.0" prefWidth="90.0" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="LOGIN" textFill="WHITE">
+                           <font>
+                              <Font name="Bodoni MT Bold" size="17.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </JFXButton>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
