@@ -70,6 +70,7 @@ public class LoginHandler {
 	
 	@Autowired private HttpUtils httpUtils;
 	@Autowired private UserSession userSession;
+	@Autowired private UIFrameworkHandler uiFrameworkHandler;
 	
 	@PostConstruct
 	public void UI_Init() {
@@ -120,8 +121,12 @@ public class LoginHandler {
     			tempuser = loginService.getValue();
     			if(tempuser == null)
     				showLogs("´íÎó", "µÇÂ¼Ê§°Ü£¬Çë¼ì²é£¡");
-    			else
+    			else{
     				userSession.setUser(tempuser);
+    				s_Stage.close();
+    				s_Stage = null;
+    				uiFrameworkHandler.startMainUI();
+    			}
     			
     			root.setCursor(Cursor.DEFAULT);
     		}	

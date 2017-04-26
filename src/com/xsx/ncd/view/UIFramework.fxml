@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" style="-fx-background-color: white;" stylesheets="@MainUI.css" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      
+      <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <AnchorPane fx:id="leftMenuAnchorPane" style="-fx-background-color: #205890;">
+            	<children>
+                  <StackPane prefHeight="50.0" style="-fx-background-color: CA1119;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ImageView fx:id="leftMenuExpandeImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@../../../../RES/addUserIco.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="leftMenuUnExpandeImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../RES/close2.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </StackPane>
+            		<JFXListView fx:id="leftMenuListView" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label fx:id="test" ellipsisString="" text="工作台1" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+			            </HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台2" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+			            </HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台3" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+						</HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台4" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+						</HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台5" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+						</HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台6" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+			            </HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台7" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+			            </HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台8" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+						</HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台9" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+						</HBox>
+						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
+							<children>
+			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+			                     <image>
+			                        <Image url="@../../../../RES/gzt.png" />
+			                     </image>
+			                  </ImageView>
+			                  <Label ellipsisString="" text="工作台10" textFill="WHITE">
+			                     <font>
+			                        <Font size="18.0" />
+			                     </font>
+			                  </Label>
+			               </children>
+						</HBox>
+			      </JFXListView>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <ImageView fitHeight="150.0" fitWidth="81.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../../../NCD_Client/src/RES/logo1.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+                  
+            	</children>
+            </AnchorPane>
+            <AnchorPane GridPane.columnIndex="1">
+               <children>
+                  <AnchorPane prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #CA1119; -fx-border-color: #094987; -fx-border-width: 0 0 0 2;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <HBox alignment="BOTTOM_CENTER" spacing="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="20.0">
+                           <children>
+                              <HBox fx:id="GB_MyInfoHBox" alignment="BOTTOM_CENTER" spacing="5.0">
+                                 <children>
+                                    <ImageView fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../NCD_Client/src/RES/mine.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Text fx:id="GB_UserNameText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="张雄">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </HBox>
+                              <HBox fx:id="GB_UserOutHBox" alignment="BOTTOM_CENTER" spacing="5.0">
+                                 <children>
+                                    <ImageView fitHeight="27.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../../../NCD_Client/src/RES/zhuxiao.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="注销">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </children></AnchorPane>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>

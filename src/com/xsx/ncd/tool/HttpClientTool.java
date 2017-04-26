@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import net.sf.json.JSONObject;
@@ -18,9 +17,7 @@ import okhttp3.Response;
 @Component
 public class HttpClientTool {
 	
-	private static Logger logger = Logger.getLogger(HttpClientTool.class);
-	
-	private final String ServerUrlHead = "http://localhost:8080/NCDPOCT_Server";
+	private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
 	private StringBuffer urlStringBuffer = new StringBuffer();
 	
 	private final MediaType mediaJsonType = MediaType.parse("application/json; charset=utf-8");
@@ -48,7 +45,6 @@ public class HttpClientTool {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			logger.debug("xsx");
 		}
 		
 		return null;
