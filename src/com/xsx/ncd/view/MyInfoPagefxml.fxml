@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDialog?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane fx:id="rootStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXDialog fx:id="modifyUserInfoDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label>权限认证</Label>
+					</heading>
+					<body>
+						 <HBox alignment="CENTER_LEFT" spacing="20.0">
+						 	<Label>密码：</Label>
+						 	<PasswordField fx:id="userPasswordTextField" text="密码" />
+						 </HBox>
+					</body>
+					<actions>
+						<JFXButton fx:id="cancelButton0" styleClass="dialog-accept">取消</JFXButton>
+						<JFXButton fx:id="acceptButton0" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <JFXDialog fx:id="modifyUserPasswordDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label>修改密码</Label>
+					</heading>
+					<body>
+						 <VBox alignment="CENTER_LEFT" spacing="20.0">
+						 	<HBox alignment="CENTER_LEFT" spacing="20.0">
+							 	<Label>新密码：</Label>
+							 	<PasswordField fx:id="userNewPasswordTextField0" text="密码" />
+							 </HBox>
+							 <HBox alignment="CENTER_LEFT" spacing="20.0">
+							 	<Label>新密码：</Label>
+							 	<PasswordField fx:id="userNewPasswordTextField1" text="密码" />
+							 </HBox>
+							 <HBox alignment="CENTER_LEFT" spacing="20.0">
+							 	<Label>旧密码：</Label>
+							 	<PasswordField fx:id="userOldPasswordTextField" text="密码" />
+							 </HBox>
+						 </VBox>
+						 
+					</body>
+					<actions>
+						<JFXButton fx:id="cancelButton1" styleClass="dialog-accept">取消</JFXButton>
+						<JFXButton fx:id="acceptButton1" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <JFXDialog fx:id="LogDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label fx:id="LogDialogHead">信息</Label>
+					</heading>
+					<body>
+						 <Label fx:id="LogDialogContent" />
+					</body>
+					<actions>
+						<JFXButton fx:id="acceptButton2" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <HBox spacing="50.0" style="-fx-background-color: white; -fx-background-radius: 5;">
+                     <children>
+                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #1a3f83; -fx-background-radius: 5 0 0 5; -fx-border-radius: 5 0 0 5; -fx-border-width: 4;">
+                           <children>
+                              <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/myIco.png" />
+                                 </image>
+                              </ImageView>
+                              <Label text="我的信息" textFill="#1a3f83">
+                                 <font>
+                                    <Font name="System Bold" size="20.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <JFXButton fx:id="GB_ModifyUserPassWordButton" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="修改密码" textFill="WHITE">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/lock.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                                 <VBox.margin>
+                                    <Insets top="50.0" />
+                                 </VBox.margin>
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                           </children>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <padding>
+                              <Insets bottom="80.0" left="10.0" right="10.0" top="80.0" />
+                           </padding>
+                        </VBox>
+                        <AnchorPane>
+                           <children>
+                              <VBox alignment="TOP_CENTER" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="70.0">
+                                 <children>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="姓      名：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserNameTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="年      龄：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserAgeTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="性      别：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserSexTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="联系方式：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserPhoneTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="职      务：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserJobTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="科      室：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserDepaTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="备      注：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserDescTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <JFXButton fx:id="GB_SaveUserInfoButton" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="保      存" textFill="WHITE">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                       <VBox.margin>
+                                          <Insets top="30.0" />
+                                       </VBox.margin>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </JFXButton>
+                                 </children>
+                              </VBox>
+                              <StackPane fx:id="GB_ModifyIcoStackPane" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <ImageView fx:id="editUserInfoImageView" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/modifyIco.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor></StackPane>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" />
+                           </HBox.margin>
+                        </AnchorPane>
+                     </children>
+                     <effect>
+                        <DropShadow height="26.69" offsetX="2.0" offsetY="3.0" radius="11.3625" width="20.76" />
+                     </effect>
+                  </HBox>
+               </children>
+               <StackPane.margin>
+                  <Insets left="50.0" top="50.0" />
+               </StackPane.margin>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

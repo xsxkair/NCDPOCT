@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
@@ -34,161 +36,252 @@
                            <image>
                               <Image url="@../../../../RES/addUserIco.png" />
                            </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </ImageView>
                         <ImageView fx:id="leftMenuUnExpandeImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../../../RES/close2.png" />
                            </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </ImageView>
                      </children>
                   </StackPane>
-            		<JFXListView fx:id="leftMenuListView" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label fx:id="test" ellipsisString="" text="工作台1" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-			            </HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台2" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-			            </HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台3" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-						</HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台4" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-						</HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台5" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-						</HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台6" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-			            </HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台7" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-			            </HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台8" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-						</HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台9" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-						</HBox>
-						<HBox alignment="CENTER_LEFT" style="-fx-background-color: transparent;">
-							<children>
-			                  <ImageView fitHeight="78.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-			                     <image>
-			                        <Image url="@../../../../RES/gzt.png" />
-			                     </image>
-			                  </ImageView>
-			                  <Label ellipsisString="" text="工作台10" textFill="WHITE">
-			                     <font>
-			                        <Font size="18.0" />
-			                     </font>
-			                  </Label>
-			               </children>
-						</HBox>
-			      </JFXListView>
-                  <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                  <JFXListView fx:id="leftMenuListView" maxWidth="200.0" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem1" ellipsisString="" text="工作台" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+				            </AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem2" ellipsisString="" text="设备管理" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+				            </AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                 <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem3" ellipsisString="" text="试剂管理" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+							</AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem4" ellipsisString="" text="标本管理" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+							</AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem5" ellipsisString="" text="报告管理" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+							</AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem6" ellipsisString="" text="人员管理" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+				            </AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem7" ellipsisString="" text="质控和定标" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+				            </AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem8" ellipsisString="" text="异常查询" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+							</AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/gzt.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem9" ellipsisString="" text="微信平台" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+							</AnchorPane>
+				      </JFXListView>
+                  <HBox fx:id="leftMenuLogoHbox" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                      <children>
-                        <ImageView fitHeight="150.0" fitWidth="81.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="leftMenuLogoImageView" fitHeight="150.0" fitWidth="81.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../../NCD_Client/src/RES/logo1.png" />
+                              <Image url="@../../../../RES/logo1.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -198,8 +291,46 @@
             </AnchorPane>
             <AnchorPane GridPane.columnIndex="1">
                <children>
-                  <AnchorPane prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #CA1119; -fx-border-color: #094987; -fx-border-width: 0 0 0 2;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane maxHeight="50.0" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #CA1119; -fx-border-color: #094987; -fx-border-width: 0 0 0 2;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
+                        <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <JFXButton fx:id="rootActivityButton" text="rootActivityName" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                              <ImageView fx:id="topMenuSeparatorImageView1" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
+                              <JFXButton fx:id="fatherActivityButton" text="fatherActivityName" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                              <ImageView fx:id="topMenuSeparatorImageView2" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
+                              <JFXButton fx:id="childActivityButton" text="childActivityName" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                           </children>
+                        </HBox>
                         <HBox alignment="BOTTOM_CENTER" spacing="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="20.0">
                            <children>
                               <HBox fx:id="GB_MyInfoHBox" alignment="BOTTOM_CENTER" spacing="5.0">
@@ -240,6 +371,7 @@
                         </HBox>
                      </children>
                   </AnchorPane>
+                  <AnchorPane fx:id="GB_RootPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
                </children></AnchorPane>
          </children>
       </GridPane>

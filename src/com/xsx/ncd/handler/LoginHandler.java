@@ -65,6 +65,7 @@ public class LoginHandler {
 	private double initX;
     private double initY;
 	
+    private User loginUser = null;
 	private User tempuser = null;
 	private String tempStr = null;
 	
@@ -113,7 +114,7 @@ public class LoginHandler {
     	
     	loginService = new LoginService();
     	loginService.runningProperty().addListener((o, oldValue, newValue)->{
-    		System.out.println(newValue);
+
     		if(newValue){
     			root.setCursor(Cursor.WAIT);
     		}
@@ -132,23 +133,10 @@ public class LoginHandler {
     		}	
     	});
     	
-    	LoginButton.disableProperty().bind(new BooleanBinding() {
-			{
-				bind(UserNameText.lengthProperty());
-				bind(UserPasswordText.lengthProperty());
-				bind(loginService.runningProperty());
-			}
-			@Override
-			protected boolean computeValue() {
-				// TODO Auto-generated method stub
-				
-				if(UserNameText.getLength() > 0 && UserPasswordText.getLength() >= 6 && !loginService.isRunning())
-					return false;
-				else
-					return true;
-			}
-		});
+    	LoginButton.disableProperty().bind(UserNameText.lengthProperty().lessThan(1).
+    			or(UserPasswordText.lengthProperty().lessThan(6)).or(loginService.runningProperty()));
     	
+    	loginUser = new User();
     	LoginButton.setOnAction((e)->{
     		loginService.restart();
     	});
@@ -183,6 +171,8 @@ public class LoginHandler {
 		s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
 		s_Stage.setResizable(false);
 		s_Stage.setScene(s_Scene);
+		
+		UserPasswordText.setText(null);
  
 		s_Stage.show();
 	}
@@ -206,7 +196,9 @@ public class LoginHandler {
 			@Override
 			protected User call() {
 				// TODO Auto-generated method stub
-				return httpUtils.login(UserNameText.getText(), UserPasswordText.getText());
+				loginUser.setAccount(UserNameText.getText());
+				loginUser.setPassword(UserPasswordText.getText());
+				return httpUtils.login(loginUser);
 			}
 		}
 	}

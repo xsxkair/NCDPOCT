@@ -7,7 +7,7 @@ public class User implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 123450L;
 
 	private Integer id;
 	
@@ -25,14 +25,14 @@ public class User implements Serializable{
 	
 	private String job;
 	
-	private String department;
+	private Department department;
 	
 	private String des;
 	
 	private Boolean managedevice;
 	
 	private Boolean managereport;
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -97,11 +97,11 @@ public class User implements Serializable{
 		this.job = job;
 	}
 
-	public String getDepartment() {
+	public Department getDepartment() {
 		return department;
 	}
 
-	public void setDepartment(String department) {
+	public void setDepartment(Department department) {
 		this.department = department;
 	}
 

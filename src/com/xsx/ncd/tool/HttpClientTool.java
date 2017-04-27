@@ -24,7 +24,7 @@ public class HttpClientTool {
 	private final MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
 	private final OkHttpClient client = new OkHttpClient();
 	
-	public Map<String, Object> myHttpPostJson(String url, Map mapType, Map<String, Object> parm){
+	public String myHttpPostJson(String url, Object parm){
 		JSONObject jsonObject = JSONObject.fromObject(parm);
 		
 		urlStringBuffer.setLength(0);
@@ -40,7 +40,7 @@ public class HttpClientTool {
 		try {
 			response = client.newCall(request).execute();
 			if(response.isSuccessful()) {
-			    System.out.println(response.body().string());
+				return response.body().string();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

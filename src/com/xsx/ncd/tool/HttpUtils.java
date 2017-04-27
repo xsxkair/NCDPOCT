@@ -19,12 +19,29 @@ public class HttpUtils {
 	
 	@Autowired private HttpClientTool httpClientTool;
 	
-	public User login(String account, String password){
-		Map<String, String> parm = new HashMap<>();
-		parm.put("account", account);
-		parm.put("password", password);
+	public User login(User user){
 		
-		tempStr = httpClientTool.myHttpPost("/Login", parm);
+		tempStr = httpClientTool.myHttpPostJson("/Login", user);
+		
+		if(tempStr == null)
+			return null;
+		else{
+			try {
+				jsonObject = JSONObject.fromObject(tempStr);
+
+				tempuser = (User)JSONObject.toBean(jsonObject,User.class);
+			} catch (Exception e) {
+				// TODO: handle exception
+				tempuser = null;
+			}
+			
+			return tempuser;
+		}
+	}
+
+	public User modifyUserInfo(User user){
+		
+		tempStr = httpClientTool.myHttpPostJson("/ModifyUserInfo", user);
 		
 		if(tempStr == null)
 			return null;
