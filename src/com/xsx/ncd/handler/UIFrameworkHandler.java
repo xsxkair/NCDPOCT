@@ -162,7 +162,7 @@ public class UIFrameworkHandler {
         });
         
         //更新用户名
-        userSession.getUser().addListener((o, oldValue, newValue)->{
+        userSession.getUserProperty().addListener((o, oldValue, newValue)->{
         	if(newValue != null)
         		GB_UserNameText.setText((newValue.getName() == null)?"^_^":newValue.getName());
         	else
@@ -180,6 +180,13 @@ public class UIFrameworkHandler {
         rootActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
         	if(newValue){
         		rootActivityButton.setText(activitySession.getRootActivity().get().getActivityName());
+        	}
+        });
+        
+        fatherActivityButton.visibleProperty().bind(activitySession.getFatherActivity().isNotNull());
+        fatherActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
+        	if(newValue){
+        		fatherActivityButton.setText(activitySession.getFatherActivity().get().getActivityName());
         	}
         });
         

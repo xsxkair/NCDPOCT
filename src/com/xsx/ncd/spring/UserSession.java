@@ -16,7 +16,11 @@ public class UserSession {
 		this.user.set(user);
 	}
 
-	public ObjectProperty<User> getUser() {
+	public ObjectProperty<User> getUserProperty() {
 		return user;
+	}
+	
+	public User getUser() {
+		return user.get();
 	}
 }

@@ -39,6 +39,7 @@ public class HttpClientTool {
 		Response response;
 		try {
 			response = client.newCall(request).execute();
+			
 			if(response.isSuccessful()) {
 				return response.body().string();
 			}
@@ -74,6 +75,7 @@ public class HttpClientTool {
 		
 		try {
 			response = client.newCall(request).execute();
+			
 			if(response.isSuccessful()) {
 				return response.body().string();
 			}

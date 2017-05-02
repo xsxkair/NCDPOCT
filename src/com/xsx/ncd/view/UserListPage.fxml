@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDialog?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane fx:id="rootStackPane" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXDialog fx:id="modifyUserInfoDialog">
+               <content>
+                  <JFXDialogLayout>
+                     <heading>
+                        <Label text="权限确认" />
+                     </heading>
+                     <body>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                           <children>
+                              <Label text="密码：" />
+                              <PasswordField fx:id="userPasswordTextField" text="密码" />
+                           </children>
+                        </HBox>
+                     </body>
+                     <actions>
+                        <JFXButton fx:id="cancelButton0" styleClass="dialog-accept">取消</JFXButton>
+                        <JFXButton fx:id="acceptButton0" styleClass="dialog-accept">确认</JFXButton>
+                     </actions>
+                  </JFXDialogLayout>
+               </content>
+            </JFXDialog>
+            <JFXDialog fx:id="LogDialog">
+               <content>
+                  <JFXDialogLayout>
+                     <heading>
+                        <Label fx:id="LogDialogHead" />
+                     </heading>
+                     <body>
+                        <Label fx:id="LogDialogContent" />
+                     </body>
+                     <actions>
+                        <JFXButton fx:id="acceptButton2" styleClass="dialog-accept">确认</JFXButton>
+                     </actions>
+                  </JFXDialogLayout>
+               </content>
+            </JFXDialog>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <HBox spacing="50.0" style="-fx-background-color: white; -fx-background-radius: 5;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                     <children>
+                        <AnchorPane style="-fx-border-color: #1a3f83; -fx-background-radius: 5 0 0 5; -fx-border-radius: 5 0 0 5; -fx-border-width: 4;">
+                           <children>
+                              <HBox alignment="BOTTOM_CENTER" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                 <children>
+                                    <ImageView fitHeight="150.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/myIco.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label text="我的信息" textFill="#1a3f83">
+                                       <font>
+                                          <Font name="System Bold" size="20.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <JFXListView fx:id="GB_UserListView" prefWidth="200.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="45.0">
+                                 <effect>
+                                    <InnerShadow height="15.07" radius="7.0175" width="15.0" />
+                                 </effect>
+                              </JFXListView>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane>
+                           <children>
+                              <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="70.0">
+                                 <children>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="账      号：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserAccountTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="密      码：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <PasswordField fx:id="GB_UserPassWordPassWordField" prefWidth="200.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #dcdddd;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="姓      名：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserNameTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="年      龄：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserAgeTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="性      别：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserSexTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="联系方式：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserPhoneTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="职      务：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserJobTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="科      室：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <JFXComboBox fx:id="GB_UserDepartmentCombox" prefWidth="200.0" />
+                                       </children>
+                                    </HBox>
+                                    <HBox spacing="30.0">
+                                       <children>
+                                          <Label text="备      注：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="GB_UserDescTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
+                                       <children>
+                                          <Label text="报告管理：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <JFXToggleButton fx:id="GB_ReportManageToggle" text=" ">
+                                             <padding>
+                                                <Insets bottom="-10.0" top="-10.0" />
+                                             </padding>
+                                          </JFXToggleButton>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
+                                       <children>
+                                          <Label text="人员管理：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <JFXToggleButton fx:id="GB_UserManageToggle" text=" ">
+                                             <padding>
+                                                <Insets bottom="-10.0" top="-10.0" />
+                                             </padding>
+                                          </JFXToggleButton>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
+                                       <children>
+                                          <Label text="设备管理：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <JFXToggleButton fx:id="GB_DeviceManageToggle" text=" ">
+                                             <padding>
+                                                <Insets bottom="-10.0" top="-10.0" />
+                                             </padding>
+                                          </JFXToggleButton>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
+                                       <children>
+                                          <Label text="试剂管理：" textFill="#1a3f83">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <JFXToggleButton fx:id="GB_CardManageToggle" text=" ">
+                                             <padding>
+                                                <Insets bottom="-10.0" top="-10.0" />
+                                             </padding>
+                                          </JFXToggleButton>
+                                       </children>
+                                    </HBox>
+                                    <JFXButton fx:id="GB_SaveUserInfoButton" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="保      存" textFill="WHITE">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                       <VBox.margin>
+                                          <Insets top="30.0" />
+                                       </VBox.margin>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </JFXButton>
+                                 </children>
+                              </VBox>
+                              <HBox spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <StackPane>
+                                       <children>
+                                          <ImageView fx:id="GB_AddUserImageView" fitHeight="150.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../../../../RES/addUserIco.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="GB_CancelAddUserImageView" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                                             <image>
+                                                <Image url="@../../../../RES/deleteUserIco.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </StackPane>
+                                    <StackPane fx:id="GB_ModifyIcoStackPane">
+                                       <children>
+                                          <ImageView fx:id="GB_EditUserImageView" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../../../../RES/modifyIco.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="GB_CancelEditUserImageView" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                                             <image>
+                                                <Image url="@../../../../RES/deleteUserIco.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </StackPane>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                     <effect>
+                        <DropShadow height="26.69" offsetX="2.0" offsetY="3.0" radius="11.3625" width="20.76" />
+                     </effect>
+                  </HBox>
+                  <VBox fx:id="GB_FreshPane" alignment="CENTER" spacing="10.0" style="-fx-background-color: rgba(0, 0, 0, 0.2);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <JFXSpinner startingAngle="0.0" style="-fx-radius: 50;" />
+                        <Label text="正在加载数据，请稍后" />
+                     </children>
+                     <cursor>
+                        <Cursor fx:constant="WAIT" />
+                     </cursor>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

@@ -32,7 +32,11 @@ public class User implements Serializable{
 	private Boolean managedevice;
 	
 	private Boolean managereport;
-
+	
+	private Boolean manageuser;
+	
+	private Boolean managecard;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -127,5 +131,21 @@ public class User implements Serializable{
 
 	public void setManagereport(Boolean managereport) {
 		this.managereport = managereport;
+	}
+
+	public Boolean getManageuser() {
+		return manageuser;
+	}
+
+	public void setManageuser(Boolean manageuser) {
+		this.manageuser = manageuser;
+	}
+
+	public Boolean getManagecard() {
+		return managecard;
+	}
+
+	public void setManagecard(Boolean managecard) {
+		this.managecard = managecard;
 	}
 }

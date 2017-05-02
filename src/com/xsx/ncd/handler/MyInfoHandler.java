@@ -80,6 +80,9 @@ public class MyInfoHandler implements ActivityTemplet{
 	@FXML ImageView editUserInfoImageView;
 	private SVGGlyph cancelModifySvg;
 	
+	@FXML JFXButton GB_UserManageButton;
+	@FXML JFXButton GB_OperatorManageButton;
+	
 	@FXML JFXDialog modifyUserInfoDialog;
 	@FXML PasswordField userPasswordTextField;
 	@FXML JFXButton acceptButton0;
@@ -108,6 +111,7 @@ public class MyInfoHandler implements ActivityTemplet{
 	@Autowired private UserSession userSession;
 	@Autowired private ActivitySession activitySession;
 	@Autowired private HttpUtils httpUtils;
+	@Autowired private UserListHandler userListHandler;
 	
 	@PostConstruct
 	@Override
@@ -243,11 +247,18 @@ public class MyInfoHandler implements ActivityTemplet{
 		});
         myContextMenu = new ContextMenu(RefreshMenuItem);
         
+        GB_UserManageButton.setOnAction((e)->{
+        	userListHandler.startActivity(null);
+        });
+        
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(rootpane.equals(newValue)){
-        		itsMe = userSession.getUser().get();
+        		itsMe = userSession.getUser();
         		setEditable(false);
         		upUserInfo();
+        		
+        		GB_UserManageButton.setVisible(itsMe.getManageuser());
+        		GB_OperatorManageButton.setVisible(itsMe.getManageuser());
         	}
         	else if(rootpane.equals(oldValue)){
         		itsMe = null;
@@ -349,7 +360,7 @@ public class MyInfoHandler implements ActivityTemplet{
 			@Override
 			protected User call() {
 				// TODO Auto-generated method stub
-				return httpUtils.modifyUserInfo(itsMe);
+				return httpUtils.SaveUser(itsMe);
 			}
 		}
 	}

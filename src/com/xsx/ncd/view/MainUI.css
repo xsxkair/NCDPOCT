@@ -3,52 +3,47 @@
 	src: url('STXINGKA.TTF');
 }
 
-#test{
-	-fx-font-family: 'myfont', Arial, sans-serif;
-	-fx-font-size: 18;
-	-fx-font-weight: bold;
-}
 
 /*左侧菜单*/
-.list-cell:filled:selected:focused, .list-cell:filled:selected {
+#leftMenuListView .list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-color: #5A86D1;
 }
 
-.list-cell { /* <=== changed to even */
+#leftMenuListView .list-cell { /* <=== changed to even */
     -fx-background-color:  #205890;
     -fx-pref-height : 60;
     -fx-padding : 0;
 }
-.list-cell:even { /* <=== changed to even */
+#leftMenuListView .list-cell:even { /* <=== changed to even */
     -fx-background-color:  #205890;
 }
 
-.list-cell:filled:hover {
+#leftMenuListView .list-cell:filled:hover {
     -fx-background-color: #fad5d2;
     -fx-cursor:HAND;
 }
 
-.list-cell:selected {
+#leftMenuListView .list-cell:selected {
     -fx-background-color: #5A86D1;
 }
 
-.list-view *.scroll-bar:horizontal  {
+#leftMenuListView *.scroll-bar:horizontal  {
     visibility : false;
     -fx-opacity: 0;
 }
 
-.list-view *.scroll-bar:vertical  {
+#leftMenuListView *.scroll-bar:vertical  {
     visibility : false;
     -fx-opacity: 0;
 }
 
-.list-view {
+#leftMenuListView{
 	-fx-background-color: #205890;
 	-fx-background-insets : 0;
 	-fx-border-width : 0;
 }
-.list-view *.scroll-bar:horizontal *.increment-arrow, 
-.list-view *.scroll-bar:horizontal *.decrement-arrow {
+#leftMenuListView *.scroll-bar:horizontal *.increment-arrow, 
+#leftMenuListView *.scroll-bar:horizontal *.decrement-arrow {
     -fx-background-color: null;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
@@ -57,8 +52,8 @@
     -fx-opacity: 0;
 }
 
-.list-view *.scroll-bar:vertical *.increment-arrow, 
-.list-view *.scroll-bar:vertical *.decrement-arrow {
+#leftMenuListView *.scroll-bar:vertical *.increment-arrow, 
+#leftMenuListView *.scroll-bar:vertical *.decrement-arrow {
     -fx-background-color: null;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
@@ -67,11 +62,29 @@
     -fx-opacity: 0;
 }
 
-.list-view > .virtual-flow > .scroll-bar:vertical,
-.list-view > .virtual-flow > .scroll-bar:vertical > .track,
-.list-view > .virtual-flow > .scroll-bar:vertical > .track-background, 
-.list-view > .virtual-flow > .scroll-bar:horizontal,
-.list-view > .virtual-flow > .scroll-bar:horizontal > .track,
-.list-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+#leftMenuListView > .virtual-flow > .scroll-bar:vertical,
+#leftMenuListView > .virtual-flow > .scroll-bar:vertical > .track,
+#leftMenuListView > .virtual-flow > .scroll-bar:vertical > .track-background, 
+#leftMenuListView > .virtual-flow > .scroll-bar:horizontal,
+#leftMenuListView > .virtual-flow > .scroll-bar:horizontal > .track,
+#leftMenuListView > .virtual-flow > .scroll-bar:horizontal > .track-background {
     -fx-background-color: transparent;
+}
+
+/*审核人管理*/
+#GB_UserListView .list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(#328BDB 0%, #207BCF 25%, #1973C9 75%, #0A65BF 100%);
+    -fx-text-fill: white;
+}
+
+#GB_UserListView .list-cell { /* <=== changed to even */
+    -fx-background-color: white;
+    
+}
+#GB_UserListView .list-cell:even { /* <=== changed to even */
+    -fx-background-color: white;
+}
+
+#GB_UserListView .list-cell:filled:hover {
+    -fx-background-color: #fad5d2;
 }
