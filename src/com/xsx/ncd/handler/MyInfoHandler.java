@@ -1,10 +1,8 @@
 package com.xsx.ncd.handler;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -12,52 +10,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
-import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.User;
-import com.xsx.ncd.handler.LoginHandler.LoginService.LoginTask;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpUtils;
 
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Window;
 
 @Component
 public class MyInfoHandler implements ActivityTemplet{
@@ -74,8 +54,12 @@ public class MyInfoHandler implements ActivityTemplet{
 	@FXML TextField GB_UserSexTextField;
 	@FXML TextField GB_UserPhoneTextField;
 	@FXML TextField GB_UserJobTextField;
-	@FXML TextField GB_UserDepaTextField;
+	@FXML JFXComboBox<Department> GB_UserDepartmentCombox;
 	@FXML TextField GB_UserDescTextField;
+	@FXML JFXToggleButton GB_UserManageToggle;
+	@FXML JFXToggleButton GB_DeviceManageToggle;
+	@FXML JFXToggleButton GB_CardManageToggle;
+	@FXML JFXToggleButton GB_ReportManageToggle;
 	@FXML StackPane GB_ModifyIcoStackPane;
 	@FXML ImageView editUserInfoImageView;
 	private SVGGlyph cancelModifySvg;
@@ -100,18 +84,18 @@ public class MyInfoHandler implements ActivityTemplet{
 	@FXML Label LogDialogContent;
 	@FXML JFXButton acceptButton2;
 	
-	private User itsMe = null;
-	private User modifyUser = null;
-	private User tempUser = null;
-	private MyService myService = null;
-
-	ContextMenu myContextMenu;
-	MenuItem RefreshMenuItem;
+	@FXML VBox GB_FreshPane;
 	
+	private User itsMe = null;
+	private User tempUser = null;
+	private List<Department> tempDepartmentList = null;
+	
+	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
 	@Autowired private UserSession userSession;
 	@Autowired private ActivitySession activitySession;
 	@Autowired private HttpUtils httpUtils;
 	@Autowired private UserListHandler userListHandler;
+	@Autowired OperatorListHandler operatorListHandler;
 	
 	@PostConstruct
 	@Override
@@ -141,6 +125,7 @@ public class MyInfoHandler implements ActivityTemplet{
         GB_ModifyIcoStackPane.getChildren().add(cancelModifySvg);
         
         editUserInfoImageView.setOnMouseClicked(e->{
+        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
         	setEditable(true);
         });
         
@@ -154,28 +139,32 @@ public class MyInfoHandler implements ActivityTemplet{
     		modifyUserInfoDialog.show(rootStackPane);
         });
         
-        myService = new MyService();
-        myService.runningProperty().addListener((o, oldValue, newValue)->{
+        GB_FreshPane.visibleProperty().bind(httpUtils.runningProperty());
+        httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
 
-    		if(newValue){
-    			rootpane.setCursor(Cursor.WAIT);
-    		}
-    		else{
-    			tempUser = myService.getValue();
-    			if(tempUser == null){
-    				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
-    			}
-    			else{
-    				userSession.setUser(tempUser);
-    				itsMe = tempUser;
-    				setEditable(false);
-    			}
-    			
-    			rootpane.setCursor(Cursor.DEFAULT);
-    		}	
-    	});
-        
-        modifyUser = new User();
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				// TODO Auto-generated method stub
+				if(!newValue){
+	    			if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveUser)){
+	    				tempUser = (User) httpUtils.getValue();
+		    			if(tempUser == null){
+		    				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
+		    			}
+		    			else{
+		    				userSession.setUser(tempUser);
+		    				itsMe = tempUser;
+		    				setEditable(false);
+		    			}
+	    			}
+	    			else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllDepartment)){
+	    				tempDepartmentList = (List<Department>) httpUtils.getValue();
+		    			GB_UserDepartmentCombox.getItems().setAll(tempDepartmentList);
+	    			}
+	    		}
+			}
+        };
+
         //È·ÈÏÐÞ¸Ä¸öÈËÐÅÏ¢
         acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
         acceptButton0.setOnMouseClicked((e)->{
@@ -187,10 +176,13 @@ public class MyInfoHandler implements ActivityTemplet{
 				itsMe.setSex(GB_UserSexTextField.getText());
 				itsMe.setPhone(GB_UserPhoneTextField.getText());
 				itsMe.setJob(GB_UserJobTextField.getText());
-				//itsMe.setDepartment(GB_UserDepaTextField.getText());
+				itsMe.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
 				itsMe.setDes(GB_UserDescTextField.getText());
-				
-				myService.restart();
+				itsMe.setManagecard(GB_CardManageToggle.isSelected());
+				itsMe.setManageuser(GB_UserManageToggle.isSelected());
+				itsMe.setManagereport(GB_ReportManageToggle.isSelected());
+				itsMe.setManagedevice(GB_DeviceManageToggle.isSelected());
+				httpUtils.startHttpService(ServiceEnum.SaveUser, itsMe);
 			}
 			else
 				showLogsDialog("´íÎó", "ÃÜÂë´íÎó£¬½ûÖ¹ÐÞ¸Ä£¡");
@@ -223,7 +215,7 @@ public class MyInfoHandler implements ActivityTemplet{
 			}
 			else {
 				itsMe.setPassword(userNewPasswordTextField0.getText());
-				myService.restart();
+				httpUtils.startHttpService(ServiceEnum.SaveUser, itsMe);
 			}
 		});
         
@@ -236,45 +228,25 @@ public class MyInfoHandler implements ActivityTemplet{
         	LogDialog.close();
 		});
         
-        RefreshMenuItem = new MenuItem("Ë¢ÐÂ");
-        RefreshMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-        	
-			@Override
-			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				upUserInfo();
-			}
-		});
-        myContextMenu = new ContextMenu(RefreshMenuItem);
-        
         GB_UserManageButton.setOnAction((e)->{
         	userListHandler.startActivity(null);
         });
         
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(rootpane.equals(newValue)){
-        		itsMe = userSession.getUser();
-        		setEditable(false);
-        		upUserInfo();
-        		
-        		GB_UserManageButton.setVisible(itsMe.getManageuser());
-        		GB_OperatorManageButton.setVisible(itsMe.getManageuser());
-        	}
-        	else if(rootpane.equals(oldValue)){
-        		itsMe = null;
-        	}
+        GB_OperatorManageButton.setOnAction((e)->{
+        	operatorListHandler.startActivity(null);
         });
         
-        rootpane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				// TODO Auto-generated method stub
-				if(event.getButton().equals(MouseButton.SECONDARY)){
-						myContextMenu.show(rootpane, event.getScreenX(), event.getScreenY());
-				}
-			}
-		});
+        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
+        	if(rootpane.equals(newValue)){
+        		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
+        		itsMe = userSession.getUser();
+        		setEditable(false);
+        	}
+        	else {
+        		itsMe = null;
+        		httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
+        	}
+        });
         
         AnchorPane.setTopAnchor(rootpane, 0.0);
         AnchorPane.setBottomAnchor(rootpane, 0.0);
@@ -286,14 +258,33 @@ public class MyInfoHandler implements ActivityTemplet{
 	}
 	
 	private void setEditable(boolean editable) {
+		itsMe = userSession.getUser();
+		
 		GB_SaveUserInfoButton.setVisible(editable);
 		GB_UserNameTextField.setEditable(editable);
 		GB_UserAgeTextField.setEditable(editable);
 		GB_UserSexTextField.setEditable(editable);
 		GB_UserPhoneTextField.setEditable(editable);
 		GB_UserJobTextField.setEditable(editable);
-		GB_UserDepaTextField.setEditable(editable);
 		GB_UserDescTextField.setEditable(editable);
+		
+		if(itsMe.getManageuser()){
+			GB_UserDepartmentCombox.setDisable(!editable);
+			GB_UserManageToggle.setDisable(!editable);
+			GB_ReportManageToggle.setDisable(!editable);
+			GB_DeviceManageToggle.setDisable(!editable);
+			GB_CardManageToggle.setDisable(!editable);
+		}
+		else{
+			GB_UserDepartmentCombox.setDisable(true);
+			GB_UserManageToggle.setDisable(true);
+			GB_ReportManageToggle.setDisable(true);
+			GB_DeviceManageToggle.setDisable(true);
+			GB_CardManageToggle.setDisable(true);
+		}
+		
+		GB_UserManageButton.setVisible(itsMe.getManageuser());
+		GB_OperatorManageButton.setVisible(itsMe.getManageuser());
 		
 		if(editable){
 			editUserInfoImageView.setVisible(false);
@@ -307,13 +298,19 @@ public class MyInfoHandler implements ActivityTemplet{
 	}
 	
 	private void upUserInfo() {
+		
 		GB_UserNameTextField.setText(itsMe.getName());
 		GB_UserAgeTextField.setText(itsMe.getAge());
 		GB_UserSexTextField.setText(itsMe.getSex());
 		GB_UserPhoneTextField.setText(itsMe.getPhone());
 		GB_UserJobTextField.setText(itsMe.getJob());
-		GB_UserDepaTextField.setText(itsMe.getDepartment().getName());
+		GB_UserDepartmentCombox.getSelectionModel().select(itsMe.getDepartment());
 		GB_UserDescTextField.setText(itsMe.getDes());
+		
+		GB_UserManageToggle.setSelected(itsMe.getManageuser());
+		GB_ReportManageToggle.setSelected(itsMe.getManagereport());
+		GB_DeviceManageToggle.setSelected(itsMe.getManagedevice());
+		GB_CardManageToggle.setSelected(itsMe.getManagecard());
 	}
 	
 	private void showLogsDialog(String head, String logs) {
@@ -345,23 +342,5 @@ public class MyInfoHandler implements ActivityTemplet{
 	public String getActivityName() {
 		// TODO Auto-generated method stub
 		return activityName;
-	}
-	
-	class MyService extends Service<User>{
-
-		@Override
-		protected Task<User> createTask() {
-			// TODO Auto-generated method stub
-			return new MyTask();
-		}
-		
-		class MyTask extends Task<User>{
-
-			@Override
-			protected User call() {
-				// TODO Auto-generated method stub
-				return httpUtils.SaveUser(itsMe);
-			}
-		}
 	}
 }

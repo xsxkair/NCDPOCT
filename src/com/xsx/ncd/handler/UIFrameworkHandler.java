@@ -172,6 +172,7 @@ public class UIFrameworkHandler {
         //×¢Ïú
         GB_UserOutHBox.setOnMouseClicked((e)->{
         	userSession.setUser(null);
+        	activitySession.setActivityPane(null);
     		s_Stage.close();
     		loginHandler.startLoginActivity();
         });
@@ -192,7 +193,8 @@ public class UIFrameworkHandler {
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	GB_RootPane.getChildren().clear();
-			GB_RootPane.getChildren().add(newValue);
+        	if(newValue != null)
+        		GB_RootPane.getChildren().add(newValue);
         });
         leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
         	System.out.println(newValue);

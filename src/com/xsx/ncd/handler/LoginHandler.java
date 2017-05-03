@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
+import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.spring.UserSession;
@@ -18,6 +19,8 @@ import com.xsx.ncd.tool.HttpClientTool;
 import com.xsx.ncd.tool.HttpUtils;
 
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -57,8 +60,6 @@ public class LoginHandler {
 	
 	@FXML ImageView	GB_CloseButton;
 	
-	private LoginService loginService = null;
-	
 	private Image closeImage1 = null;
 	private Image closeImage2 = null;
 	
@@ -68,6 +69,8 @@ public class LoginHandler {
     private User loginUser = null;
 	private User tempuser = null;
 	private String tempStr = null;
+	
+	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
 	
 	@Autowired private HttpUtils httpUtils;
 	@Autowired private UserSession userSession;
@@ -86,12 +89,12 @@ public class LoginHandler {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("xsx");
 		}
         
         GB_RootStackPane.getChildren().remove(GB_LogDialog);
         
         s_Scene = new Scene(root, Color.TRANSPARENT);
+		
         root.setOnMousePressed(new EventHandler<MouseEvent>() {
 
             public void handle(MouseEvent me) {
@@ -112,33 +115,38 @@ public class LoginHandler {
             }
         });
     	
-    	loginService = new LoginService();
-    	loginService.runningProperty().addListener((o, oldValue, newValue)->{
+    	httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
 
-    		if(newValue){
-    			root.setCursor(Cursor.WAIT);
-    		}
-    		else{
-    			tempuser = loginService.getValue();
-    			if(tempuser == null)
-    				showLogs("´íÎó", "µÇÂ¼Ê§°Ü£¬Çë¼ì²é£¡");
-    			else{
-    				userSession.setUser(tempuser);
-    				s_Stage.close();
-    				s_Stage = null;
-    				uiFrameworkHandler.startMainUI();
-    			}
-    			
-    			root.setCursor(Cursor.DEFAULT);
-    		}	
-    	});
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				// TODO Auto-generated method stub
+				if(newValue){
+	    			root.setCursor(Cursor.WAIT);
+	    		}
+	    		else{
+	    			tempuser = (User) httpUtils.getValue();
+	    			if(tempuser == null)
+	    				showLogs("´íÎó", "µÇÂ¼Ê§°Ü£¬Çë¼ì²é£¡");
+	    			else{
+	    				httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
+	    				userSession.setUser(tempuser);
+	    				s_Stage.hide();
+	    				uiFrameworkHandler.startMainUI();
+	    			}
+	    			
+	    			root.setCursor(Cursor.DEFAULT);
+	    		}
+			}
+		};
     	
     	LoginButton.disableProperty().bind(UserNameText.lengthProperty().lessThan(1).
-    			or(UserPasswordText.lengthProperty().lessThan(6)).or(loginService.runningProperty()));
+    			or(UserPasswordText.lengthProperty().lessThan(6)).or(httpUtils.runningProperty()));
     	
     	loginUser = new User();
     	LoginButton.setOnAction((e)->{
-    		loginService.restart();
+    		loginUser.setAccount(UserNameText.getText());
+			loginUser.setPassword(UserPasswordText.getText());
+    		httpUtils.startHttpService(ServiceEnum.Login, loginUser);
     	});
         
         closeImage1 = new Image(this.getClass().getResourceAsStream("/RES/close1.png"));
@@ -165,15 +173,18 @@ public class LoginHandler {
         in = null;
 	}
 	
-	public void startLoginActivity() {		
-		s_Stage = new Stage();
-		s_Stage.initStyle(StageStyle.TRANSPARENT);
-		s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
-		s_Stage.setResizable(false);
-		s_Stage.setScene(s_Scene);
-		
+	public void startLoginActivity() {
+		if(s_Stage == null){
+			s_Stage = new Stage();
+			s_Stage.initStyle(StageStyle.TRANSPARENT);
+			s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
+			s_Stage.setResizable(false);
+			s_Stage.setScene(s_Scene);
+		}
+
 		UserPasswordText.setText(null);
  
+		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
 		s_Stage.show();
 	}
 	
@@ -181,25 +192,5 @@ public class LoginHandler {
 		logHeadLabel.setText(logHead);
 		logContentLabel.setText(logContent);
 		GB_LogDialog.show(GB_RootStackPane);
-	}
-	
-	class LoginService extends Service<User>{
-
-		@Override
-		protected Task<User> createTask() {
-			// TODO Auto-generated method stub
-			return new LoginTask();
-		}
-		
-		class LoginTask extends Task<User>{
-
-			@Override
-			protected User call() {
-				// TODO Auto-generated method stub
-				loginUser.setAccount(UserNameText.getText());
-				loginUser.setPassword(UserPasswordText.getText());
-				return httpUtils.login(loginUser);
-			}
-		}
 	}
 }

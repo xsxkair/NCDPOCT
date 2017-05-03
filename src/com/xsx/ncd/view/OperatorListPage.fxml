@@ -75,7 +75,7 @@
                                           <Image url="@../../../../RES/myIco.png" />
                                        </image>
                                     </ImageView>
-                                    <Label text="审核人" textFill="#1a3f83">
+                                    <Label text="操作人" textFill="#1a3f83">
                                        <font>
                                           <Font name="System Bold" size="20.0" />
                                        </font>
@@ -93,26 +93,6 @@
                            <children>
                               <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="70.0">
                                  <children>
-                                    <HBox spacing="30.0">
-                                       <children>
-                                          <Label text="账      号：" textFill="#1a3f83">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <TextField fx:id="GB_UserAccountTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
-                                       </children>
-                                    </HBox>
-                                    <HBox spacing="30.0">
-                                       <children>
-                                          <Label text="密      码：" textFill="#1a3f83">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <PasswordField fx:id="GB_UserPassWordPassWordField" prefWidth="200.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #dcdddd;" />
-                                       </children>
-                                    </HBox>
                                     <HBox spacing="30.0">
                                        <children>
                                           <Label text="姓      名：" textFill="#1a3f83">
@@ -185,54 +165,12 @@
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" spacing="30.0">
                                        <children>
-                                          <Label text="报告管理：" textFill="#1a3f83">
+                                          <Label text="操作资质：" textFill="#1a3f83">
                                              <font>
                                                 <Font size="15.0" />
                                              </font>
                                           </Label>
-                                          <JFXToggleButton fx:id="GB_ReportManageToggle" text=" ">
-                                             <padding>
-                                                <Insets bottom="-10.0" top="-10.0" />
-                                             </padding>
-                                          </JFXToggleButton>
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
-                                       <children>
-                                          <Label text="人员管理：" textFill="#1a3f83">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <JFXToggleButton fx:id="GB_UserManageToggle" text=" ">
-                                             <padding>
-                                                <Insets bottom="-10.0" top="-10.0" />
-                                             </padding>
-                                          </JFXToggleButton>
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
-                                       <children>
-                                          <Label text="设备管理：" textFill="#1a3f83">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <JFXToggleButton fx:id="GB_DeviceManageToggle" text=" ">
-                                             <padding>
-                                                <Insets bottom="-10.0" top="-10.0" />
-                                             </padding>
-                                          </JFXToggleButton>
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="30.0">
-                                       <children>
-                                          <Label text="试剂管理：" textFill="#1a3f83">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <JFXToggleButton fx:id="GB_CardManageToggle" text=" ">
+                                          <JFXToggleButton fx:id="GB_OperatorRightToggle" text=" ">
                                              <padding>
                                                 <Insets bottom="-10.0" top="-10.0" />
                                              </padding>

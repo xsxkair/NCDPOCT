@@ -26,6 +26,7 @@ import com.jfoenix.svg.SVGGlyphLoader;
 import com.xsx.ncd.define.MyUserActionEnum;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Department;
+import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
@@ -63,7 +64,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 @Component
-public class UserListHandler implements ActivityTemplet{
+public class OperatorListHandler implements ActivityTemplet{
 
 	private AnchorPane rootpane;
 	
@@ -71,8 +72,6 @@ public class UserListHandler implements ActivityTemplet{
 	
 	@FXML JFXListView<ListViewCell> GB_UserListView;
 	
-	@FXML TextField GB_UserAccountTextField;
-	@FXML PasswordField GB_UserPassWordPassWordField;
 	@FXML TextField GB_UserNameTextField;
 	@FXML TextField GB_UserAgeTextField;
 	@FXML TextField GB_UserSexTextField;
@@ -80,10 +79,7 @@ public class UserListHandler implements ActivityTemplet{
 	@FXML TextField GB_UserJobTextField;
 	@FXML JFXComboBox<Department> GB_UserDepartmentCombox;
 	@FXML TextField GB_UserDescTextField;
-	@FXML JFXToggleButton GB_UserManageToggle;
-	@FXML JFXToggleButton GB_DeviceManageToggle;
-	@FXML JFXToggleButton GB_CardManageToggle;
-	@FXML JFXToggleButton GB_ReportManageToggle;
+	@FXML JFXToggleButton GB_OperatorRightToggle;
 	
 	@FXML ImageView GB_AddUserImageView;
 	@FXML ImageView GB_CancelAddUserImageView;
@@ -105,15 +101,10 @@ public class UserListHandler implements ActivityTemplet{
 	
 	@FXML VBox GB_FreshPane;
 
-	private List<User> myUserList;
 	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
 	private User itsMe = null;
 	private ListViewCell selectListViewCell = null;
-	private User tempUser = null;
-	
-	private User deleteUser = null;
-	private String editUserAccount = null;
-	private String addUserAccount = null;
+	private Operator tempOperator = null;
 	
 	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
 
@@ -126,8 +117,8 @@ public class UserListHandler implements ActivityTemplet{
 	public void UI_Init(){
 
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/UserListPage.fxml"));
-        InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/UserListPage.fxml");
+		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/OperatorListPage.fxml"));
+        InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/OperatorListPage.fxml");
         loader.setController(this);
         try {
         	rootpane = loader.load(in);
@@ -141,9 +132,14 @@ public class UserListHandler implements ActivityTemplet{
         rootStackPane.getChildren().remove(LogDialog);
         
         GB_EditUserImageView.setOnMouseClicked((e)->{
-        	setEnableEdit(true);
-        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
-        	GB_ActionType = MyUserActionEnum.EDIT;
+        	if(GB_UserListView.getSelectionModel().getSelectedItem() != null){
+	        	setEnableEdit(true);
+	        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
+	        	GB_ActionType = MyUserActionEnum.EDIT;
+        	}
+        	else{
+        		showLogsDialog("错误", "选择为空！");
+        	}
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
@@ -172,58 +168,58 @@ public class UserListHandler implements ActivityTemplet{
 	        	else{
 	        		rootpane.setCursor(Cursor.DEFAULT);
 	        		
-	        		if(httpUtils.getServiceEnum().equals(ServiceEnum.DeleteUser)){
+	        		if(httpUtils.getServiceEnum().equals(ServiceEnum.DeleteOperator)){
 	        			if((Boolean)httpUtils.getValue()){
-	        				httpUtils.startHttpService(ServiceEnum.ReadAllOtherUser, itsMe);
+	        				httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
 	            		}
 	        			else{
 	        				showLogsDialog("错误", "删除失败！");
 	        			}
 	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveUser)){
-	        			tempUser = (User) httpUtils.getValue();
+	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveOperator)){
+	        			tempOperator = (Operator) httpUtils.getValue();
 	            		
 	            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-	            			if(tempUser == null){
+	            			if(tempOperator == null){
 	            				showLogsDialog("错误", "添加失败！");
 	            			}
 	            			else{
 	            				setInAddStatus(false);
-	            				httpUtils.startHttpService(ServiceEnum.ReadAllOtherUser, itsMe);
+	            				httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
 	            			}
 	            			
 	            		}
 	            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-	            			if(tempUser == null){
+	            			if(tempOperator == null){
 	            				showLogsDialog("错误", "修改失败！");
 	            			}
 	            			else{
 	            				setEnableEdit(false);
-	            				httpUtils.startHttpService(ServiceEnum.ReadAllOtherUser, itsMe);
+	            				httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
 	            			}
 	            		}
 	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.CheckUserIsExist)){
+	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.CheckOperatorIsExist)){
 	        			if(GB_ActionType.equals(MyUserActionEnum.ADD)){
 
 	            			if((Boolean)httpUtils.getValue()){
 	            				showLogsDialog("错误", "用户已存在，请检查！");
 	                		}
 	            			else{
-	            				httpUtils.startHttpService(ServiceEnum.SaveUser, tempUser);
+	            				httpUtils.startHttpService(ServiceEnum.SaveOperator, tempOperator);
 	            			}
 	            		}
 	            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
 	            			if((Boolean)httpUtils.getValue()){
-	            				httpUtils.startHttpService(ServiceEnum.SaveUser, tempUser);
+	            				httpUtils.startHttpService(ServiceEnum.SaveOperator, tempOperator);
 	                		}
 	            			else{
 	            				showLogsDialog("错误", "用户不存在，请检查！");
 	            			}
 	            		}
 	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllOtherUser)){
-	        			upUserList((List<User>) httpUtils.getValue());
+	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllOperator)){
+	        			upUserList((List<Operator>) httpUtils.getValue());
 	        		}
 	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllDepartment)){
 		    			GB_UserDepartmentCombox.getItems().setAll((List<Department>) httpUtils.getValue());
@@ -238,47 +234,37 @@ public class UserListHandler implements ActivityTemplet{
         	modifyUserInfoDialog.close();
         	if(userPasswordTextField.getText().equals(itsMe.getPassword())){
         		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
-        			deleteUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+        			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-        			httpUtils.startHttpService(ServiceEnum.DeleteUser, deleteUser);
+        			httpUtils.startHttpService(ServiceEnum.DeleteOperator, tempOperator);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-        			tempUser = new User();
+        			tempOperator = new Operator();
         				
-        			tempUser.setAccount(GB_UserAccountTextField.getText());
-        			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
-        			tempUser.setName(GB_UserNameTextField.getText());
-        			tempUser.setAge(GB_UserAgeTextField.getText());
-        			tempUser.setSex(GB_UserSexTextField.getText());
-        			tempUser.setPhone(GB_UserPhoneTextField.getText());
-        			tempUser.setJob(GB_UserJobTextField.getText());
-        			tempUser.setDes(GB_UserDescTextField.getText());
-        			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-        			tempUser.setManageuser(GB_UserManageToggle.isSelected());
-        			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
-        			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
-        			tempUser.setManagecard(GB_CardManageToggle.isSelected());
+        			tempOperator.setName(GB_UserNameTextField.getText());
+        			tempOperator.setAge(GB_UserAgeTextField.getText());
+        			tempOperator.setSex(GB_UserSexTextField.getText());
+        			tempOperator.setPhone(GB_UserPhoneTextField.getText());
+        			tempOperator.setJob(GB_UserJobTextField.getText());
+        			tempOperator.setDes(GB_UserDescTextField.getText());
+        			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+        			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			httpUtils.startHttpService(ServiceEnum.CheckUserIsExist, tempUser);
+        			httpUtils.startHttpService(ServiceEnum.CheckOperatorIsExist, tempOperator);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-        			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-        			
-        			tempUser.setAccount(GB_UserAccountTextField.getText());
-        			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
-        			tempUser.setName(GB_UserNameTextField.getText());
-        			tempUser.setAge(GB_UserAgeTextField.getText());
-        			tempUser.setSex(GB_UserSexTextField.getText());
-        			tempUser.setPhone(GB_UserPhoneTextField.getText());
-        			tempUser.setJob(GB_UserJobTextField.getText());
-        			tempUser.setDes(GB_UserDescTextField.getText());
-        			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-        			tempUser.setManageuser(GB_UserManageToggle.isSelected());
-        			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
-        			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
-        			tempUser.setManagecard(GB_CardManageToggle.isSelected());
-        			
-        			httpUtils.startHttpService(ServiceEnum.CheckUserIsExist, tempUser);
+        			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+    				
+        			tempOperator.setName(GB_UserNameTextField.getText());
+        			tempOperator.setAge(GB_UserAgeTextField.getText());
+        			tempOperator.setSex(GB_UserSexTextField.getText());
+        			tempOperator.setPhone(GB_UserPhoneTextField.getText());
+        			tempOperator.setJob(GB_UserJobTextField.getText());
+        			tempOperator.setDes(GB_UserDescTextField.getText());
+        			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+        			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
+
+        			httpUtils.startHttpService(ServiceEnum.CheckOperatorIsExist, tempOperator);
         		}
         	}
         	else
@@ -289,15 +275,13 @@ public class UserListHandler implements ActivityTemplet{
         });
         
         //取消修改密码
-        
         acceptButton2.setOnMouseClicked((e)->{
         	LogDialog.close();
 		});
         
         //添加或修改
-        GB_SaveUserInfoButton.disableProperty().bind(GB_UserAccountTextField.lengthProperty().lessThan(1).
-        		or(GB_UserPassWordPassWordField.lengthProperty().lessThan(6)).
-        		or(GB_UserNameTextField.lengthProperty().lessThan(1)));
+        GB_SaveUserInfoButton.disableProperty().bind(GB_UserNameTextField.lengthProperty().lessThan(1).
+        		or(GB_UserDepartmentCombox.getSelectionModel().selectedItemProperty().isNull()));
         GB_SaveUserInfoButton.setOnAction((e)->{
 			userPasswordTextField.clear();
     		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
@@ -305,10 +289,14 @@ public class UserListHandler implements ActivityTemplet{
         });
         
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
+        	
+        	selectListViewCell = newValue;
+        	
         	if(newValue != null){
         		newValue.setDeleteIcoVisible(true);
         		setEnableEdit(false);
         	}
+        	
         	if(oldValue != null)
         		oldValue.setDeleteIcoVisible(false);
         });
@@ -317,7 +305,7 @@ public class UserListHandler implements ActivityTemplet{
         	if(rootpane.equals(newValue)){
         		itsMe = userSession.getUser();
         		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
-        		httpUtils.startHttpService(ServiceEnum.ReadAllOtherUser, itsMe);
+        		httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
         		setEnableEdit(false);
         	}
         	else {
@@ -342,10 +330,10 @@ public class UserListHandler implements ActivityTemplet{
 		activitySession.setActivityPane(rootpane);
 	}
 	
-	private void upUserList(List<User> userList) {
+	private void upUserList(List<Operator> userList) {
 
 		GB_UserListView.getItems().clear();
-		for (User user : userList) {
+		for (Operator user : userList) {
 			ListViewCell tempListViewCell = new ListViewCell(user, deleteUserIco);
 			GB_UserListView.getItems().add(tempListViewCell);
 		}
@@ -354,20 +342,15 @@ public class UserListHandler implements ActivityTemplet{
 	}
 	
 	private void setEnableEdit(boolean editable) {
-		GB_UserAccountTextField.setEditable(false);
-		GB_UserPassWordPassWordField.setEditable(editable);
 		GB_UserNameTextField.setEditable(editable);
 		GB_UserAgeTextField.setEditable(editable);
 		GB_UserSexTextField.setEditable(editable);
 		GB_UserPhoneTextField.setEditable(editable);
 		GB_UserJobTextField.setEditable(editable);
 		GB_UserDescTextField.setEditable(editable);
+		GB_OperatorRightToggle.setDisable(!editable);
 		
-		GB_UserDepartmentCombox.setDisable(!editable);
-		GB_UserManageToggle.setDisable(!editable);
-		GB_ReportManageToggle.setDisable(!editable);
-		GB_DeviceManageToggle.setDisable(!editable);
-		GB_CardManageToggle.setDisable(!editable);
+		GB_UserDepartmentCombox.setDisable(true);
 		
 		GB_SaveUserInfoButton.setVisible(editable);
 		
@@ -379,12 +362,10 @@ public class UserListHandler implements ActivityTemplet{
 			GB_EditUserImageView.setVisible(true);
 			GB_CancelEditUserImageView.setVisible(false);
 			showSelectUserInfo();
-		}			
+		}
 	}
 	
 	private void setInAddStatus(boolean editable) {
-		GB_UserAccountTextField.setEditable(editable);
-		GB_UserPassWordPassWordField.setEditable(editable);
 		GB_UserNameTextField.setEditable(editable);
 		GB_UserAgeTextField.setEditable(editable);
 		GB_UserSexTextField.setEditable(editable);
@@ -393,10 +374,7 @@ public class UserListHandler implements ActivityTemplet{
 		GB_UserDescTextField.setEditable(editable);
 		
 		GB_UserDepartmentCombox.setDisable(!editable);
-		GB_UserManageToggle.setDisable(!editable);
-		GB_ReportManageToggle.setDisable(!editable);
-		GB_DeviceManageToggle.setDisable(!editable);
-		GB_CardManageToggle.setDisable(!editable);
+		GB_OperatorRightToggle.setDisable(!editable);
 		
 		GB_SaveUserInfoButton.setVisible(editable);
 		
@@ -413,8 +391,6 @@ public class UserListHandler implements ActivityTemplet{
 	}
 	
 	private void clearUserInfo() {
-		GB_UserAccountTextField.clear();;
-		GB_UserPassWordPassWordField.clear();
 		GB_UserNameTextField.clear();
 		GB_UserAgeTextField.clear();
 		GB_UserSexTextField.clear();
@@ -422,28 +398,24 @@ public class UserListHandler implements ActivityTemplet{
 		GB_UserJobTextField.clear();
 		GB_UserDescTextField.clear();
 		GB_UserDepartmentCombox.getSelectionModel().select(null);
-		GB_UserManageToggle.setSelected(false);
-		GB_ReportManageToggle.setSelected(false);
-		GB_DeviceManageToggle.setSelected(false);
-		GB_CardManageToggle.setSelected(false);
+		GB_OperatorRightToggle.setSelected(false);
 	}
 	
 	private void showSelectUserInfo() {
-		User user = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+		if(GB_UserListView.getSelectionModel().getSelectedItem() != null){
+			Operator user = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-		GB_UserAccountTextField.setText(user.getAccount());
-		GB_UserPassWordPassWordField.setText(user.getPassword());
-		GB_UserNameTextField.setText(user.getName());
-		GB_UserAgeTextField.setText(user.getAge());
-		GB_UserSexTextField.setText(user.getSex());
-		GB_UserPhoneTextField.setText(user.getPhone());
-		GB_UserJobTextField.setText(user.getJob());
-		GB_UserDescTextField.setText(user.getDes());
-		GB_UserDepartmentCombox.getSelectionModel().select(user.getDepartment());
-		GB_UserManageToggle.setSelected(user.getManageuser());
-		GB_ReportManageToggle.setSelected(user.getManagereport());
-		GB_DeviceManageToggle.setSelected(user.getManagedevice());
-		GB_CardManageToggle.setSelected(user.getManagecard());
+			if(user != null){
+				GB_UserNameTextField.setText(user.getName());
+				GB_UserAgeTextField.setText(user.getAge());
+				GB_UserSexTextField.setText(user.getSex());
+				GB_UserPhoneTextField.setText(user.getPhone());
+				GB_UserJobTextField.setText(user.getJob());
+				GB_UserDescTextField.setText(user.getDes());
+				GB_UserDepartmentCombox.getSelectionModel().select(user.getDepartment());
+				GB_OperatorRightToggle.setSelected(user.getChecked());
+			}
+		}
 	}
 	
 	private void showLogsDialog(String head, String logs) {
@@ -456,7 +428,7 @@ public class UserListHandler implements ActivityTemplet{
 		
 		ImageView imageView = null;
 		
-		public ListViewCell(User user, Image image){
+		public ListViewCell(Operator user, Image image){
 			Label userName = new Label(user.getName());
 			AnchorPane.setTopAnchor(userName, 0.0);
 	        AnchorPane.setBottomAnchor(userName, 0.0);
@@ -479,7 +451,6 @@ public class UserListHandler implements ActivityTemplet{
 			
 			this.setUserData(user);
 			this.getChildren().addAll(userName, imageView);
-			//this.setMouseTransparent(true);
 		}
 		
 		public void setDeleteIcoVisible(boolean status){
@@ -502,6 +473,6 @@ public class UserListHandler implements ActivityTemplet{
 	@Override
 	public String getActivityName() {
 		// TODO Auto-generated method stub
-		return "审核人管理";
+		return "操作人管理";
 	}
 }

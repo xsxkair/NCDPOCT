@@ -1,111 +1,100 @@
 package com.xsx.ncd.tool;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.entity.Department;
+import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.entity.User;
 
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Component
-public class HttpUtils {
-
+public class HttpUtils extends Service<Object>{
+	
+	private ServiceEnum serviceEnum = ServiceEnum.NONE;
+	private Object parmData = null;
+	
 	private User tempuser = null;
 	private String tempStr = null;
 	private JSONObject jsonObject = null;
 	private JSONArray jsonArray = null;
 	private List<User> tempUserList = null;
-	private Boolean isOK = null;
 	
 	@Autowired private HttpClientTool httpClientTool;
-	
-	public User login(User user){
-		
-		tempStr = httpClientTool.myHttpPostJson("/Login", user);
-		
-		if(tempStr == null)
-			return null;
-		else{
-			try {
-				jsonObject = JSONObject.fromObject(tempStr);
 
-				tempuser = (User)JSONObject.toBean(jsonObject,User.class);
-			} catch (Exception e) {
-				// TODO: handle exception
-				tempuser = null;
-			}
+	public ServiceEnum getServiceEnum() {
+		return serviceEnum;
+	}
+
+	public void setServiceEnum(ServiceEnum serviceEnum) {
+		this.serviceEnum = serviceEnum;
+	}
+
+	public Object getParmData() {
+		return parmData;
+	}
+
+	public void setParmData(Object parmData) {
+		this.parmData = parmData;
+	}
+
+	@Override
+	protected Task<Object> createTask() {
+		// TODO Auto-generated method stub
+		return new MyTask();
+	}
+	
+	public void startHttpService(ServiceEnum serviceEnum, Object object){
+		this.serviceEnum = serviceEnum;
+		this.parmData = object;
+		this.restart();
+	}
+	
+	class MyTask extends Task<Object>{
+
+		@Override
+		protected Object call() {
+			// TODO Auto-generated method stub
+			if(ServiceEnum.NONE.equals(serviceEnum))
+				return null;
 			
-			return tempuser;
-		}
-	}
-
-	public User SaveUser(User user){
-		
-		tempStr = httpClientTool.myHttpPostJson("/SaveUser", user);
-		
-		if(tempStr == null)
-			return null;
-		else{
-			try {
-				jsonObject = JSONObject.fromObject(tempStr);
-
-				tempuser = (User)JSONObject.toBean(jsonObject,User.class);
-			} catch (Exception e) {
-				// TODO: handle exception
-				tempuser = null;
-			}
+			tempStr = httpClientTool.myHttpPostJson(serviceEnum.getName(), parmData);
 			
-			return tempuser;
-		}
-	}
-	
-	public Boolean deleteUser(User user){
-		tempStr = httpClientTool.myHttpPostJson("/DeleteUser", user);
-		
-		if(tempStr == null)
-			return true;
-		else if(tempStr.indexOf("true") >= 0){
-			return true;
-		}
-		else 
-			return false;
-	}
-	
-	public List<User> readAllUserBut(User user){
-		
-		tempStr = httpClientTool.myHttpPostJson("/ReadAllUser", user);
-		
-		if(tempStr == null)
-			return null;
-		else{
-			try {
-				jsonArray = JSONArray.fromObject(tempStr);
-
-				tempUserList = JSONArray.toList(jsonArray, User.class);
-			} catch (Exception e) {
-				// TODO: handle exception
-				tempUserList = null;
+			if(tempStr == null)
+				return null;
+			else{
+				try {
+					
+					if(serviceEnum.getIndex() == 1){
+						jsonArray = JSONArray.fromObject(tempStr);
+						return JSONArray.toCollection(jsonArray, serviceEnum.getObjectclass());
+					}
+					else if(serviceEnum.getIndex() == 2){
+						jsonObject = JSONObject.fromObject(tempStr);
+						return JSONObject.toBean(jsonObject, serviceEnum.getObjectclass());
+					}
+					else if(serviceEnum.getIndex() == 2){
+						if(tempStr == null)
+							return true;
+						else if(tempStr.indexOf("true") >= 0)
+							return true;
+						else 
+							return false;
+					}
+					else
+						return null;
+				} catch (Exception e) {
+					// TODO: handle exception
+					return null;
+				}
 			}
-			
-			return tempUserList;
 		}
-	}
-	
-	public Boolean checkUserIsExist(User user){
-		
-		tempStr = httpClientTool.myHttpPostJson("/CheckUserIsExist", user);
-
-		if(tempStr == null)
-			return true;
-		else if(tempStr.indexOf("true") >= 0){
-			return true;
-		}
-		else 
-			return false;
 	}
 }
