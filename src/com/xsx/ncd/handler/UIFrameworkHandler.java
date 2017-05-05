@@ -92,6 +92,7 @@ public class UIFrameworkHandler {
 	@Autowired LoginHandler loginHandler;
 	@Autowired ActivitySession activitySession;
 	@Autowired MyInfoHandler myInfoHandler;
+	@Autowired RepertoryPage repertoryPage;
 
 	@PostConstruct
 	public void UI_Init() {
@@ -183,23 +184,40 @@ public class UIFrameworkHandler {
         		rootActivityButton.setText(activitySession.getRootActivity().get().getActivityName());
         	}
         });
+        rootActivityButton.setOnAction((e)->{
+        	activitySession.getRootActivity().get().startActivity(null);
+        });
         
+        topMenuSeparatorImageView1.visibleProperty().bind(fatherActivityButton.visibleProperty());
         fatherActivityButton.visibleProperty().bind(activitySession.getFatherActivity().isNotNull());
         fatherActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
         	if(newValue){
         		fatherActivityButton.setText(activitySession.getFatherActivity().get().getActivityName());
         	}
         });
+        fatherActivityButton.setOnAction((e)->{
+        	activitySession.getFatherActivity().get().startActivity(null);
+        });
+        
+        topMenuSeparatorImageView2.visibleProperty().bind(childActivityButton.visibleProperty());
+        childActivityButton.visibleProperty().bind(activitySession.getChildActivity().isNotNull());
+        childActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
+        	if(newValue){
+        		childActivityButton.setText(activitySession.getChildActivity().get().getActivityName());
+        	}
+        });
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	GB_RootPane.getChildren().clear();
         	if(newValue != null)
-        		GB_RootPane.getChildren().add(newValue);
+        		GB_RootPane.getChildren().add(newValue.getActivityRootPane());
         });
         leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
         	System.out.println(newValue);
         	if(newValue.equals(5))
         		myInfoHandler.startActivity(null);
+        	else if(newValue.equals(2))
+        		repertoryPage.startActivity(null);
         });
 
         loader = null;

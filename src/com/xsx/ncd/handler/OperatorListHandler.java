@@ -1,15 +1,12 @@
 
 package com.xsx.ncd.handler;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.omg.PortableServer.IMPLICIT_ACTIVATION_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +14,9 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
-import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.svg.SVGGlyph;
-import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.MyUserActionEnum;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Department;
@@ -32,36 +26,21 @@ import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpUtils;
 
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 @Component
 public class OperatorListHandler implements ActivityTemplet{
@@ -103,7 +82,6 @@ public class OperatorListHandler implements ActivityTemplet{
 
 	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
 	private User itsMe = null;
-	private ListViewCell selectListViewCell = null;
 	private Operator tempOperator = null;
 	
 	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
@@ -132,6 +110,9 @@ public class OperatorListHandler implements ActivityTemplet{
         rootStackPane.getChildren().remove(LogDialog);
         
         GB_EditUserImageView.setOnMouseClicked((e)->{
+        	if(GB_ActionType.equals(MyUserActionEnum.ADD))
+        		setInAddStatus(false);
+
         	if(GB_UserListView.getSelectionModel().getSelectedItem() != null){
 	        	setEnableEdit(true);
 	        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
@@ -148,6 +129,9 @@ public class OperatorListHandler implements ActivityTemplet{
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
+        	if(GB_ActionType.equals(MyUserActionEnum.EDIT))
+        		setEnableEdit(false);
+        	
         	GB_ActionType = MyUserActionEnum.ADD;
         	setInAddStatus(true);
         	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
@@ -264,7 +248,7 @@ public class OperatorListHandler implements ActivityTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			httpUtils.startHttpService(ServiceEnum.CheckOperatorIsExist, tempOperator);
+        			httpUtils.startHttpService(ServiceEnum.SaveOperator, tempOperator);
         		}
         	}
         	else
@@ -289,8 +273,6 @@ public class OperatorListHandler implements ActivityTemplet{
         });
         
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
-        	
-        	selectListViewCell = newValue;
         	
         	if(newValue != null){
         		newValue.setDeleteIcoVisible(true);
@@ -327,7 +309,7 @@ public class OperatorListHandler implements ActivityTemplet{
 	public void startActivity(Object object) {
 		// TODO Auto-generated method stub
 		activitySession.setFatherActivity(this);
-		activitySession.setActivityPane(rootpane);
+		activitySession.setActivityPane(this);
 	}
 	
 	private void upUserList(List<Operator> userList) {
@@ -342,7 +324,7 @@ public class OperatorListHandler implements ActivityTemplet{
 	}
 	
 	private void setEnableEdit(boolean editable) {
-		GB_UserNameTextField.setEditable(editable);
+		GB_UserNameTextField.setEditable(false);
 		GB_UserAgeTextField.setEditable(editable);
 		GB_UserSexTextField.setEditable(editable);
 		GB_UserPhoneTextField.setEditable(editable);
@@ -474,5 +456,17 @@ public class OperatorListHandler implements ActivityTemplet{
 	public String getActivityName() {
 		// TODO Auto-generated method stub
 		return "操作人管理";
+	}
+
+	@Override
+	public Pane getActivityRootPane() {
+		// TODO Auto-generated method stub
+		return rootpane;
+	}
+
+	@Override
+	public void PostMessageToThisActivity(Message message) {
+		// TODO Auto-generated method stub
+		
 	}
 }

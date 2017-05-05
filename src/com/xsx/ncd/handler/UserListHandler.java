@@ -23,6 +23,7 @@ import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.MyUserActionEnum;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Department;
@@ -57,6 +58,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -141,9 +143,17 @@ public class UserListHandler implements ActivityTemplet{
         rootStackPane.getChildren().remove(LogDialog);
         
         GB_EditUserImageView.setOnMouseClicked((e)->{
-        	setEnableEdit(true);
-        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
-        	GB_ActionType = MyUserActionEnum.EDIT;
+        	if(GB_ActionType.equals(MyUserActionEnum.ADD))
+        		setInAddStatus(false);
+        	
+        	if(GB_UserListView.getSelectionModel().getSelectedItem() != null){
+        		setEnableEdit(true);
+            	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
+            	GB_ActionType = MyUserActionEnum.EDIT;
+        	}
+        	else{
+        		showLogsDialog("错误", "选择为空！");
+        	}
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
@@ -152,6 +162,9 @@ public class UserListHandler implements ActivityTemplet{
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
+        	if(GB_ActionType.equals(MyUserActionEnum.EDIT))
+        		setEnableEdit(false);
+        	
         	GB_ActionType = MyUserActionEnum.ADD;
         	setInAddStatus(true);
         	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
@@ -318,7 +331,6 @@ public class UserListHandler implements ActivityTemplet{
         		itsMe = userSession.getUser();
         		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
         		httpUtils.startHttpService(ServiceEnum.ReadAllOtherUser, itsMe);
-        		setEnableEdit(false);
         	}
         	else {
         		itsMe = null;
@@ -339,7 +351,7 @@ public class UserListHandler implements ActivityTemplet{
 	public void startActivity(Object object) {
 		// TODO Auto-generated method stub
 		activitySession.setFatherActivity(this);
-		activitySession.setActivityPane(rootpane);
+		activitySession.setActivityPane(this);
 	}
 	
 	private void upUserList(List<User> userList) {
@@ -503,5 +515,17 @@ public class UserListHandler implements ActivityTemplet{
 	public String getActivityName() {
 		// TODO Auto-generated method stub
 		return "审核人管理";
+	}
+
+	@Override
+	public Pane getActivityRootPane() {
+		// TODO Auto-generated method stub
+		return rootpane;
+	}
+
+	@Override
+	public void PostMessageToThisActivity(Message message) {
+		// TODO Auto-generated method stub
+		
 	}
 }

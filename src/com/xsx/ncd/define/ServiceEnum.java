@@ -1,7 +1,9 @@
 package com.xsx.ncd.define;
 
 import com.xsx.ncd.entity.Department;
+import com.xsx.ncd.entity.Item;
 import com.xsx.ncd.entity.Operator;
+import com.xsx.ncd.entity.Repertory;
 import com.xsx.ncd.entity.User;
 
 /*
@@ -11,12 +13,21 @@ import com.xsx.ncd.entity.User;
  * 3£¬´ú±íbool×Ö·û´®
  */
 public enum ServiceEnum {
-	NONE("None", 0, null), ReadAllDepartment("/readAllDepartment", 1, Department.class), Login("/Login", 2, User.class), 
-	SaveUser("/SaveUser", 2, User.class), DeleteUser("/DeleteUser", 3, null), CheckUserIsExist("/CheckUserIsExist", 3, null),
-	ReadAllOtherUser("/ReadAllUser", 1, User.class), ReadAllOperator("/ReadAllOperator", 1, Operator.class), 
+	Error("Error", 0, null), 
+	NONE("None", 0, null), 
+	ReadAllDepartment("/readAllDepartment", 1, Department.class), 
+	Login("/Login", 2, User.class), 
+	SaveUser("/SaveUser", 2, User.class), 
+	DeleteUser("/DeleteUser", 3, null), 
+	CheckUserIsExist("/CheckUserIsExist", 3, null),
+	ReadAllOtherUser("/ReadAllUser", 1, User.class), 
+	ReadAllOperator("/ReadAllOperator", 1, Operator.class), 
 	SaveOperator("/SaveOperator", 2, Operator.class),
-	DeleteOperator("/DeleteOperator", 3, null), CheckOperatorIsExist("/CheckOperatorIsExist", 3, null),
-	ReadOneOperatorById("/ReadOneOperatorById", 2, Operator.class);
+	DeleteOperator("/DeleteOperator", 3, null), 
+	CheckOperatorIsExist("/CheckOperatorIsExist", 3, null),
+	ReadOneOperatorById("/ReadOneOperatorById", 2, Operator.class), 
+	ReadAllItems("/ReadAllItems", 1, Item.class),
+	SaveRepertoryRecord("/SaveRepertoryRecord", 2, Repertory.class);
 	
 	private final String name;
 	private final Integer index;

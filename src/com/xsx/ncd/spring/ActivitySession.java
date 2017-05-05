@@ -12,17 +12,17 @@ import javafx.scene.layout.Pane;
 public class ActivitySession {
 		
 		//主界面的显示界面
-		private ObjectProperty<Pane> ActivityPane = new SimpleObjectProperty<>();
+		private ObjectProperty<ActivityTemplet> ActivityPane = new SimpleObjectProperty<>();
 		
 		private ObjectProperty<ActivityTemplet> rootActivity = new SimpleObjectProperty<>();
 		private ObjectProperty<ActivityTemplet> fatherActivity = new SimpleObjectProperty<>();
 		private ObjectProperty<ActivityTemplet> childActivity = new SimpleObjectProperty<>();
 
-		public ObjectProperty<Pane> getActivityPane() {
+		public ObjectProperty<ActivityTemplet> getActivityPane() {
 			return ActivityPane;
 		}
 
-		public void setActivityPane(Pane activityPane) {
+		public void setActivityPane(ActivityTemplet activityPane) {
 			ActivityPane.set(activityPane);
 		}
 

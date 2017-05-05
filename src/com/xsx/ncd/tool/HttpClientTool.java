@@ -1,12 +1,24 @@
 package com.xsx.ncd.tool;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import net.sf.json.JSONObject;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xsx.ncd.define.Message;
+import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.spring.ActivitySession;
+
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -17,21 +29,40 @@ import okhttp3.Response;
 @Component
 public class HttpClientTool {
 	
-	private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
+	private ObjectMapper mapper = new ObjectMapper();
+	private String jsonString = null;
+	
+	private final String ServerUrlHead = "http://192.168.0.56:8080/NCDPOCT_Server";
+	//private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
 	private StringBuffer urlStringBuffer = new StringBuffer();
 	
 	private final MediaType mediaJsonType = MediaType.parse("application/json; charset=utf-8");
 	private final MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
 	private final OkHttpClient client = new OkHttpClient();
 	
+	@Autowired ActivitySession activitySession;
+	
+	@PostConstruct
+	private void init(){
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");  
+        mapper.setDateFormat(outputFormat);
+	}
+	
 	public String myHttpPostJson(String url, Object parm){
-		JSONObject jsonObject = JSONObject.fromObject(parm);
+
+		try {
+			jsonString = mapper.writeValueAsString(parm);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return null;
+		}
 		
 		urlStringBuffer.setLength(0);
 		urlStringBuffer.append(ServerUrlHead);
 		urlStringBuffer.append(url);
 		
-		RequestBody body = RequestBody.create(mediaJsonType, jsonObject.toString());
+		RequestBody body = RequestBody.create(mediaJsonType, jsonString);
 		Request request = new Request.Builder()
 		      .url(urlStringBuffer.toString())
 		      .post(body)
@@ -50,6 +81,72 @@ public class HttpClientTool {
 		
 		return null;
 		
+	}
+	
+	public void myHttpAsynchronousPostJson(ServiceEnum serviceEnum, Object parm){
+
+		Message message = new Message(serviceEnum, null);
+		
+		try {
+			jsonString = mapper.writeValueAsString(parm);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+
+			activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+			return;
+		}
+
+		urlStringBuffer.setLength(0);
+		urlStringBuffer.append(ServerUrlHead);
+		urlStringBuffer.append(serviceEnum.getName());
+		
+		RequestBody body = RequestBody.create(mediaJsonType, jsonString);
+		Request request = new Request.Builder()
+		      .url(urlStringBuffer.toString())
+		      .post(body)
+		      .build();
+		Call call = client.newCall(request);
+		call.enqueue(new Callback() {
+			
+			@Override
+			public void onResponse(Call arg0, Response arg1){
+				// TODO Auto-generated method stub
+				try {
+					jsonString = arg1.body().string();
+				
+					if(jsonString != null){
+						if(serviceEnum.getIndex() == 1){
+							JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
+							message.setObj(mapper.readValue(jsonString, javaType));
+						}
+						else if(serviceEnum.getIndex() == 2){
+							message.setObj(mapper.readValue(jsonString, serviceEnum.getObjectclass()));
+						}
+						else if(serviceEnum.getIndex() == 3){
+							if(jsonString != null){
+								if(jsonString.indexOf("true") >= 0)
+									message.setObj(true);
+								else 
+									message.setObj(false);
+							}
+						}
+					}
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+			}
+			
+			@Override
+			public void onFailure(Call arg0, IOException arg1) {
+				// TODO Auto-generated method stub
+				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+			}
+		});	
 	}
 	
 	public String myHttpPost(String url, Map<String, String> parm){

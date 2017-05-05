@@ -2,15 +2,17 @@ package com.xsx.ncd.entity;
 
 import java.io.Serializable;
 
+
 public class Operator implements Serializable{
 	
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 123451L;
+	private static final long serialVersionUID = -2918286652396847269L;
 
 	private Integer id;
-	
+
 	private String name;
 	
 	private String age;

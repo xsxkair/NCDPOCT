@@ -4,10 +4,11 @@ import java.io.Serializable;
 
 public class Department implements Serializable{
 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 123456L;
+	private static final long serialVersionUID = -2297757163195796572L;
 
 	private Integer id;
 	
@@ -48,10 +49,4 @@ public class Department implements Serializable{
 	public void setDes(String des) {
 		this.des = des;
 	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
-
 }

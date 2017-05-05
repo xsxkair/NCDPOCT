@@ -16,15 +16,20 @@ import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
+import com.xsx.ncd.tool.HttpClientTool;
 import com.xsx.ncd.tool.HttpUtils;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -35,6 +40,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -89,11 +95,14 @@ public class MyInfoHandler implements ActivityTemplet{
 	private User itsMe = null;
 	private User tempUser = null;
 	private List<Department> tempDepartmentList = null;
+	private ListProperty<Message> myMessagesProperty = null;
+	private ListChangeListener myMessagesListChangeListener = null;
 	
 	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
 	@Autowired private UserSession userSession;
 	@Autowired private ActivitySession activitySession;
 	@Autowired private HttpUtils httpUtils;
+	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserListHandler userListHandler;
 	@Autowired OperatorListHandler operatorListHandler;
 	
@@ -125,7 +134,8 @@ public class MyInfoHandler implements ActivityTemplet{
         GB_ModifyIcoStackPane.getChildren().add(cancelModifySvg);
         
         editUserInfoImageView.setOnMouseClicked(e->{
-        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
+        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+        	//httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
         	setEditable(true);
         });
         
@@ -139,6 +149,18 @@ public class MyInfoHandler implements ActivityTemplet{
     		modifyUserInfoDialog.show(rootStackPane);
         });
         
+        myMessagesListChangeListener = new ListChangeListener<Message>() {
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
+				// TODO Auto-generated method stub
+				if(c.wasAdded()){
+					for (Message message : c.getAddedSubList()) {
+						System.out.println(message.getObj());
+					}
+				}
+			}
+		};
         GB_FreshPane.visibleProperty().bind(httpUtils.runningProperty());
         httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
 
@@ -238,13 +260,17 @@ public class MyInfoHandler implements ActivityTemplet{
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(rootpane.equals(newValue)){
-        		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
+        		myMessagesProperty = new SimpleListProperty<>();
+        		myMessagesProperty.addListener(myMessagesListChangeListener);
+        		//httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
         		itsMe = userSession.getUser();
         		setEditable(false);
         	}
         	else {
+        		myMessagesProperty.removeListener(myMessagesListChangeListener);
+        		myMessagesProperty = null;
         		itsMe = null;
-        		httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
+        		//httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
         	}
         });
         
@@ -323,7 +349,9 @@ public class MyInfoHandler implements ActivityTemplet{
 	public void startActivity(Object object) {
 		// TODO Auto-generated method stub
 		activitySession.setRootActivity(this);
-		activitySession.setActivityPane(rootpane);
+		activitySession.setFatherActivity(null);
+		activitySession.setChildActivity(null);
+		activitySession.setActivityPane(this);
 	}
 
 	@Override
@@ -342,5 +370,17 @@ public class MyInfoHandler implements ActivityTemplet{
 	public String getActivityName() {
 		// TODO Auto-generated method stub
 		return activityName;
+	}
+
+	@Override
+	public Pane getActivityRootPane() {
+		// TODO Auto-generated method stub
+		return rootpane;
+	}
+
+	@Override
+	public void PostMessageToThisActivity(Message message) {
+		// TODO Auto-generated method stub
+		myMessagesProperty.add(message);
 	}
 }

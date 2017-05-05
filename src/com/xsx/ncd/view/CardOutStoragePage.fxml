@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDialog?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane fx:id="rootStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXDialog fx:id="modifyUserInfoDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label>权限认证</Label>
+					</heading>
+					<body>
+						 <HBox alignment="CENTER_LEFT" spacing="20.0">
+						 	<Label>密码：</Label>
+						 	<PasswordField fx:id="userPasswordTextField" text="密码" />
+						 </HBox>
+					</body>
+					<actions>
+						<JFXButton fx:id="cancelButton0" styleClass="dialog-accept">取消</JFXButton>
+						<JFXButton fx:id="acceptButton0" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <JFXDialog fx:id="modifyUserPasswordDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label>修改密码</Label>
+					</heading>
+					<body>
+						 <VBox alignment="CENTER_LEFT" spacing="20.0">
+						 	<HBox alignment="CENTER_LEFT" spacing="20.0">
+							 	<Label>新密码：</Label>
+							 	<PasswordField fx:id="userNewPasswordTextField0" text="密码" />
+							 </HBox>
+							 <HBox alignment="CENTER_LEFT" spacing="20.0">
+							 	<Label>新密码：</Label>
+							 	<PasswordField fx:id="userNewPasswordTextField1" text="密码" />
+							 </HBox>
+							 <HBox alignment="CENTER_LEFT" spacing="20.0">
+							 	<Label>旧密码：</Label>
+							 	<PasswordField fx:id="userOldPasswordTextField" text="密码" />
+							 </HBox>
+						 </VBox>
+						 
+					</body>
+					<actions>
+						<JFXButton fx:id="cancelButton1" styleClass="dialog-accept">取消</JFXButton>
+						<JFXButton fx:id="acceptButton1" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <JFXDialog fx:id="LogDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label fx:id="LogDialogHead">信息</Label>
+					</heading>
+					<body>
+						 <Label fx:id="LogDialogContent" />
+					</body>
+					<actions>
+						<JFXButton fx:id="acceptButton2" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <VBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="试剂批号：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="GB_CardLotTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="测试项目：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="GB_CardItemLabel" text="Label" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="生产日期：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="GB_CardMadeDateLabel" text="Label" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="过期时间：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="GB_CardPeriodDateLabel" text="Label" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="厂      家：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="GB_CardVenderLabel" text="Label" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="库      存：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="GB_CardStorageNumLabel" text="Label" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="出库数目：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="GB_CardOutNumTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="领用人：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="GB_CardOutUserCombox" prefWidth="200.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="领用科室：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="GB_CardOutDepartmentCombox" prefWidth="200.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+                           <children>
+                              <Label text="明      细：" textFill="#1a3f83">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="GB_CardOutDetailTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                           </children>
+                        </HBox>
+                        <JFXButton fx:id="CardOutStorageButton" buttonType="RAISED" defaultButton="true" prefHeight="32.0" prefWidth="90.0" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="出库" textFill="WHITE">
+                           <font>
+                              <Font name="Bodoni MT Bold" size="17.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </JFXButton>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+            <VBox fx:id="GB_FreshPane" alignment="CENTER" spacing="10.0" style="-fx-background-color: rgba(0, 0, 0, 0.2);" visible="false">
+               <children>
+                  <JFXSpinner radius="50.0" startingAngle="0.0" style="-fx-radius: 100;" />
+                  <Label text="正在加载数据，请稍后" />
+               </children>
+               <cursor>
+                  <Cursor fx:constant="WAIT" />
+               </cursor>
+            </VBox>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>
