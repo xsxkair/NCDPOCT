@@ -268,7 +268,7 @@
                                           </ImageView>
                                        </children>
                                        <cursor>
-                                          <Cursor fx:constant="HAND" />
+                                          <Cursor fx:constant="DEFAULT" />
                                        </cursor>
                                     </StackPane>
                                     <StackPane fx:id="GB_ModifyIcoStackPane">
@@ -285,7 +285,7 @@
                                           </ImageView>
                                        </children>
                                        <cursor>
-                                          <Cursor fx:constant="HAND" />
+                                          <Cursor fx:constant="DEFAULT" />
                                        </cursor>
                                     </StackPane>
                                  </children>

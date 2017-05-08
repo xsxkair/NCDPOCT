@@ -92,3 +92,10 @@
 #GB_UserListView .list-cell:filled:hover {
     -fx-background-color: #fad5d2;
 }
+
+#GB_EditUserImageView:hover,
+#GB_CancelEditUserImageView:hover,
+#GB_AddUserImageView:hover,
+#GB_CancelAddUserImageView:hover{
+	-fx-cursor:HAND;
+}

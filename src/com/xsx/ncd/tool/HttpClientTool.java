@@ -32,8 +32,8 @@ public class HttpClientTool {
 	private ObjectMapper mapper = new ObjectMapper();
 	private String jsonString = null;
 	
-	private final String ServerUrlHead = "http://192.168.0.56:8080/NCDPOCT_Server";
-	//private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
+	//private final String ServerUrlHead = "http://192.168.0.56:8080/NCDPOCT_Server";
+	private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
 	private StringBuffer urlStringBuffer = new StringBuffer();
 	
 	private final MediaType mediaJsonType = MediaType.parse("application/json; charset=utf-8");
@@ -48,7 +48,10 @@ public class HttpClientTool {
         mapper.setDateFormat(outputFormat);
 	}
 	
-	public String myHttpPostJson(String url, Object parm){
+	/*
+	 * 同步方式post json数据
+	 */
+	public String myHttpSynchronousPostJson(String url, Object parm){
 
 		try {
 			jsonString = mapper.writeValueAsString(parm);
@@ -83,6 +86,9 @@ public class HttpClientTool {
 		
 	}
 	
+	/*
+	 * 异步方式post json数据
+	 */
 	public void myHttpAsynchronousPostJson(ServiceEnum serviceEnum, Object parm){
 
 		Message message = new Message(serviceEnum, null);
@@ -114,9 +120,11 @@ public class HttpClientTool {
 				// TODO Auto-generated method stub
 				try {
 					jsonString = arg1.body().string();
-				
+
 					if(jsonString != null){
-						if(serviceEnum.getIndex() == 1){
+						if(jsonString.length() == 0)
+							message.setObj(null);
+						else if(serviceEnum.getIndex() == 1){
 							JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
 							message.setObj(mapper.readValue(jsonString, javaType));
 						}

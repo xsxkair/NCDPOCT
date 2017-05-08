@@ -72,4 +72,8 @@ public class Card implements Serializable{
 		this.vender = vender;
 	}
 	
+	@Override
+	public String toString() {
+		return lotnum;
+	}
 }

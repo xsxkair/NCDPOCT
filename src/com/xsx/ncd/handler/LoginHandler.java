@@ -165,8 +165,7 @@ public class LoginHandler {
         });
         
         acceptButton.setOnAction((e)->{
-        	if(GB_LogDialog.isVisible())
-        		GB_LogDialog.close();
+        	GB_LogDialog.close();
         });
         
         loader = null;

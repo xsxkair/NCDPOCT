@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.svg.SVGGlyphLoader;
@@ -26,10 +27,15 @@ import com.xsx.ncd.entity.Repertory;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
+import com.xsx.ncd.tool.HttpClientTool;
 import com.xsx.ncd.tool.HttpUtils;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
@@ -51,8 +57,8 @@ public class CardInStoragePage implements ActivityTemplet {
 	
 	@FXML StackPane rootStackPane;
 	
-	@FXML TextField GB_CardLotNumTextField;
-	@FXML ComboBox<Item> GB_CardTypeCombox;
+	@FXML JFXComboBox<String> GB_CardLotNumBox;
+	@FXML JFXComboBox<Item> GB_CardTypeCombox;
 	@FXML JFXDatePicker GB_CardMakeTimeDatePicker;
 	@FXML JFXDatePicker GB_CardPeriodDateDatePicker;
 	@FXML TextField GB_CardVenderTextField;
@@ -74,11 +80,11 @@ public class CardInStoragePage implements ActivityTemplet {
 	
 	private Card tempCard = null;
 	private Repertory tempRepertory = null;
-	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
+	private ObservableList<Message> myMessagesList = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired UserSession userSession;
-	@Autowired HttpUtils httpUtils;
+	@Autowired HttpClientTool httpClientTool;
 	
 	@Override
 	@PostConstruct
@@ -112,14 +118,14 @@ public class CardInStoragePage implements ActivityTemplet {
             }
         });
         
-        CardInStorageButtom.disableProperty().bind(GB_CardLotNumTextField.lengthProperty().lessThan(1).
+        CardInStorageButtom.disableProperty().bind(GB_CardLotNumBox.getSelectionModel().selectedItemProperty().isNull().
         		or(GB_CardTypeCombox.getSelectionModel().selectedItemProperty().isNull().
         		or(GB_CardInNumTextField.lengthProperty().lessThan(1))));
         CardInStorageButtom.setOnAction((e)->{
         	modifyUserInfoDialog.show(rootStackPane);
         });
         
-        
+        GB_CardLotNumBox.proper
         
         acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
         acceptButton0.setOnMouseClicked((e)->{
@@ -130,7 +136,7 @@ public class CardInStoragePage implements ActivityTemplet {
 				tempRepertory = new Repertory();
 
 				tempCard.setItem(GB_CardTypeCombox.getSelectionModel().getSelectedItem());
-				tempCard.setLotnum(GB_CardLotNumTextField.getText());
+				tempCard.setLotnum(GB_CardLotNumBox.getSelectionModel().getSelectedItem());
 				tempCard.setMakedate(java.sql.Date.valueOf(GB_CardMakeTimeDatePicker.getValue()));
 				tempCard.setPerioddate(java.sql.Date.valueOf(GB_CardPeriodDateDatePicker.getValue()));
 				tempCard.setVender(GB_CardVenderTextField.getText());
@@ -143,37 +149,47 @@ public class CardInStoragePage implements ActivityTemplet {
 				tempRepertory.setOperator(userSession.getUser());
 				tempRepertory.setTime(new Timestamp(System.currentTimeMillis()));
 
-				httpUtils.startHttpService(ServiceEnum.SaveRepertoryRecord, tempRepertory);
+				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveRepertoryRecord, tempRepertory);
 				
 			}
 			else
 				showLogsDialog("´íÎó", "ÃÜÂë´íÎó£¬½ûÖ¹²Ù×÷£¡");
 		});
         
-        httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
+        myMessagesList = FXCollections.observableArrayList();
+        myMessagesList.addListener(new ListChangeListener<Message>(){
 
 			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
 				// TODO Auto-generated method stub
-				if(!newValue){
-	    			if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveRepertoryRecord)){
-
-	    			}
-	    			else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllItems)){
-	    				if(httpUtils.getValue() instanceof List)
-	    					GB_CardTypeCombox.getItems().setAll((List<Item>)httpUtils.getValue());
-	    			}
-	    		}
+				while(c.next()){
+					if(c.wasAdded()){
+						GB_FreshPane.setVisible(false);
+						for (Message message : c.getAddedSubList()) {
+							switch (message.getWhat()) {
+							case SaveRepertoryRecord:
+								
+								break;
+							case ReadAllItems:
+								GB_CardTypeCombox.getItems().setAll((List<Item>)message.getObj());
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
 			}
-        };
+        	
+        });
+
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(rootPane.equals(newValue)){
-        		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
-        		httpUtils.startHttpService(ServiceEnum.ReadAllItems, null);
+        	if(this.equals(newValue)){
+        		
         	}
         	else {
-        		httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
+
         	}
         });
         
@@ -216,7 +232,7 @@ public class CardInStoragePage implements ActivityTemplet {
 	@Override
 	public String getActivityName() {
 		// TODO Auto-generated method stub
-		return "ÊÔ¼Á¿¨¹ÜÀí";
+		return "ÊÔ¼Á¿¨Èë¿â";
 	}
 
 	@Override
@@ -228,7 +244,9 @@ public class CardInStoragePage implements ActivityTemplet {
 	@Override
 	public void PostMessageToThisActivity(Message message) {
 		// TODO Auto-generated method stub
-		
+		Platform.runLater(()->{
+			myMessagesList.add(message);
+		});
 	}
 
 }

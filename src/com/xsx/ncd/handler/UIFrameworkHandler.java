@@ -213,7 +213,6 @@ public class UIFrameworkHandler {
         		GB_RootPane.getChildren().add(newValue.getActivityRootPane());
         });
         leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
-        	System.out.println(newValue);
         	if(newValue.equals(5))
         		myInfoHandler.startActivity(null);
         	else if(newValue.equals(2))

@@ -66,7 +66,7 @@ public class HttpUtils extends Service<Object>{
 			if(ServiceEnum.NONE.equals(serviceEnum))
 				return null;
 			
-			tempStr = httpClientTool.myHttpPostJson(serviceEnum.getName(), parmData);
+			tempStr = httpClientTool.myHttpSynchronousPostJson(serviceEnum.getName(), parmData);
 			
 			if(tempStr == null)
 				return null;

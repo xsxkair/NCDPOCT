@@ -24,10 +24,12 @@ import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
-import com.xsx.ncd.tool.HttpUtils;
+import com.xsx.ncd.tool.HttpClientTool;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -81,14 +83,13 @@ public class OperatorListHandler implements ActivityTemplet{
 	@FXML VBox GB_FreshPane;
 
 	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
-	private User itsMe = null;
 	private Operator tempOperator = null;
-	
-	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
+	private User itsMe = null;
+	private ObservableList<Message> myMessagesList = null;
 
+	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserSession userSession;
 	@Autowired private ActivitySession activitySession;
-	@Autowired private HttpUtils httpUtils;
 	
 	@PostConstruct
 	@Override
@@ -109,108 +110,106 @@ public class OperatorListHandler implements ActivityTemplet{
         rootStackPane.getChildren().remove(modifyUserInfoDialog);
         rootStackPane.getChildren().remove(LogDialog);
         
+        GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
-        	if(GB_ActionType.equals(MyUserActionEnum.ADD))
-        		setInAddStatus(false);
-
-        	if(GB_UserListView.getSelectionModel().getSelectedItem() != null){
-	        	setEnableEdit(true);
-	        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
-	        	GB_ActionType = MyUserActionEnum.EDIT;
-        	}
-        	else{
-        		showLogsDialog("¥ÌŒÛ", "—°‘ÒŒ™ø’£°");
-        	}
+        	setUserInfoInStatus(MyUserActionEnum.EDIT);
+        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+            GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
-        	setEnableEdit(false);
         	GB_ActionType = MyUserActionEnum.NONE;
+        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
-        	if(GB_ActionType.equals(MyUserActionEnum.EDIT))
-        		setEnableEdit(false);
-        	
+        	setUserInfoInStatus(MyUserActionEnum.ADD);
+        	clearUserInfo();
         	GB_ActionType = MyUserActionEnum.ADD;
-        	setInAddStatus(true);
-        	httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
+        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	setInAddStatus(false);
+        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
         });
         
-		GB_FreshPane.visibleProperty().bind(httpUtils.runningProperty());
-		httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
+        myMessagesList = FXCollections.observableArrayList();
+        myMessagesList.addListener(new ListChangeListener<Message>(){
 
 			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
 				// TODO Auto-generated method stub
-				if(newValue)
-	        		rootpane.setCursor(Cursor.WAIT);
-	        	else{
-	        		rootpane.setCursor(Cursor.DEFAULT);
-	        		
-	        		if(httpUtils.getServiceEnum().equals(ServiceEnum.DeleteOperator)){
-	        			if((Boolean)httpUtils.getValue()){
-	        				httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
-	            		}
-	        			else{
-	        				showLogsDialog("¥ÌŒÛ", "…æ≥˝ ß∞‹£°");
-	        			}
-	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveOperator)){
-	        			tempOperator = (Operator) httpUtils.getValue();
-	            		
-	            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-	            			if(tempOperator == null){
-	            				showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
-	            			}
-	            			else{
-	            				setInAddStatus(false);
-	            				httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
-	            			}
-	            			
-	            		}
-	            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-	            			if(tempOperator == null){
-	            				showLogsDialog("¥ÌŒÛ", "–ﬁ∏ƒ ß∞‹£°");
-	            			}
-	            			else{
-	            				setEnableEdit(false);
-	            				httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
-	            			}
-	            		}
-	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.CheckOperatorIsExist)){
-	        			if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+				while(c.next()){
+					if(c.wasAdded()){
+						GB_FreshPane.setVisible(false);
+						for (Message message : c.getAddedSubList()) {
+							switch (message.getWhat()) {
+							case DeleteOperator:
+								if((Boolean)message.getObj()){
+			        				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+			            		}
+			        			else{
+			        				showLogsDialog("¥ÌŒÛ", "…æ≥˝ ß∞‹£°");
+			        			}
+								break;
+							case SaveOperator:
+								tempOperator = (Operator) message.getObj();
+			            		
+			            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+			            			if(tempOperator == null){
+			            				showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
+			            			}
+			            			else{
+			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+			            			}
+			            			
+			            		}
+			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+			            			if(tempOperator == null){
+			            				showLogsDialog("¥ÌŒÛ", "–ﬁ∏ƒ ß∞‹£°");
+			            			}
+			            			else{
+			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+			            			}
+			            		}
+								break;
+							case ReadAllOperator:
+								upUserList((List<Operator>) message.getObj());
+								setUserInfoInStatus(MyUserActionEnum.NONE);
+								break;
+							case CheckOperatorIsExist:
+								if(GB_ActionType.equals(MyUserActionEnum.ADD)){
 
-	            			if((Boolean)httpUtils.getValue()){
-	            				showLogsDialog("¥ÌŒÛ", "”√ªß“—¥Ê‘⁄£¨«ÎºÏ≤È£°");
-	                		}
-	            			else{
-	            				httpUtils.startHttpService(ServiceEnum.SaveOperator, tempOperator);
-	            			}
-	            		}
-	            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-	            			if((Boolean)httpUtils.getValue()){
-	            				httpUtils.startHttpService(ServiceEnum.SaveOperator, tempOperator);
-	                		}
-	            			else{
-	            				showLogsDialog("¥ÌŒÛ", "”√ªß≤ª¥Ê‘⁄£¨«ÎºÏ≤È£°");
-	            			}
-	            		}
-	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllOperator)){
-	        			upUserList((List<Operator>) httpUtils.getValue());
-	        		}
-	        		else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllDepartment)){
-		    			GB_UserDepartmentCombox.getItems().setAll((List<Department>) httpUtils.getValue());
-	    			}
-	        	}
+			            			if((Boolean)message.getObj()){
+			            				showLogsDialog("¥ÌŒÛ", "”√ªß“—¥Ê‘⁄£¨«ÎºÏ≤È£°");
+			                		}
+			            			else{
+			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveOperator, tempOperator);
+			            			}
+			            		}
+			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+			            			if((Boolean)message.getObj()){
+			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveOperator, tempOperator);
+			                		}
+			            			else{
+			            				showLogsDialog("¥ÌŒÛ", "”√ªß≤ª¥Ê‘⁄£¨«ÎºÏ≤È£°");
+			            			}
+			            		}
+								break;
+							case ReadAllDepartment:
+								GB_UserDepartmentCombox.getItems().setAll((List<Department>) message.getObj());
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
 			}
-        };
+        });
+        
+		GB_FreshPane.setVisible(false);
+
         
         //»®œﬁ»∑»œ
         acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
@@ -220,7 +219,7 @@ public class OperatorListHandler implements ActivityTemplet{
         		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
         			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-        			httpUtils.startHttpService(ServiceEnum.DeleteOperator, tempOperator);
+        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.DeleteOperator, tempOperator);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
         			tempOperator = new Operator();
@@ -234,7 +233,7 @@ public class OperatorListHandler implements ActivityTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			httpUtils.startHttpService(ServiceEnum.CheckOperatorIsExist, tempOperator);
+        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.CheckOperatorIsExist, tempOperator);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
         			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
@@ -248,7 +247,7 @@ public class OperatorListHandler implements ActivityTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			httpUtils.startHttpService(ServiceEnum.SaveOperator, tempOperator);
+        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.CheckOperatorIsExist, tempOperator);
         		}
         	}
         	else
@@ -276,7 +275,7 @@ public class OperatorListHandler implements ActivityTemplet{
         	
         	if(newValue != null){
         		newValue.setDeleteIcoVisible(true);
-        		setEnableEdit(false);
+        		showSelectUserInfo();
         	}
         	
         	if(oldValue != null)
@@ -284,15 +283,12 @@ public class OperatorListHandler implements ActivityTemplet{
         });
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(rootpane.equals(newValue)){
+        	if(this.equals(newValue)){
         		itsMe = userSession.getUser();
-        		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
-        		httpUtils.startHttpService(ServiceEnum.ReadAllOperator, itsMe);
-        		setEnableEdit(false);
+        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, itsMe);
         	}
         	else {
         		itsMe = null;
-        		httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
         	}
         });
         
@@ -323,53 +319,24 @@ public class OperatorListHandler implements ActivityTemplet{
 		GB_UserListView.getSelectionModel().selectFirst();
 	}
 	
-	private void setEnableEdit(boolean editable) {
-		GB_UserNameTextField.setEditable(false);
-		GB_UserAgeTextField.setEditable(editable);
-		GB_UserSexTextField.setEditable(editable);
-		GB_UserPhoneTextField.setEditable(editable);
-		GB_UserJobTextField.setEditable(editable);
-		GB_UserDescTextField.setEditable(editable);
-		GB_OperatorRightToggle.setDisable(!editable);
+	private void setUserInfoInStatus(MyUserActionEnum status){
+		GB_UserNameTextField.setEditable(status.equals(MyUserActionEnum.ADD));
+		GB_UserAgeTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
+		GB_UserSexTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
+		GB_UserPhoneTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
+		GB_UserJobTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
+		GB_UserDescTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
 		
-		GB_UserDepartmentCombox.setDisable(true);
+		GB_UserDepartmentCombox.setDisable(!status.equals(MyUserActionEnum.ADD));
+		GB_OperatorRightToggle.setDisable(status.equals(MyUserActionEnum.NONE));
 		
-		GB_SaveUserInfoButton.setVisible(editable);
+		GB_SaveUserInfoButton.setVisible(!status.equals(MyUserActionEnum.NONE));
 		
-		if(editable){
-			GB_EditUserImageView.setVisible(false);
-			GB_CancelEditUserImageView.setVisible(true);
-		}
-		else{
-			GB_EditUserImageView.setVisible(true);
-			GB_CancelEditUserImageView.setVisible(false);
-			showSelectUserInfo();
-		}
-	}
-	
-	private void setInAddStatus(boolean editable) {
-		GB_UserNameTextField.setEditable(editable);
-		GB_UserAgeTextField.setEditable(editable);
-		GB_UserSexTextField.setEditable(editable);
-		GB_UserPhoneTextField.setEditable(editable);
-		GB_UserJobTextField.setEditable(editable);
-		GB_UserDescTextField.setEditable(editable);
-		
-		GB_UserDepartmentCombox.setDisable(!editable);
-		GB_OperatorRightToggle.setDisable(!editable);
-		
-		GB_SaveUserInfoButton.setVisible(editable);
-		
-		if(editable){
-			GB_AddUserImageView.setVisible(false);
-			GB_CancelAddUserImageView.setVisible(true);
-			clearUserInfo();
-		}
-		else{
-			GB_AddUserImageView.setVisible(true);
-			GB_CancelAddUserImageView.setVisible(false);
-			showSelectUserInfo();
-		}			
+		GB_EditUserImageView.setVisible(status.equals(MyUserActionEnum.NONE));
+		GB_CancelEditUserImageView.setVisible(status.equals(MyUserActionEnum.EDIT));
+		GB_AddUserImageView.setVisible(status.equals(MyUserActionEnum.NONE));
+		GB_CancelAddUserImageView.setVisible(status.equals(MyUserActionEnum.ADD));
+
 	}
 	
 	private void clearUserInfo() {
@@ -384,20 +351,16 @@ public class OperatorListHandler implements ActivityTemplet{
 	}
 	
 	private void showSelectUserInfo() {
-		if(GB_UserListView.getSelectionModel().getSelectedItem() != null){
-			Operator user = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+		Operator user = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-			if(user != null){
-				GB_UserNameTextField.setText(user.getName());
-				GB_UserAgeTextField.setText(user.getAge());
-				GB_UserSexTextField.setText(user.getSex());
-				GB_UserPhoneTextField.setText(user.getPhone());
-				GB_UserJobTextField.setText(user.getJob());
-				GB_UserDescTextField.setText(user.getDes());
-				GB_UserDepartmentCombox.getSelectionModel().select(user.getDepartment());
-				GB_OperatorRightToggle.setSelected(user.getChecked());
-			}
-		}
+		GB_UserNameTextField.setText(user.getName());
+		GB_UserAgeTextField.setText(user.getAge());
+		GB_UserSexTextField.setText(user.getSex());
+		GB_UserPhoneTextField.setText(user.getPhone());
+		GB_UserJobTextField.setText(user.getJob());
+		GB_UserDescTextField.setText(user.getDes());
+		GB_UserDepartmentCombox.getSelectionModel().select(user.getDepartment());
+		GB_OperatorRightToggle.setSelected(user.getChecked());
 	}
 	
 	private void showLogsDialog(String head, String logs) {
@@ -467,6 +430,8 @@ public class OperatorListHandler implements ActivityTemplet{
 	@Override
 	public void PostMessageToThisActivity(Message message) {
 		// TODO Auto-generated method stub
-		
+		Platform.runLater(()->{
+			myMessagesList.add(message);
+		});
 	}
 }

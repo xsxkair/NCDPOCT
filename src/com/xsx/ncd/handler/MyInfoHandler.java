@@ -25,16 +25,17 @@ import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
 import com.xsx.ncd.tool.HttpUtils;
 
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -94,14 +95,10 @@ public class MyInfoHandler implements ActivityTemplet{
 	
 	private User itsMe = null;
 	private User tempUser = null;
-	private List<Department> tempDepartmentList = null;
-	private ListProperty<Message> myMessagesProperty = null;
-	private ListChangeListener myMessagesListChangeListener = null;
+	private ObservableList<Message> myMessagesList = null;
 	
-	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
 	@Autowired private UserSession userSession;
 	@Autowired private ActivitySession activitySession;
-	@Autowired private HttpUtils httpUtils;
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserListHandler userListHandler;
 	@Autowired OperatorListHandler operatorListHandler;
@@ -134,8 +131,8 @@ public class MyInfoHandler implements ActivityTemplet{
         GB_ModifyIcoStackPane.getChildren().add(cancelModifySvg);
         
         editUserInfoImageView.setOnMouseClicked(e->{
+        	GB_FreshPane.setVisible(true);
         	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
-        	//httpUtils.startHttpService(ServiceEnum.ReadAllDepartment, null);
         	setEditable(true);
         });
         
@@ -149,43 +146,41 @@ public class MyInfoHandler implements ActivityTemplet{
     		modifyUserInfoDialog.show(rootStackPane);
         });
         
-        myMessagesListChangeListener = new ListChangeListener<Message>() {
+        GB_FreshPane.setVisible(false);
+        myMessagesList = FXCollections.observableArrayList();
+        myMessagesList.addListener(new ListChangeListener<Message>(){
 
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
 				// TODO Auto-generated method stub
-				if(c.wasAdded()){
-					for (Message message : c.getAddedSubList()) {
-						System.out.println(message.getObj());
+				while(c.next()){
+					if(c.wasAdded()){
+						GB_FreshPane.setVisible(false);
+						for (Message message : c.getAddedSubList()) {
+							switch (message.getWhat()) {
+							case SaveUser:
+								tempUser = (User) message.getObj();
+				    			if(tempUser == null){
+				    				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
+				    			}
+				    			else{
+				    				userSession.setUser(tempUser);
+				    				itsMe = tempUser;
+				    				setEditable(false);
+				    			}
+								break;
+							case ReadAllDepartment:
+				    			GB_UserDepartmentCombox.getItems().setAll((List<Department>) message.getObj());
+								break;
+							default:
+								break;
+							}
+						}
 					}
 				}
 			}
-		};
-        GB_FreshPane.visibleProperty().bind(httpUtils.runningProperty());
-        httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				// TODO Auto-generated method stub
-				if(!newValue){
-	    			if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveUser)){
-	    				tempUser = (User) httpUtils.getValue();
-		    			if(tempUser == null){
-		    				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
-		    			}
-		    			else{
-		    				userSession.setUser(tempUser);
-		    				itsMe = tempUser;
-		    				setEditable(false);
-		    			}
-	    			}
-	    			else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllDepartment)){
-	    				tempDepartmentList = (List<Department>) httpUtils.getValue();
-		    			GB_UserDepartmentCombox.getItems().setAll(tempDepartmentList);
-	    			}
-	    		}
-			}
-        };
+        	
+        });
 
         //È·ÈÏÐÞ¸Ä¸öÈËÐÅÏ¢
         acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
@@ -204,7 +199,9 @@ public class MyInfoHandler implements ActivityTemplet{
 				itsMe.setManageuser(GB_UserManageToggle.isSelected());
 				itsMe.setManagereport(GB_ReportManageToggle.isSelected());
 				itsMe.setManagedevice(GB_DeviceManageToggle.isSelected());
-				httpUtils.startHttpService(ServiceEnum.SaveUser, itsMe);
+				
+				GB_FreshPane.setVisible(true);
+				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveUser, itsMe);
 			}
 			else
 				showLogsDialog("´íÎó", "ÃÜÂë´íÎó£¬½ûÖ¹ÐÞ¸Ä£¡");
@@ -237,7 +234,8 @@ public class MyInfoHandler implements ActivityTemplet{
 			}
 			else {
 				itsMe.setPassword(userNewPasswordTextField0.getText());
-				httpUtils.startHttpService(ServiceEnum.SaveUser, itsMe);
+				GB_FreshPane.setVisible(true);
+				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveUser, itsMe);
 			}
 		});
         
@@ -259,16 +257,11 @@ public class MyInfoHandler implements ActivityTemplet{
         });
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(rootpane.equals(newValue)){
-        		myMessagesProperty = new SimpleListProperty<>();
-        		myMessagesProperty.addListener(myMessagesListChangeListener);
-        		//httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
+        	if(this.equals(newValue)){
         		itsMe = userSession.getUser();
         		setEditable(false);
         	}
-        	else {
-        		myMessagesProperty.removeListener(myMessagesListChangeListener);
-        		myMessagesProperty = null;
+        	else {        		
         		itsMe = null;
         		//httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
         	}
@@ -381,6 +374,8 @@ public class MyInfoHandler implements ActivityTemplet{
 	@Override
 	public void PostMessageToThisActivity(Message message) {
 		// TODO Auto-generated method stub
-		myMessagesProperty.add(message);
+		Platform.runLater(()->{
+			myMessagesList.add(message);
+		});
 	}
 }
