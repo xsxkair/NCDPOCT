@@ -29,6 +29,7 @@ public class RepertoryPage implements ActivityTemplet {
 	
 	@Autowired private ActivitySession activitySession;
 	@Autowired CardInStoragePage cardInStoragePage;
+	@Autowired CardOutStoragePage cardOutStoragePage;
 	
 	@Override
 	@PostConstruct
@@ -47,6 +48,10 @@ public class RepertoryPage implements ActivityTemplet {
         
         CardInStorageButton.setOnAction((e)->{
         	cardInStoragePage.startActivity(null);
+        });
+        
+        CardOutStorageButton.setOnAction((e)->{
+        	cardOutStoragePage.startActivity(null);
         });
         
         AnchorPane.setTopAnchor(rootPane, 0.0);

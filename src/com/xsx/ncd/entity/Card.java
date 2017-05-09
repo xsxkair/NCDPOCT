@@ -18,9 +18,9 @@ public class Card implements Serializable{
 
 	private Item item;						//试剂卡测试项目信息
 	
-	private Date makedate;			//生产日期
+	private java.sql.Timestamp makedate;			//生产日期
 	
-	private Date perioddate;		//过期日期
+	private java.sql.Timestamp perioddate;		//过期日期
 	
 	private String vender;					//厂家
 
@@ -48,19 +48,19 @@ public class Card implements Serializable{
 		this.item = item;
 	}
 
-	public Date getMakedate() {
+	public java.sql.Timestamp getMakedate() {
 		return makedate;
 	}
 
-	public void setMakedate(Date makedate) {
+	public void setMakedate(java.sql.Timestamp makedate) {
 		this.makedate = makedate;
 	}
 
-	public Date getPerioddate() {
+	public java.sql.Timestamp getPerioddate() {
 		return perioddate;
 	}
 
-	public void setPerioddate(Date perioddate) {
+	public void setPerioddate(java.sql.Timestamp perioddate) {
 		this.perioddate = perioddate;
 	}
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXDialog?>
 <?import com.jfoenix.controls.JFXDialogLayout?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -84,12 +84,12 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="30.0">
                            <children>
-                              <Label text="批      号：" textFill="#1a3f83">
+                              <Label fx:id="GB_LotnumLabel" text="批      号：" textFill="#1a3f83">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <JFXComboBox fx:id="GB_CardLotNumBox" editable="true" prefWidth="200.0" promptText="请输入批号" />
+                              <TextField fx:id="GB_CardLotNumTextfield" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="30.0">
@@ -99,7 +99,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <JFXComboBox fx:id="GB_CardTypeCombox" prefWidth="200.0" promptText="请选择试剂卡种类" />
+                              <ComboBox fx:id="GB_CardTypeCombox" prefWidth="200.0" promptText="请选择试剂卡种类" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="30.0">
@@ -144,12 +144,12 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="30.0">
                            <children>
-                              <Label text="备      注：" textFill="#1a3f83">
+                              <Label text="明      细：" textFill="#1a3f83">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="GB_CardInDescTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+                              <TextField fx:id="GB_CardInDetailTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
                            </children>
                         </HBox>
                         <JFXButton fx:id="CardInStorageButtom" buttonType="RAISED" defaultButton="true" prefHeight="32.0" prefWidth="90.0" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="入库" textFill="WHITE">

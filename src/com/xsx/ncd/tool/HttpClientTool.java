@@ -44,7 +44,7 @@ public class HttpClientTool {
 	
 	@PostConstruct
 	private void init(){
-		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");  
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");  
         mapper.setDateFormat(outputFormat);
 	}
 	
@@ -157,6 +157,7 @@ public class HttpClientTool {
 		});	
 	}
 	
+
 	public String myHttpPost(String url, Map<String, String> parm){
 		Set<String> paramKeySet = parm.keySet();
 		Response response;

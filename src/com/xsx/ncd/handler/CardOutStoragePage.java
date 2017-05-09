@@ -17,6 +17,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Card;
 import com.xsx.ncd.entity.Department;
@@ -25,10 +26,18 @@ import com.xsx.ncd.entity.Repertory;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
+import com.xsx.ncd.tool.HttpClientTool;
 import com.xsx.ncd.tool.HttpUtils;
 
+import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
@@ -38,11 +47,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
 
-
+@Component
 public class CardOutStoragePage implements ActivityTemplet {
 
 	private AnchorPane rootPane = null;
@@ -73,13 +83,14 @@ public class CardOutStoragePage implements ActivityTemplet {
 	
 	@FXML VBox GB_FreshPane;
 	
-	private Card tempCard = null;
+	private ObjectProperty<Card> outCard = null;					//出库试剂卡信息，如果为null，不允许操作
+	private Card tempCard2 = null;									//与服务器通信数据
 	private Repertory tempRepertory = null;
-	private ChangeListener<Boolean> httpUtilsServiceChangeListener = null;
+	private ObservableList<Message> myMessagesList = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired UserSession userSession;
-	@Autowired HttpUtils httpUtils;
+	@Autowired HttpClientTool httpClientTool;
 	
 	@Override
 	@PostConstruct
@@ -113,12 +124,62 @@ public class CardOutStoragePage implements ActivityTemplet {
             }
         });
         
-        CardOutStorageButton.disableProperty().bind(GB_CardLotTextField.lengthProperty().lessThan(1).
+        outCard = new SimpleObjectProperty<>(null);
+        
+ /*       CardOutStorageButton.disableProperty().bind(outCard.isNull().
         		or(GB_CardOutUserCombox.getSelectionModel().selectedItemProperty().isNull().
         		or(GB_CardOutDepartmentCombox.getSelectionModel().selectedItemProperty().isNull().
-        		or(GB_CardOutNumTextField.lengthProperty().lessThan(1)))));
+        		or(GB_CardOutNumTextField.lengthProperty().lessThan(1)))));*/
+        CardOutStorageButton.disableProperty().bind(new BooleanBinding() {
+			{
+				bind(outCard);
+				bind(GB_CardOutUserCombox.getSelectionModel().selectedItemProperty());
+				bind(GB_CardOutDepartmentCombox.getSelectionModel().selectedItemProperty());
+				bind(GB_CardOutNumTextField.lengthProperty());
+				bind(GB_CardStorageNumLabel.textProperty());
+			}
+			
+			@Override
+			protected boolean computeValue() {
+				// TODO Auto-generated method stub
+				if(outCard.get() == null)
+					return true;
+				
+				if(GB_CardOutUserCombox.getSelectionModel().getSelectedItem() == null)
+					return true;
+				
+				if(GB_CardOutDepartmentCombox.getSelectionModel().getSelectedItem() == null)
+					return true;
+				
+				Integer allNum = null;
+				Integer thisNum = null;
+				
+				try {
+					allNum = Integer.valueOf(GB_CardStorageNumLabel.getText());
+					thisNum = Integer.valueOf(GB_CardOutNumTextField.getText());
+				} catch (Exception e2) {
+					// TODO: handle exception
+					return true;
+				}
+				
+				if(thisNum > allNum)
+					return true;
+				
+				return false;
+			}
+		});
         CardOutStorageButton.setOnAction((e)->{
+        	
+        	userPasswordTextField.clear();
         	modifyUserInfoDialog.show(rootStackPane);
+        });
+        
+        GB_CardLotTextField.focusedProperty().addListener((o, oldValue, newValue)->{
+        	if(!newValue){
+        		if(GB_CardLotTextField.getLength() > 0){
+        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.QueryCardByLotNum, GB_CardLotTextField.getText());
+        		}
+        	}
         });
         
         acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
@@ -126,55 +187,92 @@ public class CardOutStoragePage implements ActivityTemplet {
 			modifyUserInfoDialog.close();
 
 			if(userPasswordTextField.getText().equals(userSession.getUser().getPassword())){
-				tempCard = new Card();
 				tempRepertory = new Repertory();
-
-				tempCard.setItem(GB_CardTypeCombox.getSelectionModel().getSelectedItem());
-				tempCard.setLotnum(GB_CardLotNumTextField.getText());
-				tempCard.setMakedate(java.sql.Date.valueOf(GB_CardMakeTimeDatePicker.getValue()));
-				tempCard.setPerioddate(java.sql.Date.valueOf(GB_CardPeriodDateDatePicker.getValue()));
-				tempCard.setVender(GB_CardVenderTextField.getText());
 				
-				tempRepertory.setCard(tempCard);
-				tempRepertory.setDepartment(null);
-				tempRepertory.setUser(null);
-				tempRepertory.setDetailed(GB_CardInDetailTextField.getText());
-				tempRepertory.setDsc(GB_CardInDescTextField.getText());
-				tempRepertory.setNum(Integer.valueOf(GB_CardInNumTextField.getText()));
+				tempRepertory.setCard(outCard.get());
+				tempRepertory.setDepartment(GB_CardOutDepartmentCombox.getSelectionModel().getSelectedItem());
+				tempRepertory.setUser(GB_CardOutUserCombox.getSelectionModel().getSelectedItem());
+				tempRepertory.setDetailed(GB_CardOutDetailTextField.getText());
+				tempRepertory.setNum(0-Integer.valueOf(GB_CardOutNumTextField.getText()));
 				tempRepertory.setOperator(userSession.getUser());
 				tempRepertory.setTime(new Timestamp(System.currentTimeMillis()));
 
-				httpUtils.startHttpService(ServiceEnum.SaveRepertoryRecord, tempRepertory);
+				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveRepertoryRecord, tempRepertory);
 				
 			}
 			else
 				showLogsDialog("错误", "密码错误，禁止操作！");
 		});
         
-        httpUtilsServiceChangeListener = new ChangeListener<Boolean>() {
+        myMessagesList = FXCollections.observableArrayList();
+        myMessagesList.addListener(new ListChangeListener<Message>(){
 
 			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
 				// TODO Auto-generated method stub
-				if(!newValue){
-	    			if(httpUtils.getServiceEnum().equals(ServiceEnum.SaveRepertoryRecord)){
-
-	    			}
-	    			else if(httpUtils.getServiceEnum().equals(ServiceEnum.ReadAllItems)){
-	    				if(httpUtils.getValue() instanceof List)
-	    					GB_CardTypeCombox.getItems().setAll((List<Item>)httpUtils.getValue());
-	    			}
-	    		}
+				while(c.next()){
+					if(c.wasAdded()){
+						GB_FreshPane.setVisible(false);
+						for (Message message : c.getAddedSubList()) {
+							switch (message.getWhat()) {
+							case SaveRepertoryRecord:
+								if(message.getObj() == null)
+									showLogsDialog("错误", "入库失败！");
+								else
+									clearPage();
+								break;
+							case ReadAllUser:
+								GB_CardOutUserCombox.getItems().setAll((List<User>)message.getObj());
+								break;
+							case ReadAllDepartment:
+								GB_CardOutDepartmentCombox.getItems().setAll((List<Department>)message.getObj());
+								break;
+							case QueryCardByLotNum:
+								tempCard2 = (Card) message.getObj();
+								outCard.set(tempCard2);
+								if(tempCard2 != null){									
+									GB_CardItemLabel.setText(tempCard2.getItem().getName());
+									
+									if(tempCard2.getMakedate() != null)
+										GB_CardMadeDateLabel.setText(tempCard2.getMakedate().toLocalDateTime().toLocalDate().toString());
+									
+									if(tempCard2.getPerioddate() != null)
+										GB_CardPeriodDateLabel.setText(tempCard2.getPerioddate().toLocalDateTime().toLocalDate().toString());
+									
+									if(tempCard2.getVender() != null)
+										GB_CardVenderLabel.setText(tempCard2.getVender());
+									
+									httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.QueryRepertoryNumByCard, tempCard2);
+								}
+								else{
+									GB_CardItemLabel.setText(null);
+									GB_CardMadeDateLabel.setText(null);
+									GB_CardPeriodDateLabel.setText(null);
+									GB_CardVenderLabel.setText(null);
+									GB_CardStorageNumLabel.setText(null);
+								}
+								break;
+							case QueryRepertoryNumByCard:
+								GB_CardStorageNumLabel.setText(((Long)message.getObj()).toString());
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
 			}
-        };
+        });
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(rootPane.equals(newValue)){
-        		httpUtils.runningProperty().addListener(httpUtilsServiceChangeListener);
-        		httpUtils.startHttpService(ServiceEnum.ReadAllItems, null);
+        	if(this.equals(newValue)){
+        		tempCard2 = new Card();
+        		clearPage();
+        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllUser, tempRepertory);
+        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, tempRepertory);
         	}
         	else {
-        		httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
+        		tempCard2 = null;
         	}
         });
         
@@ -196,10 +294,8 @@ public class CardOutStoragePage implements ActivityTemplet {
 	@Override
 	public void startActivity(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setRootActivity(this);
-		activitySession.setFatherActivity(null);
-		activitySession.setChildActivity(null);
-		activitySession.setActivityPane(rootPane);
+		activitySession.setFatherActivity(this);
+		activitySession.setActivityPane(this);
 	}
 
 	@Override
@@ -217,7 +313,33 @@ public class CardOutStoragePage implements ActivityTemplet {
 	@Override
 	public String getActivityName() {
 		// TODO Auto-generated method stub
-		return "试剂卡管理";
+		return "试剂卡出库";
 	}
 
+	@Override
+	public Pane getActivityRootPane() {
+		// TODO Auto-generated method stub
+		return rootPane;
+	}
+
+	@Override
+	public void PostMessageToThisActivity(Message message) {
+		// TODO Auto-generated method stub
+		Platform.runLater(()->{
+			myMessagesList.add(message);
+		});
+	}
+
+	private void clearPage(){
+		GB_CardLotTextField.clear();
+		GB_CardItemLabel.setText(null);
+		GB_CardMadeDateLabel.setText(null);
+		GB_CardPeriodDateLabel.setText(null);
+		GB_CardVenderLabel.setText(null);
+		GB_CardStorageNumLabel.setText(null);
+		GB_CardOutNumTextField.clear();
+		GB_CardOutUserCombox.getSelectionModel().select(null);
+		GB_CardOutDepartmentCombox.getSelectionModel().select(null);
+		GB_CardOutDetailTextField.clear();
+	}
 }
