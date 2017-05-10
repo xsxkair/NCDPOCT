@@ -1,15 +1,9 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 
 
-public class DeviceQualityRecord implements Serializable{
+public class DeviceQualityRecord {
 
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6010270144998296889L;
 
 	private Integer id;
 	

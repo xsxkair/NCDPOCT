@@ -29,14 +29,17 @@ public enum ServiceEnum {
 	SaveOperator("/SaveOperator", 2, Operator.class),
 	DeleteOperator("/DeleteOperator", 3, null), 
 	CheckOperatorIsExist("/CheckOperatorIsExist", 3, null),
-	ReadOneOperatorById("/ReadOneOperatorById", 2, Operator.class), 
+	ReadOneOperatorById("/ReadOneOperatorById", 2, Operator.class),
+	
 	ReadAllItems("/ReadAllItems", 1, Item.class),
 	
 	SaveRepertoryRecord("/SaveRepertoryRecord", 2, Repertory.class),
 	QueryRepertoryNumByCard("/QueryRepertoryNumByCard", 2, Long.class),
 	
 	QueryCardLotNumLikeThis("/QueryCardLotNumLikeThis", 1, String.class),
-	QueryCardByLotNum("/QueryCardByLotNum", 2, Card.class);
+	QueryCardByLotNum("/QueryCardByLotNum", 2, Card.class),
+	
+	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", 3, null);
 	
 	private final String name;
 	private final Integer index;

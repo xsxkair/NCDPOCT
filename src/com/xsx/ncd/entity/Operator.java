@@ -1,15 +1,7 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 
-
-public class Operator implements Serializable{
-	
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2918286652396847269L;
+public class Operator{
 
 	private Integer id;
 

@@ -1,23 +1,23 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class DeviceType implements Serializable{
+public class DeviceType{
 
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2571148727646805744L;
 
 	private Integer id;
 
+	private String code;
+	
 	private String name;
 	
-	private String icon;
+	private String onicon;
+	
+	private String officon;
+	
+	private String erroricon;
 	
 	private Set<Item> items = new HashSet<>();
 	
@@ -35,6 +35,14 @@ public class DeviceType implements Serializable{
 		this.id = id;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -43,12 +51,28 @@ public class DeviceType implements Serializable{
 		this.name = name;
 	}
 
-	public String getIcon() {
-		return icon;
+	public String getOnicon() {
+		return onicon;
 	}
 
-	public void setIcon(String icon) {
-		this.icon = icon;
+	public void setOnicon(String onicon) {
+		this.onicon = onicon;
+	}
+
+	public String getOfficon() {
+		return officon;
+	}
+
+	public void setOfficon(String officon) {
+		this.officon = officon;
+	}
+
+	public String getErroricon() {
+		return erroricon;
+	}
+
+	public void setErroricon(String erroricon) {
+		this.erroricon = erroricon;
 	}
 
 	public Set<Item> getItems() {

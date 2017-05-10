@@ -1,13 +1,7 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 
-public class DeviceAdjustRecord implements Serializable{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5641089533071073033L;
+public class DeviceAdjustRecord {
 
 	private Integer id;
 	

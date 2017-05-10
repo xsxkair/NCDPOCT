@@ -1,6 +1,8 @@
 package com.xsx.ncd.tool;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +17,14 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.entity.DeviceType;
 import com.xsx.ncd.spring.ActivitySession;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -191,5 +195,76 @@ public class HttpClientTool {
 		}
 
 		return null;
+	}
+	
+	public void myHttpPostDeviceType(ServiceEnum serviceEnum, DeviceType deviceType, File onFile,
+			File offFile, File errorFile){
+		
+		Message message = new Message(serviceEnum, null);
+		
+		urlStringBuffer.setLength(0);
+		urlStringBuffer.append(ServerUrlHead);
+		urlStringBuffer.append(serviceEnum.getName());
+		
+		try {
+			jsonString = mapper.writeValueAsString(deviceType);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+
+			activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+			return;
+		}
+		
+		RequestBody onFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), onFile);
+		RequestBody offFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), offFile);
+		RequestBody errorFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), errorFile);
+		RequestBody beanBody = RequestBody.create(mediaJsonType, jsonString);
+
+		RequestBody requestBody = new MultipartBody.Builder()
+				.setType(MultipartBody.FORM)
+				.addFormDataPart("deviceType", jsonString)
+				.addFormDataPart("onico", onFile.getName(), onFileBody)
+				.addFormDataPart("offico", offFile.getName(), offFileBody)
+				.addFormDataPart("errorico", errorFile.getName(), errorFileBody)
+				.build();
+		
+		Request request = new Request.Builder()
+		      .url(urlStringBuffer.toString())
+		      .post(requestBody)
+		      .build();
+		
+		Call call = client.newCall(request);
+		call.enqueue(new Callback() {
+			
+			@Override
+			public void onResponse(Call arg0, Response arg1) throws IOException {
+				// TODO Auto-generated method stub
+				try {
+					jsonString = arg1.body().string();
+
+					if(jsonString != null){
+						if(jsonString != null){
+							if(jsonString.indexOf("true") >= 0)
+								message.setObj(true);
+							else 
+								message.setObj(false);
+						}
+					}
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+			}
+			
+			@Override
+			public void onFailure(Call arg0, IOException arg1) {
+				// TODO Auto-generated method stub
+				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+			}
+		});
 	}
 }

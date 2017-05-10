@@ -1,14 +1,7 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 
-public class Department implements Serializable{
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2297757163195796572L;
+public class Department{
 
 	private Integer id;
 	

@@ -1,17 +1,11 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class Device implements Serializable{
+public class Device{
 
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4205891974622255900L;
 
 	private Integer id;
 	

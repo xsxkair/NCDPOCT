@@ -1,14 +1,6 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
-
-public class Repertory implements Serializable{
-
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2090918329914690883L;
+public class Repertory {
 
 	private Integer id;
 	

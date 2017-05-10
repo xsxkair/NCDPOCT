@@ -1,15 +1,8 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 
+public class User {
 
-public class User implements Serializable{
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1366908259106015145L;
 
 	private Integer id;
 	

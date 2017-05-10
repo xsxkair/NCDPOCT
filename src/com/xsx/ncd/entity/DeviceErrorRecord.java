@@ -1,15 +1,9 @@
 package com.xsx.ncd.entity;
 
-import java.io.Serializable;
 
 
-public class DeviceErrorRecord implements Serializable{
+public class DeviceErrorRecord {
 
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7258491501397059675L;
 
 	private Integer id;
 	
