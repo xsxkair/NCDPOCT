@@ -45,7 +45,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 @Component
-public class OperatorListHandler implements ActivityTemplet{
+public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 
 	private AnchorPane rootpane;
 	
@@ -113,24 +113,24 @@ public class OperatorListHandler implements ActivityTemplet{
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.EDIT);
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
             GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+        	startHttpWork(ServiceEnum.ReadAllOperator, null);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.ADD);
         	clearUserInfo();
         	GB_ActionType = MyUserActionEnum.ADD;
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+        	startHttpWork(ServiceEnum.ReadAllOperator, null);
         });
         
         myMessagesList = FXCollections.observableArrayList();
@@ -145,22 +145,22 @@ public class OperatorListHandler implements ActivityTemplet{
 						for (Message message : c.getAddedSubList()) {
 							switch (message.getWhat()) {
 							case DeleteOperator:
-								if((Boolean)message.getObj()){
-			        				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+								if(message.getObj(Boolean.class)){
+									startHttpWork(ServiceEnum.ReadAllOperator, null);
 			            		}
 			        			else{
 			        				showLogsDialog("´íÎó", "É¾³ýÊ§°Ü£¡");
 			        			}
 								break;
 							case SaveOperator:
-								tempOperator = (Operator) message.getObj();
+								tempOperator = message.getObj(Operator.class);
 			            		
 			            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
 			            			if(tempOperator == null){
 			            				showLogsDialog("´íÎó", "Ìí¼ÓÊ§°Ü£¡");
 			            			}
 			            			else{
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+			            				startHttpWork(ServiceEnum.ReadAllOperator, null);
 			            			}
 			            			
 			            		}
@@ -169,27 +169,27 @@ public class OperatorListHandler implements ActivityTemplet{
 			            				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
 			            			}
 			            			else{
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, null);
+			            				startHttpWork(ServiceEnum.ReadAllOperator, null);
 			            			}
 			            		}
 								break;
 							case ReadAllOperator:
-								upUserList((List<Operator>) message.getObj());
+								upUserList(message.getObj(List.class));
 								setUserInfoInStatus(MyUserActionEnum.NONE);
 								break;
 							case CheckOperatorIsExist:
 								if(GB_ActionType.equals(MyUserActionEnum.ADD)){
 
-			            			if((Boolean)message.getObj()){
+			            			if(message.getObj(Boolean.class)){
 			            				showLogsDialog("´íÎó", "ÓÃ»§ÒÑ´æÔÚ£¬Çë¼ì²é£¡");
 			                		}
 			            			else{
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveOperator, tempOperator);
+			            				startHttpWork(ServiceEnum.SaveOperator, tempOperator);
 			            			}
 			            		}
 			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-			            			if((Boolean)message.getObj()){
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveOperator, tempOperator);
+			            			if(message.getObj(Boolean.class)){
+			            				startHttpWork(ServiceEnum.SaveOperator, tempOperator);
 			                		}
 			            			else{
 			            				showLogsDialog("´íÎó", "ÓÃ»§²»´æÔÚ£¬Çë¼ì²é£¡");
@@ -197,7 +197,7 @@ public class OperatorListHandler implements ActivityTemplet{
 			            		}
 								break;
 							case ReadAllDepartment:
-								GB_UserDepartmentCombox.getItems().setAll((List<Department>) message.getObj());
+								GB_UserDepartmentCombox.getItems().setAll(message.getObj(List.class));
 								break;
 							default:
 								break;
@@ -219,7 +219,7 @@ public class OperatorListHandler implements ActivityTemplet{
         		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
         			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.DeleteOperator, tempOperator);
+        			startHttpWork(ServiceEnum.DeleteOperator, tempOperator);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
         			tempOperator = new Operator();
@@ -233,7 +233,7 @@ public class OperatorListHandler implements ActivityTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.CheckOperatorIsExist, tempOperator);
+        			startHttpWork(ServiceEnum.CheckOperatorIsExist, tempOperator);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
         			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
@@ -247,7 +247,7 @@ public class OperatorListHandler implements ActivityTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.CheckOperatorIsExist, tempOperator);
+        			startHttpWork(ServiceEnum.CheckOperatorIsExist, tempOperator);
         		}
         	}
         	else
@@ -285,7 +285,7 @@ public class OperatorListHandler implements ActivityTemplet{
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(this.equals(newValue)){
         		itsMe = userSession.getUser();
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOperator, itsMe);
+        		startHttpWork(ServiceEnum.ReadAllOperator, itsMe);
         	}
         	else {
         		itsMe = null;
@@ -433,5 +433,15 @@ public class OperatorListHandler implements ActivityTemplet{
 		Platform.runLater(()->{
 			myMessagesList.add(message);
 		});
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			GB_FreshPane.setVisible(false);
+			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
+		}	
 	}
 }

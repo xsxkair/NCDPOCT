@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.svg.SVGGlyphLoader;
 import com.xsx.ncd.define.Message;
+import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.ActivitySession;
 
 import javafx.fxml.FXML;
@@ -20,7 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
 @Component
-public class RepertoryPage implements ActivityTemplet {
+public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 
 	private AnchorPane rootPane = null;
 	
@@ -101,5 +102,14 @@ public class RepertoryPage implements ActivityTemplet {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+//		GB_FreshPane.setVisible(true);
+		
+//		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+//			GB_FreshPane.setVisible(false);
+//			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
+//		}	
+	}
 }

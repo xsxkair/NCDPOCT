@@ -2,7 +2,6 @@ package com.xsx.ncd.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -10,26 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXToggleButton;
-import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.svg.SVGGlyphLoader;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
-import com.xsx.ncd.tool.HttpUtils;
 
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -47,7 +39,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 @Component
-public class MyInfoHandler implements ActivityTemplet{
+public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 
 	private AnchorPane rootpane;
 	private final String activityName = "我的信息";
@@ -61,7 +53,7 @@ public class MyInfoHandler implements ActivityTemplet{
 	@FXML TextField GB_UserSexTextField;
 	@FXML TextField GB_UserPhoneTextField;
 	@FXML TextField GB_UserJobTextField;
-	@FXML JFXComboBox<Department> GB_UserDepartmentCombox;
+	@FXML TextField GB_UserDepartmentTextField;
 	@FXML TextField GB_UserDescTextField;
 	@FXML JFXToggleButton GB_UserManageToggle;
 	@FXML JFXToggleButton GB_DeviceManageToggle;
@@ -94,8 +86,9 @@ public class MyInfoHandler implements ActivityTemplet{
 	@FXML VBox GB_FreshPane;
 	
 	private User itsMe = null;
-	private User tempUser = null;
+	private ChangeListener<User> myUserListener = null;
 	private ObservableList<Message> myMessagesList = null;
+	private ListChangeListener<Message> myMessageListChangeListener = null;
 	
 	@Autowired private UserSession userSession;
 	@Autowired private ActivitySession activitySession;
@@ -131,8 +124,6 @@ public class MyInfoHandler implements ActivityTemplet{
         GB_ModifyIcoStackPane.getChildren().add(cancelModifySvg);
         
         editUserInfoImageView.setOnMouseClicked(e->{
-        	GB_FreshPane.setVisible(true);
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
         	setEditable(true);
         });
         
@@ -142,44 +133,7 @@ public class MyInfoHandler implements ActivityTemplet{
         
         GB_SaveUserInfoButton.setOnAction((e)->{
         	userPasswordTextField.clear();
-    		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
     		modifyUserInfoDialog.show(rootStackPane);
-        });
-        
-        GB_FreshPane.setVisible(false);
-        myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-						GB_FreshPane.setVisible(false);
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-							case SaveUser:
-								tempUser = (User) message.getObj();
-				    			if(tempUser == null){
-				    				showLogsDialog("错误", "修改失败！");
-				    			}
-				    			else{
-				    				userSession.setUser(tempUser);
-				    				itsMe = tempUser;
-				    				setEditable(false);
-				    			}
-								break;
-							case ReadAllDepartment:
-				    			GB_UserDepartmentCombox.getItems().setAll((List<Department>) message.getObj());
-								break;
-							default:
-								break;
-							}
-						}
-					}
-				}
-			}
-        	
         });
 
         //确认修改个人信息
@@ -193,15 +147,9 @@ public class MyInfoHandler implements ActivityTemplet{
 				itsMe.setSex(GB_UserSexTextField.getText());
 				itsMe.setPhone(GB_UserPhoneTextField.getText());
 				itsMe.setJob(GB_UserJobTextField.getText());
-				itsMe.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
 				itsMe.setDes(GB_UserDescTextField.getText());
-				itsMe.setManagecard(GB_CardManageToggle.isSelected());
-				itsMe.setManageuser(GB_UserManageToggle.isSelected());
-				itsMe.setManagereport(GB_ReportManageToggle.isSelected());
-				itsMe.setManagedevice(GB_DeviceManageToggle.isSelected());
-				
-				GB_FreshPane.setVisible(true);
-				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveUser, itsMe);
+
+				startHttpWork(ServiceEnum.SaveUser, itsMe);
 			}
 			else
 				showLogsDialog("错误", "密码错误，禁止修改！");
@@ -216,7 +164,6 @@ public class MyInfoHandler implements ActivityTemplet{
         	userNewPasswordTextField0.clear();
     		userNewPasswordTextField1.clear();
     		userOldPasswordTextField.clear();
-    		modifyUserPasswordDialog.setTransitionType(DialogTransition.CENTER);
     		modifyUserPasswordDialog.show(rootStackPane);
         });
         
@@ -234,8 +181,7 @@ public class MyInfoHandler implements ActivityTemplet{
 			}
 			else {
 				itsMe.setPassword(userNewPasswordTextField0.getText());
-				GB_FreshPane.setVisible(true);
-				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveUser, itsMe);
+				startHttpWork(ServiceEnum.SaveUser, itsMe);
 			}
 		});
         
@@ -252,18 +198,57 @@ public class MyInfoHandler implements ActivityTemplet{
         	userListHandler.startActivity(null);
         });
         
+        myMessageListChangeListener = new ListChangeListener<Message>(){
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
+				// TODO Auto-generated method stub
+				while(c.next()){
+					if(c.wasAdded()){
+						for (Message message : c.getAddedSubList()) {
+							switch (message.getWhat()) {
+							
+								case SaveUser:
+									userSession.setUser(message.getObj(User.class));
+									break;
+									
+								default:
+									break;
+							}
+						}
+						
+						GB_FreshPane.setVisible(false);
+					}
+				}
+			}
+        	
+        };
+        
         GB_OperatorManageButton.setOnAction((e)->{
         	operatorListHandler.startActivity(null);
         });
         
+        myUserListener = (o, oldValue, newValue)->{
+        	itsMe = newValue;
+        	setEditable(false);
+        	upUserInfo();
+        };
+        
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(this.equals(newValue)){
+        		userSession.getUserProperty().addListener(myUserListener);
         		itsMe = userSession.getUser();
         		setEditable(false);
+        		upUserInfo();
+        		
+        		myMessagesList = FXCollections.observableArrayList();
+        		myMessagesList.addListener(myMessageListChangeListener);
         	}
-        	else {        		
+        	else if(this.equals(oldValue)){
+        		userSession.getUserProperty().removeListener(myUserListener);
+        		myMessagesList.removeListener(myMessageListChangeListener);
+        		myMessagesList = null;
         		itsMe = null;
-        		//httpUtils.runningProperty().removeListener(httpUtilsServiceChangeListener);
         	}
         });
         
@@ -277,7 +262,6 @@ public class MyInfoHandler implements ActivityTemplet{
 	}
 	
 	private void setEditable(boolean editable) {
-		itsMe = userSession.getUser();
 		
 		GB_SaveUserInfoButton.setVisible(editable);
 		GB_UserNameTextField.setEditable(editable);
@@ -287,43 +271,23 @@ public class MyInfoHandler implements ActivityTemplet{
 		GB_UserJobTextField.setEditable(editable);
 		GB_UserDescTextField.setEditable(editable);
 		
-		if(itsMe.getManageuser()){
-			GB_UserDepartmentCombox.setDisable(!editable);
-			GB_UserManageToggle.setDisable(!editable);
-			GB_ReportManageToggle.setDisable(!editable);
-			GB_DeviceManageToggle.setDisable(!editable);
-			GB_CardManageToggle.setDisable(!editable);
-		}
-		else{
-			GB_UserDepartmentCombox.setDisable(true);
-			GB_UserManageToggle.setDisable(true);
-			GB_ReportManageToggle.setDisable(true);
-			GB_DeviceManageToggle.setDisable(true);
-			GB_CardManageToggle.setDisable(true);
-		}
-		
-		GB_UserManageButton.setVisible(itsMe.getManageuser());
-		GB_OperatorManageButton.setVisible(itsMe.getManageuser());
-		
 		if(editable){
 			editUserInfoImageView.setVisible(false);
 			cancelModifySvg.setVisible(true);
 		}
 		else{
-			upUserInfo();
 			editUserInfoImageView.setVisible(true);
 			cancelModifySvg.setVisible(false);
 		}
 	}
 	
 	private void upUserInfo() {
-		
 		GB_UserNameTextField.setText(itsMe.getName());
 		GB_UserAgeTextField.setText(itsMe.getAge());
 		GB_UserSexTextField.setText(itsMe.getSex());
 		GB_UserPhoneTextField.setText(itsMe.getPhone());
 		GB_UserJobTextField.setText(itsMe.getJob());
-		GB_UserDepartmentCombox.getSelectionModel().select(itsMe.getDepartment());
+		GB_UserDepartmentTextField.setText(itsMe.getDepartment().getName());
 		GB_UserDescTextField.setText(itsMe.getDes());
 		
 		GB_UserManageToggle.setSelected(itsMe.getManageuser());
@@ -377,5 +341,15 @@ public class MyInfoHandler implements ActivityTemplet{
 		Platform.runLater(()->{
 			myMessagesList.add(message);
 		});
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			GB_FreshPane.setVisible(false);
+			showLogsDialog("错误", "数据转换失败，请重试！");
+		}	
 	}
 }

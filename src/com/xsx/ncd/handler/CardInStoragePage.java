@@ -30,7 +30,6 @@ import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
-import com.xsx.ncd.tool.HttpUtils;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -59,7 +58,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
 
 @Component
-public class CardInStoragePage implements ActivityTemplet {
+public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
 
 	private AnchorPane rootPane = null;
 	
@@ -142,7 +141,7 @@ public class CardInStoragePage implements ActivityTemplet {
         GB_CardLotNumTextfield.focusedProperty().addListener((o, oldValue, newValue)->{
         	if(!newValue){
         		if(GB_CardLotNumTextfield.getLength() > 0){
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.QueryCardByLotNum, GB_CardLotNumTextfield.getText());
+        			startHttpWork(ServiceEnum.QueryCardByLotNum, GB_CardLotNumTextfield.getText());
         		}
         	}
         });
@@ -193,7 +192,7 @@ public class CardInStoragePage implements ActivityTemplet {
 				tempRepertory.setOperator(userSession.getUser());
 				tempRepertory.setTime(new Timestamp(System.currentTimeMillis()));
 
-				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveRepertoryRecord, tempRepertory);
+				startHttpWork(ServiceEnum.SaveRepertoryRecord, tempRepertory);
 			}
 			else
 				showLogsDialog("´íÎó", "ÃÜÂë´íÎó£¬½ûÖ¹²Ù×÷£¡");
@@ -211,7 +210,7 @@ public class CardInStoragePage implements ActivityTemplet {
 						for (Message message : c.getAddedSubList()) {
 							switch (message.getWhat()) {
 							case SaveRepertoryRecord:
-								if(message.getObj() == null)
+								if(message.getObj(Repertory.class) == null)
 									showLogsDialog("´íÎó", "Èë¿âÊ§°Ü£¡");
 								else
 									clearPage();
@@ -221,10 +220,10 @@ public class CardInStoragePage implements ActivityTemplet {
 								//lotnumListContextMenu.setFocused(true);
 								break;
 							case ReadAllItems:
-								GB_CardTypeCombox.getItems().setAll((List<Item>)message.getObj());
+								GB_CardTypeCombox.getItems().setAll(message.getObj(List.class));
 								break;
 							case QueryCardByLotNum:
-								tempCard = (Card) message.getObj();
+								tempCard = message.getObj(Card.class);
 								if(tempCard != null){									
 									GB_CardTypeCombox.getSelectionModel().select(tempCard.getItem());
 									
@@ -259,7 +258,7 @@ public class CardInStoragePage implements ActivityTemplet {
         		clearPage();
         		lotnumListContextMenu = new ContextMenu();
         		lotnumListContextMenu.setPrefWidth(200);
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllItems, tempRepertory);
+        		startHttpWork(ServiceEnum.ReadAllItems, tempRepertory);
         	}
         	else {
         		tempCard2 = null;
@@ -349,5 +348,15 @@ public class CardInStoragePage implements ActivityTemplet {
 			lotnumListContextMenu.show(GB_CardLotNumTextfield, Side.BOTTOM, 0, 0);
 			selectLotnumProperty.set(null);
 		}
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			GB_FreshPane.setVisible(false);
+			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
+		}	
 	}
 }

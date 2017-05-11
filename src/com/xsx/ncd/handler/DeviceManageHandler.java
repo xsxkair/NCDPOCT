@@ -30,7 +30,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 
 @Component
-public class DeviceManageHandler implements ActivityTemplet{
+public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	private AnchorPane rootPane = null;
 	
 	@FXML FlowPane DepartmentFlowPane;
@@ -68,7 +68,7 @@ public class DeviceManageHandler implements ActivityTemplet{
 						for (Message message : c.getAddedSubList()) {
 							switch (message.getWhat()) {
 							case ReadAllDepartment:
-								showAllDepartment((List<Department>) message.getObj());
+								showAllDepartment( message.getObj(List.class));
 								break;
 							default:
 								break;
@@ -82,7 +82,7 @@ public class DeviceManageHandler implements ActivityTemplet{
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(this.equals(newValue)){
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+        		startHttpWork(ServiceEnum.ReadAllDepartment, null);
         	}
         	else{
 
@@ -144,5 +144,15 @@ public class DeviceManageHandler implements ActivityTemplet{
 			DepartmentDeviceListHandler departmentDeviceListHandler = new DepartmentDeviceListHandler(department);
 			DepartmentFlowPane.getChildren().add(departmentDeviceListHandler);
 		}
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		//GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			//GB_FreshPane.setVisible(false);
+			
+		}	
 	}
 }

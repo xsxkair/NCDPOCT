@@ -2,6 +2,7 @@ package com.xsx.ncd.define;
 
 import com.xsx.ncd.entity.Card;
 import com.xsx.ncd.entity.Department;
+import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.entity.Item;
 import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.entity.Repertory;
@@ -20,15 +21,15 @@ public enum ServiceEnum {
 	
 	Login("/Login", 2, User.class), 
 	SaveUser("/SaveUser", 2, User.class), 
-	DeleteUser("/DeleteUser", 3, null), 
-	CheckUserIsExist("/CheckUserIsExist", 3, null),
+	DeleteUser("/DeleteUser", 2, Boolean.class), 
+	CheckUserIsExist("/CheckUserIsExist", 2, Boolean.class),
 	ReadAllOtherUser("/ReadAllOtherUser", 1, User.class),
 	ReadAllUser("/ReadAllUser", 1, User.class),
 	
 	ReadAllOperator("/ReadAllOperator", 1, Operator.class), 
 	SaveOperator("/SaveOperator", 2, Operator.class),
-	DeleteOperator("/DeleteOperator", 3, null), 
-	CheckOperatorIsExist("/CheckOperatorIsExist", 3, null),
+	DeleteOperator("/DeleteOperator", 2, Boolean.class), 
+	CheckOperatorIsExist("/CheckOperatorIsExist", 2, Boolean.class),
 	ReadOneOperatorById("/ReadOneOperatorById", 2, Operator.class),
 	
 	ReadAllItems("/ReadAllItems", 1, Item.class),
@@ -39,7 +40,9 @@ public enum ServiceEnum {
 	QueryCardLotNumLikeThis("/QueryCardLotNumLikeThis", 1, String.class),
 	QueryCardByLotNum("/QueryCardByLotNum", 2, Card.class),
 	
-	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", 3, null);
+	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", 2, Boolean.class),
+	
+	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", 1, Device.class);
 	
 	private final String name;
 	private final Integer index;

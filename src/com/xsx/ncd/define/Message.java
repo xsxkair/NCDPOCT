@@ -19,8 +19,8 @@ public class Message {
 		this.what = what;
 	}
 
-	public Object getObj() {
-		return obj;
+	public <T> T getObj(Class<T> classType) {
+		return (T)obj;
 	}
 
 	public void setObj(Object obj) {

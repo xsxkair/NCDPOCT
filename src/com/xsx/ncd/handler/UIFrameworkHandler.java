@@ -93,7 +93,7 @@ public class UIFrameworkHandler {
 	@Autowired ActivitySession activitySession;
 	@Autowired MyInfoHandler myInfoHandler;
 	@Autowired RepertoryPage repertoryPage;
-	@Autowired AddDeviceTypeHandler addDeviceTypeHandler;
+	//@Autowired AddDeviceTypeHandler addDeviceTypeHandler;
 	@Autowired DeviceManageHandler deviceManageHandler;
 
 	@PostConstruct

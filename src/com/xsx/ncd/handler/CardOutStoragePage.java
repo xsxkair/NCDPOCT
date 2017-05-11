@@ -27,7 +27,6 @@ import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
-import com.xsx.ncd.tool.HttpUtils;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -53,7 +52,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
 
 @Component
-public class CardOutStoragePage implements ActivityTemplet {
+public class CardOutStoragePage implements ActivityTemplet, HttpTemplet {
 
 	private AnchorPane rootPane = null;
 	
@@ -177,7 +176,7 @@ public class CardOutStoragePage implements ActivityTemplet {
         GB_CardLotTextField.focusedProperty().addListener((o, oldValue, newValue)->{
         	if(!newValue){
         		if(GB_CardLotTextField.getLength() > 0){
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.QueryCardByLotNum, GB_CardLotTextField.getText());
+        			startHttpWork(ServiceEnum.QueryCardByLotNum, GB_CardLotTextField.getText());
         		}
         	}
         });
@@ -197,7 +196,7 @@ public class CardOutStoragePage implements ActivityTemplet {
 				tempRepertory.setOperator(userSession.getUser());
 				tempRepertory.setTime(new Timestamp(System.currentTimeMillis()));
 
-				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveRepertoryRecord, tempRepertory);
+				startHttpWork(ServiceEnum.SaveRepertoryRecord, tempRepertory);
 				
 			}
 			else
@@ -216,19 +215,19 @@ public class CardOutStoragePage implements ActivityTemplet {
 						for (Message message : c.getAddedSubList()) {
 							switch (message.getWhat()) {
 							case SaveRepertoryRecord:
-								if(message.getObj() == null)
+								if(message.getObj(Repertory.class) == null)
 									showLogsDialog("´íÎó", "Èë¿âÊ§°Ü£¡");
 								else
 									clearPage();
 								break;
 							case ReadAllUser:
-								GB_CardOutUserCombox.getItems().setAll((List<User>)message.getObj());
+								GB_CardOutUserCombox.getItems().setAll(message.getObj(List.class));
 								break;
 							case ReadAllDepartment:
-								GB_CardOutDepartmentCombox.getItems().setAll((List<Department>)message.getObj());
+								GB_CardOutDepartmentCombox.getItems().setAll(message.getObj(List.class));
 								break;
 							case QueryCardByLotNum:
-								tempCard2 = (Card) message.getObj();
+								tempCard2 = message.getObj(Card.class);
 								outCard.set(tempCard2);
 								if(tempCard2 != null){									
 									GB_CardItemLabel.setText(tempCard2.getItem().getName());
@@ -242,7 +241,7 @@ public class CardOutStoragePage implements ActivityTemplet {
 									if(tempCard2.getVender() != null)
 										GB_CardVenderLabel.setText(tempCard2.getVender());
 									
-									httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.QueryRepertoryNumByCard, tempCard2);
+									startHttpWork(ServiceEnum.QueryRepertoryNumByCard, tempCard2);
 								}
 								else{
 									GB_CardItemLabel.setText(null);
@@ -253,7 +252,7 @@ public class CardOutStoragePage implements ActivityTemplet {
 								}
 								break;
 							case QueryRepertoryNumByCard:
-								GB_CardStorageNumLabel.setText(((Long)message.getObj()).toString());
+								GB_CardStorageNumLabel.setText((message.getObj(Long.class)).toString());
 								break;
 							default:
 								break;
@@ -268,8 +267,8 @@ public class CardOutStoragePage implements ActivityTemplet {
         	if(this.equals(newValue)){
         		tempCard2 = new Card();
         		clearPage();
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllUser, tempRepertory);
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, tempRepertory);
+        		startHttpWork(ServiceEnum.ReadAllUser, tempRepertory);
+        		startHttpWork(ServiceEnum.ReadAllDepartment, tempRepertory);
         	}
         	else {
         		tempCard2 = null;
@@ -341,5 +340,15 @@ public class CardOutStoragePage implements ActivityTemplet {
 		GB_CardOutUserCombox.getSelectionModel().select(null);
 		GB_CardOutDepartmentCombox.getSelectionModel().select(null);
 		GB_CardOutDetailTextField.clear();
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			GB_FreshPane.setVisible(false);
+			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
+		}	
 	}
 }

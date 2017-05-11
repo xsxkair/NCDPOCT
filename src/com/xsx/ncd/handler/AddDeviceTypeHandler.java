@@ -48,8 +48,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-@Component
-public class AddDeviceTypeHandler implements ActivityTemplet {
+
+public class AddDeviceTypeHandler implements ActivityTemplet, HttpTemplet {
 
 	private AnchorPane rootPane = null;
 	
@@ -187,10 +187,10 @@ public class AddDeviceTypeHandler implements ActivityTemplet {
 						for (Message message : c.getAddedSubList()) {
 							switch (message.getWhat()) {
 							case ReadAllItems:
-								showAllItem((List<Item>) message.getObj());
+								showAllItem( message.getObj(List.class));
 								break;
 							case SaveDeviceTypeAndIco:
-								Boolean result = (Boolean) message.getObj();
+								Boolean result =  message.getObj(Boolean.class);
 								if(result == null)
 									showLogsDialog("´íÎó", "ÇëÖØÊÔ£¡");
 								else if(result == false)
@@ -223,15 +223,15 @@ public class AddDeviceTypeHandler implements ActivityTemplet {
 					deviceItemSet.add((Item) jfxRadioButton.getUserData());
 			}
         	deviceType.setItems(deviceItemSet);
-        	httpClientTool.myHttpPostDeviceType(ServiceEnum.SaveDeviceTypeAndIco, deviceType, (File) (DeviceOnIcoImageView.getUserData()), 
-        			(File)DeviceOffIcoImageView.getUserData(), (File)DeviceErrorIcoImageView.getUserData());
+        	//httpClientTool.myHttpPostDeviceType(ServiceEnum.SaveDeviceTypeAndIco, deviceType, (File) (DeviceOnIcoImageView.getUserData()), 
+        	//		(File)DeviceOffIcoImageView.getUserData(), (File)DeviceErrorIcoImageView.getUserData());
         });
         
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(this.equals(newValue)){
         		deviceType = new DeviceType();
         		deviceItemSet = new HashSet<>();
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllItems, null);
+        		startHttpWork(ServiceEnum.ReadAllItems, null);
         	}
         	else{
         		deviceType = null;
@@ -306,5 +306,15 @@ public class AddDeviceTypeHandler implements ActivityTemplet {
 			});
 			DeviceItemFlowPane.getChildren().add(jfxRadioButton);
 		}
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			GB_FreshPane.setVisible(false);
+			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
+		}	
 	}
 }

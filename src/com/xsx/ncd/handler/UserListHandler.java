@@ -44,7 +44,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 @Component
-public class UserListHandler implements ActivityTemplet{
+public class UserListHandler implements ActivityTemplet, HttpTemplet{
 
 	private AnchorPane rootpane;
 	
@@ -90,6 +90,7 @@ public class UserListHandler implements ActivityTemplet{
 	private User itsMe = null;
 	private User tempUser = null;
 	private ObservableList<Message> myMessagesList = null;
+	private ListChangeListener<Message> myMessageListChangeListener = null;
 
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserSession userSession;
@@ -117,98 +118,24 @@ public class UserListHandler implements ActivityTemplet{
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.EDIT);
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
             GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOtherUser, itsMe);
+        	startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.ADD);
         	clearUserInfo();
         	GB_ActionType = MyUserActionEnum.ADD;
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOtherUser, itsMe);
-        });
-
-        myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-						GB_FreshPane.setVisible(false);
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-							case DeleteUser:
-								if((Boolean)message.getObj()){
-			        				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOtherUser, itsMe);
-			            		}
-			        			else{
-			        				showLogsDialog("´íÎó", "É¾³ýÊ§°Ü£¡");
-			        			}
-								break;
-							case SaveUser:
-								tempUser = (User) message.getObj();
-			            		
-			            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-			            			if(tempUser == null){
-			            				showLogsDialog("´íÎó", "Ìí¼ÓÊ§°Ü£¡");
-			            			}
-			            			else{
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOtherUser, itsMe);
-			            			}
-			            		}
-			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-			            			if(tempUser == null){
-			            				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
-			            			}
-			            			else{
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOtherUser, itsMe);
-			            			}
-			            		}
-								break;
-							case ReadAllOtherUser:
-								upUserList((List<User>) message.getObj());
-								setUserInfoInStatus(MyUserActionEnum.NONE);
-								break;
-							case CheckUserIsExist:
-								if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-
-			            			if((Boolean)message.getObj()){
-			            				showLogsDialog("´íÎó", "ÓÃ»§ÒÑ´æÔÚ£¬Çë¼ì²é£¡");
-			                		}
-			            			else{
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveUser, tempUser);
-			            			}
-			            		}
-			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-			            			if((Boolean)message.getObj()){
-			            				httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.SaveUser, tempUser);
-			                		}
-			            			else{
-			            				showLogsDialog("´íÎó", "ÓÃ»§²»´æÔÚ£¬Çë¼ì²é£¡");
-			            			}
-			            		}
-								break;
-							case ReadAllDepartment:
-								GB_UserDepartmentCombox.getItems().setAll((List<Department>) message.getObj());
-								break;
-							default:
-								break;
-							}
-						}
-					}
-				}
-			}
+        	startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
         });
         
 		GB_FreshPane.setVisible(false);
@@ -221,7 +148,7 @@ public class UserListHandler implements ActivityTemplet{
         		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
         			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.DeleteUser, tempUser);
+        			startHttpWork(ServiceEnum.DeleteUser, tempUser);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
         			tempUser = new User();
@@ -240,7 +167,7 @@ public class UserListHandler implements ActivityTemplet{
         			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
         			tempUser.setManagecard(GB_CardManageToggle.isSelected());
 
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.CheckUserIsExist, tempUser);
+        			startHttpWork(ServiceEnum.CheckUserIsExist, tempUser);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
         			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
@@ -259,7 +186,7 @@ public class UserListHandler implements ActivityTemplet{
         			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
         			tempUser.setManagecard(GB_CardManageToggle.isSelected());
         			
-        			httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.CheckUserIsExist, tempUser);
+        			startHttpWork(ServiceEnum.CheckUserIsExist, tempUser);
         		}
         	}
         	else
@@ -283,7 +210,7 @@ public class UserListHandler implements ActivityTemplet{
     		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
     		modifyUserInfoDialog.show(rootStackPane);
         });
-        
+
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
         	if(newValue != null){
         		newValue.setDeleteIcoVisible(true);
@@ -293,12 +220,95 @@ public class UserListHandler implements ActivityTemplet{
         		oldValue.setDeleteIcoVisible(false);
         });
         
+        myMessageListChangeListener = new ListChangeListener<Message>(){
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
+				// TODO Auto-generated method stub
+				while(c.next()){
+					if(c.wasAdded()){
+						for (Message message : c.getAddedSubList()) {
+							switch (message.getWhat()) {
+							
+								case DeleteUser:
+									
+									if(message.getObj(Boolean.class))
+										startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
+					    			else
+					    				showLogsDialog("´íÎó", "É¾³ýÊ§°Ü£¡");
+									
+									break;
+									
+								case SaveUser:
+									tempUser = message.getObj(User.class);
+					        		
+					        		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+					        			if(tempUser == null){
+					        				showLogsDialog("´íÎó", "Ìí¼ÓÊ§°Ü£¡");
+					        			}
+					        			else{
+					        				startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
+					        			}
+					        		}
+					        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+					        			if(tempUser == null){
+					        				showLogsDialog("´íÎó", "ÐÞ¸ÄÊ§°Ü£¡");
+					        			}
+					        			else{
+					        				startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
+					        			}
+					        		}
+									break;
+									
+								case ReadAllOtherUser:
+									upUserList(message.getObj(List.class));
+									setUserInfoInStatus(MyUserActionEnum.NONE);
+									break;
+									
+								case CheckUserIsExist:
+									if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+					        			if(message.getObj(Boolean.class)){
+					        				showLogsDialog("´íÎó", "ÓÃ»§ÒÑ´æÔÚ£¬Çë¼ì²é£¡");
+					            		}
+					        			else{
+					        				startHttpWork(ServiceEnum.SaveUser, tempUser);
+					        			}
+					        		}
+					        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+					        			if(message.getObj(Boolean.class)){
+					        				startHttpWork(ServiceEnum.SaveUser, tempUser);
+					            		}
+					        			else{
+					        				showLogsDialog("´íÎó", "ÓÃ»§²»´æÔÚ£¬Çë¼ì²é£¡");
+					        			}
+					        		}
+									break;
+								case ReadAllDepartment:
+									GB_UserDepartmentCombox.getItems().setAll(message.getObj(List.class));
+									break;
+									
+								default:
+									break;
+							}
+						}
+						GB_FreshPane.setVisible(false);
+					}
+				}
+			}
+        };
+        
         activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
         	if(this.equals(newValue)){
         		itsMe = userSession.getUser();
-        		httpClientTool.myHttpAsynchronousPostJson(ServiceEnum.ReadAllOtherUser, itsMe);
+        		
+        		myMessagesList = FXCollections.observableArrayList();
+        		myMessagesList.addListener(myMessageListChangeListener);
+        		
+        		startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
         	}
-        	else {
+        	else if(this.equals(oldValue)){
+        		myMessagesList.removeListener(myMessageListChangeListener);
+        		myMessagesList = null;
         		itsMe = null;
         	}
         });
@@ -320,13 +330,12 @@ public class UserListHandler implements ActivityTemplet{
 	}
 	
 	private void upUserList(List<User> userList) {
-
 		GB_UserListView.getItems().clear();
 		for (User user : userList) {
 			ListViewCell tempListViewCell = new ListViewCell(user, deleteUserIco);
 			GB_UserListView.getItems().add(tempListViewCell);
 		}
-
+		
 		GB_UserListView.getSelectionModel().selectFirst();
 	}
 	
@@ -460,5 +469,15 @@ public class UserListHandler implements ActivityTemplet{
 		Platform.runLater(()->{
 			myMessagesList.add(message);
 		});
+	}
+	
+	@Override
+	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
+		GB_FreshPane.setVisible(true);
+		
+		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+			GB_FreshPane.setVisible(false);
+			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
+		}	
 	}
 }

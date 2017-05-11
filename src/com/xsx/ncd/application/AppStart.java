@@ -27,6 +27,7 @@ public class AppStart extends Application{
     			SpringFacktory.SpringFacktoryInit();
     			long end = System.currentTimeMillis();
     			System.out.println(end-start);
+    			
     			return true;
     			
 			} catch (Exception e) {

@@ -13,11 +13,14 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.entity.DeviceType;
+import com.xsx.ncd.handler.HttpTemplet;
 import com.xsx.ncd.spring.ActivitySession;
 
 import okhttp3.Call;
@@ -56,7 +59,7 @@ public class HttpClientTool {
 	 * 同步方式post json数据
 	 */
 	public String myHttpSynchronousPostJson(String url, Object parm){
-
+		
 		try {
 			jsonString = mapper.writeValueAsString(parm);
 		} catch (Exception e) {
@@ -74,9 +77,9 @@ public class HttpClientTool {
 		      .url(urlStringBuffer.toString())
 		      .post(body)
 		      .build();
-		Response response;
+
 		try {
-			response = client.newCall(request).execute();
+			Response response = client.newCall(request).execute();
 			
 			if(response.isSuccessful()) {
 				return response.body().string();
@@ -86,16 +89,17 @@ public class HttpClientTool {
 			e.printStackTrace();
 		}
 		
-		return null;
-		
+		return null;	
 	}
 	
 	/*
 	 * 异步方式post json数据
 	 */
-	public void myHttpAsynchronousPostJson(ServiceEnum serviceEnum, Object parm){
+	public Boolean myHttpAsynchronousPostJson(HttpTemplet httpTemplet, ServiceEnum serviceEnum, Object parm){
 
 		Message message = new Message(serviceEnum, null);
+		
+		
 		
 		try {
 			jsonString = mapper.writeValueAsString(parm);
@@ -103,8 +107,8 @@ public class HttpClientTool {
 			// TODO: handle exception
 			e.printStackTrace();
 
-			activitySession.getActivityPane().get().PostMessageToThisActivity(message);
-			return;
+			httpTemplet.PostMessageToThisActivity(message);
+			return false;
 		}
 
 		urlStringBuffer.setLength(0);
@@ -125,79 +129,32 @@ public class HttpClientTool {
 				try {
 					jsonString = arg1.body().string();
 
-					if(jsonString != null){
-						if(jsonString.length() == 0)
-							message.setObj(null);
-						else if(serviceEnum.getIndex() == 1){
-							JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
-							message.setObj(mapper.readValue(jsonString, javaType));
-						}
-						else if(serviceEnum.getIndex() == 2){
-							message.setObj(mapper.readValue(jsonString, serviceEnum.getObjectclass()));
-						}
-						else if(serviceEnum.getIndex() == 3){
-							if(jsonString != null){
-								if(jsonString.indexOf("true") >= 0)
-									message.setObj(true);
-								else 
-									message.setObj(false);
-							}
-						}
+					if(serviceEnum.getIndex() == 1){
+						JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
+						message.setObj(mapper.readValue(jsonString, javaType));
 					}
-				
+					else if(serviceEnum.getIndex() == 2){
+						message.setObj(mapper.readValue(jsonString, serviceEnum.getObjectclass()));
+					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+				httpTemplet.PostMessageToThisActivity(message);
 			}
 			
 			@Override
 			public void onFailure(Call arg0, IOException arg1) {
 				// TODO Auto-generated method stub
-				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+				httpTemplet.PostMessageToThisActivity(message);
 			}
-		});	
+		});
+		
+		return true;
 	}
 	
-
-	public String myHttpPost(String url, Map<String, String> parm){
-		Set<String> paramKeySet = parm.keySet();
-		Response response;
-		
-		urlStringBuffer.setLength(0);
-		urlStringBuffer.append(ServerUrlHead);
-		urlStringBuffer.append(url);
-		
-		FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
-
-		for (String string : paramKeySet) {
-			requestFormBodyBuilder.add(string, parm.get(string));
-		}
-		
-		RequestBody requestBody = requestFormBodyBuilder.build();
-		
-		Request request = new Request.Builder()
-		      .url(urlStringBuffer.toString())
-		      .post(requestBody)
-		      .build();
-		
-		try {
-			response = client.newCall(request).execute();
-			
-			if(response.isSuccessful()) {
-				return response.body().string();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-	
-	public void myHttpPostDeviceType(ServiceEnum serviceEnum, DeviceType deviceType, File onFile,
+/*	public void myHttpPostDeviceType(ServiceEnum serviceEnum, DeviceType deviceType, File onFile,
 			File offFile, File errorFile){
 		
 		Message message = new Message(serviceEnum, null);
@@ -219,7 +176,6 @@ public class HttpClientTool {
 		RequestBody onFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), onFile);
 		RequestBody offFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), offFile);
 		RequestBody errorFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), errorFile);
-		RequestBody beanBody = RequestBody.create(mediaJsonType, jsonString);
 
 		RequestBody requestBody = new MultipartBody.Builder()
 				.setType(MultipartBody.FORM)
@@ -266,5 +222,5 @@ public class HttpClientTool {
 				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
 			}
 		});
-	}
+	}*/
 }

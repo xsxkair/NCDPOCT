@@ -17,6 +17,4 @@ public interface ActivityTemplet {
 	public void distroyActivity();
 
 	public String getActivityName();
-	
-	public void PostMessageToThisActivity(Message message);
 }
