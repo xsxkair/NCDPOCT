@@ -99,3 +99,11 @@
 #GB_CancelAddUserImageView:hover{
 	-fx-cursor:HAND;
 }
+
+/*设备管理*/
+	/*添加设备弹出对话框*/
+	#existDeviceListView{
+	-fx-vertical-gap : 10.0;
+  	-fx-pref-width: 150px;
+  	-fx-background-color: transparent ;
+	}

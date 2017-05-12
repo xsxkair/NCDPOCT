@@ -3,6 +3,7 @@ package com.xsx.ncd.define;
 import com.xsx.ncd.entity.Card;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.Device;
+import com.xsx.ncd.entity.DeviceType;
 import com.xsx.ncd.entity.Item;
 import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.entity.Repertory;
@@ -31,6 +32,7 @@ public enum ServiceEnum {
 	DeleteOperator("/DeleteOperator", 2, Boolean.class), 
 	CheckOperatorIsExist("/CheckOperatorIsExist", 2, Boolean.class),
 	ReadOneOperatorById("/ReadOneOperatorById", 2, Operator.class),
+	QueryOperatorByDepartment("/QueryOperatorByDepartment", 1, Operator.class),
 	
 	ReadAllItems("/ReadAllItems", 1, Item.class),
 	
@@ -40,9 +42,11 @@ public enum ServiceEnum {
 	QueryCardLotNumLikeThis("/QueryCardLotNumLikeThis", 1, String.class),
 	QueryCardByLotNum("/QueryCardByLotNum", 2, Card.class),
 	
-	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", 2, Boolean.class),
+	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", 2, String.class),
+	QueryAllDeviceType("/QueryAllDeviceType", 1, DeviceType.class),
 	
-	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", 1, Device.class);
+	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", 1, Device.class),
+	AddNewDevice("/AddNewDevice", 2, String.class);
 	
 	private final String name;
 	private final Integer index;

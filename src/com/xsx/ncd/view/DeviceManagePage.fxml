@@ -1,15 +1,256 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDialog?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <content>
-            <FlowPane fx:id="DepartmentFlowPane" />
-         </content>
-      </ScrollPane>
+      <StackPane fx:id="rootStackPane" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+         	<JFXDialog fx:id="addDeviceTypeDialog">
+               <content>
+                  <JFXDialogLayout>
+                     <heading>
+                        <Label />
+                     </heading>
+                     <body>
+						<VBox alignment="CENTER" spacing="10.0">
+		                     <children>
+		                     	<HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label fx:id="GB_LotnumLabel" text="设备代码：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <TextField fx:id="DeviceCodeTextfield" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label fx:id="GB_LotnumLabel" text="设备名称：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <TextField fx:id="DeviceNameTextfield" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="设备型号：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                               <TextField fx:id="DeviceModelTextfield" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="设备图标：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <StackPane fx:id="DeviceIcoStackPane">
+		                                 <children>
+		                                    <ImageView fx:id="DeviceIcoImageView" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+		                                    <Label fx:id="DeviceIcoLabel" text="选择图标" />
+		                                 </children>
+		                              </StackPane>
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="测试项目：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <FlowPane fx:id="DeviceItemsFlowPane" hgap="5.0" vgap="5.0" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="厂      家：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <TextField fx:id="DeviceVenderTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="厂家电话：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <TextField fx:id="DeviceVenderPhoneTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="厂家地址：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <TextField fx:id="DeviceVenderAddrTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                     </children>
+		                  </VBox>
+                     </body>
+                     <actions>
+                        <JFXButton fx:id="cancelAddDeviceTypeButton" styleClass="dialog-accept" text="取消" />
+                        <JFXButton fx:id="commitAddDeviceTypeButton" styleClass="dialog-accept" text="提交" />
+                     </actions>
+                  </JFXDialogLayout>
+               </content>
+            </JFXDialog>
+            <JFXDialog fx:id="addDeviceDialog">
+               <content>
+                  <JFXDialogLayout>
+                     <heading>
+                        <Label />
+                     </heading>
+                     <body>
+						<VBox alignment="CENTER" spacing="10.0">
+		                     <children>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="设备编号：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                               <TextField fx:id="DeviceIdTextfield" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="设备类型：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <JFXComboBox fx:id="DeviceTypeCombox" prefWidth="200.0" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="设备科室：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <JFXComboBox fx:id="DeviceDepartmentCombox" prefWidth="200.0" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="责  任  人：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <JFXComboBox fx:id="DeviceOpertorCombox" prefWidth="200.0" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="操  作  人：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <FlowPane fx:id="DeviceOpertorsFlowPane" hgap="5.0" vgap="5.0" />
+		                           </children>
+		                        </HBox>
+		                        <HBox alignment="CENTER_LEFT" spacing="30.0">
+		                           <children>
+		                              <Label text="设备地址：" textFill="#1a3f83">
+		                                 <font>
+		                                    <Font size="15.0" />
+		                                 </font>
+		                              </Label>
+		                              <TextField fx:id="DeviceAddrTextField" prefWidth="200.0" style="-fx-background-radius: 5; -fx-background-color: linear-gradient(to bottom, #ffffff,  #eff0f0); -fx-border-color: #dcdddd; -fx-border-radius: 5;" />
+		                           </children>
+		                        </HBox>
+		                     </children>
+		                  </VBox>
+                     </body>
+                     <actions>
+                        <JFXButton fx:id="cancelAddDeviceButton" styleClass="dialog-accept" text="取消" />
+                        <JFXButton fx:id="commitAddDeviceButton" styleClass="dialog-accept" text="提交" />
+                     </actions>
+                  </JFXDialogLayout>
+               </content>
+            </JFXDialog>
+            <JFXDialog fx:id="checkUserRightDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label>权限认证</Label>
+					</heading>
+					<body>
+						 <HBox alignment="CENTER_LEFT" spacing="20.0">
+						 	<Label>密码：</Label>
+						 	<PasswordField fx:id="userPasswordTextField" text="密码" />
+						 </HBox>
+					</body>
+					<actions>
+						<JFXButton fx:id="cancelcheckUserRightButton" styleClass="dialog-accept">取消</JFXButton>
+						<JFXButton fx:id="commitcheckUserRightButton" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <JFXDialog fx:id="LogDialog">
+               <content>
+                  <JFXDialogLayout>
+                     <heading>
+                        <Label fx:id="LogDialogHead" />
+                     </heading>
+                     <body>
+                        <Label fx:id="LogDialogContent" />
+                     </body>
+                     <actions>
+                        <JFXButton fx:id="LogDialogCloseButton" styleClass="dialog-accept" text="确定" />
+                     </actions>
+                  </JFXDialogLayout>
+               </content>
+            </JFXDialog>
+            <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                  <FlowPane fx:id="DepartmentFlowPane" />
+               </content>
+            </ScrollPane>
+         </children>
+      </StackPane>
+      <JFXButton fx:id="addNewDeviceTypeButton" buttonType="RAISED" defaultButton="true" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="创建新设备类型" textFill="WHITE">
+         <font>
+            <Font name="Bodoni MT Bold" size="17.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
    </children>
 </AnchorPane>

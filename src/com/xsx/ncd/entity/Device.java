@@ -10,13 +10,7 @@ public class Device {
 	
 	private String did;
 	
-	private String name;
-	
-	private String model;
-	
 	private String status;
-	
-	private String icopath;
 	
 	private Long lasttime;
 	
@@ -24,17 +18,11 @@ public class Device {
 	
 	private Set<Operator> operators = new HashSet<>();
 	
-	private Set<Item> items = new HashSet<>();
-	
 	private Department department;
 	
+	private DeviceType deviceType;
+	
 	private String addr;
-	
-	private String vender;
-	
-	private String venderphone;
-	
-	private String venderaddr;
 
 	public Integer getId() {
 		return id;
@@ -50,62 +38,6 @@ public class Device {
 
 	public void setDid(String did) {
 		this.did = did;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getModel() {
-		return model;
-	}
-
-	public void setModel(String model) {
-		this.model = model;
-	}
-
-	public String getIcopath() {
-		return icopath;
-	}
-
-	public void setIcopath(String icopath) {
-		this.icopath = icopath;
-	}
-
-	public Set<Item> getItems() {
-		return items;
-	}
-
-	public void setItems(Set<Item> items) {
-		this.items = items;
-	}
-
-	public String getVender() {
-		return vender;
-	}
-
-	public void setVender(String vender) {
-		this.vender = vender;
-	}
-
-	public String getVenderphone() {
-		return venderphone;
-	}
-
-	public void setVenderphone(String venderphone) {
-		this.venderphone = venderphone;
-	}
-
-	public String getVenderaddr() {
-		return venderaddr;
-	}
-
-	public void setVenderaddr(String venderaddr) {
-		this.venderaddr = venderaddr;
 	}
 
 	public String getStatus() {
@@ -148,6 +80,14 @@ public class Device {
 		this.department = department;
 	}
 
+	public DeviceType getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(DeviceType deviceType) {
+		this.deviceType = deviceType;
+	}
+
 	public String getAddr() {
 		return addr;
 	}
@@ -155,5 +95,5 @@ public class Device {
 	public void setAddr(String addr) {
 		this.addr = addr;
 	}
-	
+
 }

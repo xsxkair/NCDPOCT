@@ -79,14 +79,9 @@ public class AddDeviceTypeHandler implements ActivityTemplet, HttpTemplet {
 	@FXML Label LogDialogContent;
 	@FXML JFXButton acceptButton2;
 	
-	private User itsMe = null;
-	private User tempUser = null;
 	private DeviceType deviceType = null;
 	private Set<Item> deviceItemSet = null;
 	private ObservableList<Message> myMessagesList = null;
-	private ObjectProperty<File> offImageFile = null;
-	private ObjectProperty<File> onImageFile = null;
-	private ObjectProperty<File> errorImageFile = null;
 	
 	@Autowired UserSession userSession;
 	@Autowired ActivitySession activitySession;

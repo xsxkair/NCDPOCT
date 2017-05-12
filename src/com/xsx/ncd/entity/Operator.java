@@ -93,4 +93,9 @@ public class Operator{
 		this.checked = checked;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

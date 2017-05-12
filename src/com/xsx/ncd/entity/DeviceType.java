@@ -8,16 +8,14 @@ public class DeviceType{
 
 
 	private Integer id;
-
+	
 	private String code;
 	
 	private String name;
 	
-	private String onicon;
+	private String model;
 	
-	private String officon;
-	
-	private String erroricon;
+	private String icon;
 	
 	private Set<Item> items = new HashSet<>();
 	
@@ -51,28 +49,20 @@ public class DeviceType{
 		this.name = name;
 	}
 
-	public String getOnicon() {
-		return onicon;
+	public String getModel() {
+		return model;
 	}
 
-	public void setOnicon(String onicon) {
-		this.onicon = onicon;
+	public void setModel(String model) {
+		this.model = model;
 	}
 
-	public String getOfficon() {
-		return officon;
+	public String getIcon() {
+		return icon;
 	}
 
-	public void setOfficon(String officon) {
-		this.officon = officon;
-	}
-
-	public String getErroricon() {
-		return erroricon;
-	}
-
-	public void setErroricon(String erroricon) {
-		this.erroricon = erroricon;
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 
 	public Set<Item> getItems() {
@@ -106,6 +96,10 @@ public class DeviceType{
 	public void setVenderaddr(String venderaddr) {
 		this.venderaddr = venderaddr;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "DeviceType [code=" + code + ", name=" + name + ", model=" + model + "]";
+	}
+
 }

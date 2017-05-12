@@ -98,9 +98,7 @@ public class HttpClientTool {
 	public Boolean myHttpAsynchronousPostJson(HttpTemplet httpTemplet, ServiceEnum serviceEnum, Object parm){
 
 		Message message = new Message(serviceEnum, null);
-		
-		
-		
+
 		try {
 			jsonString = mapper.writeValueAsString(parm);
 		} catch (Exception e) {
@@ -128,13 +126,17 @@ public class HttpClientTool {
 				// TODO Auto-generated method stub
 				try {
 					jsonString = arg1.body().string();
-
+					
 					if(serviceEnum.getIndex() == 1){
 						JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
 						message.setObj(mapper.readValue(jsonString, javaType));
 					}
 					else if(serviceEnum.getIndex() == 2){
-						message.setObj(mapper.readValue(jsonString, serviceEnum.getObjectclass()));
+						if(serviceEnum.getObjectclass().equals(String.class))
+							message.setObj(jsonString);
+						else{
+							message.setObj(mapper.readValue(jsonString, serviceEnum.getObjectclass()));
+						}
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -152,6 +154,65 @@ public class HttpClientTool {
 		});
 		
 		return true;
+	}
+	
+	public void myHttpPostDeviceType(HttpTemplet httpTemplet, ServiceEnum serviceEnum, 
+			DeviceType deviceType, File onFile){
+		
+		Message message = new Message(serviceEnum, "Error");
+		
+		urlStringBuffer.setLength(0);
+		urlStringBuffer.append(ServerUrlHead);
+		urlStringBuffer.append(serviceEnum.getName());
+		
+		try {
+			jsonString = mapper.writeValueAsString(deviceType);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+
+			httpTemplet.PostMessageToThisActivity(message);
+			return;
+		}
+		
+		RequestBody onFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), onFile);
+
+		RequestBody requestBody = new MultipartBody.Builder()
+				.setType(MultipartBody.FORM)
+				.addFormDataPart("deviceType", jsonString)
+				.addFormDataPart("ico", onFile.getName(), onFileBody)
+				.build();
+		
+		Request request = new Request.Builder()
+		      .url(urlStringBuffer.toString())
+		      .post(requestBody)
+		      .build();
+		
+		Call call = client.newCall(request);
+		call.enqueue(new Callback() {
+			
+			@Override
+			public void onResponse(Call arg0, Response arg1) throws IOException {
+				// TODO Auto-generated method stub
+				try {
+					jsonString = arg1.body().string();
+
+					message.setObj(jsonString);
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				httpTemplet.PostMessageToThisActivity(message);
+			}
+			
+			@Override
+			public void onFailure(Call arg0, IOException arg1) {
+				// TODO Auto-generated method stub
+				httpTemplet.PostMessageToThisActivity(message);
+			}
+		});
 	}
 	
 /*	public void myHttpPostDeviceType(ServiceEnum serviceEnum, DeviceType deviceType, File onFile,
