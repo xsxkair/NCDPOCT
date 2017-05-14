@@ -18,6 +18,7 @@ import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.define.UserFilePath;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.Device;
+import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
 
 import javafx.application.Platform;
@@ -52,9 +53,6 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 	private QueryThisDepartmentAllDeviceService queryThisDepartmentAllDeviceService = null;
 	
 	private ObservableList<Message> myMessagesList = null;
-	
-	@Autowired HttpClientTool httpClientTool;
-	@Autowired UserFilePath userFilePath;
 	
 	public DepartmentDeviceListHandler(Department department, DeviceManageHandler fatherActivity){
 		departmentData = department;
@@ -135,9 +133,8 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 	@Override
 	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
 		// TODO Auto-generated method stub
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+		if(!SpringFacktory.GetBean(HttpClientTool.class).myHttpAsynchronousPostJson(this, serviceEnum, parm)){
 			//GB_FreshPane.setVisible(false);
-			System.out.println("shibai");
 		}
 	}
 	
@@ -162,58 +159,9 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 			@Override
 			protected Void call() throws Exception {
 				// TODO Auto-generated method stub
-				System.out.println("xsx");
 				startHttpWork(ServiceEnum.QueryThisDepartmentAllDeviceList, departmentData);
 				return null;
 			}	
-		}
-	}
-	
-	class MyDeviceView extends VBox{
-		
-		private Device device = null;
-		private ImageView imageView = null;
-		private Image image = null;
-
-		public MyDeviceView(Device device) {
-			super();
-			this.device = device;
-			this.Init();
-		}
-		
-		private void Init() {
-			imageView = new ImageView();
-			JFXSpinner jfxSpinner = new JFXSpinner();
-			StackPane stackPane = new StackPane(imageView, jfxSpinner);
-			
-			Label deviceName = new Label(device.getDeviceType().getName()+"("+device.getDeviceType().getModel()+")");
-			Label deviceAddr = new Label(device.getAddr());
-			VBox vbBox = new VBox(deviceName, deviceAddr);
-			
-			this.getChildren().addAll(stackPane, vbBox);
-			
-			jfxSpinner.visibleProperty().bind(imageView.imageProperty().isNull());
-		}
-		
-		private Image getDeviceImage(){
-			String imageFilePath =  userFilePath.getDeviceIcoDirPath() + "\\" + device.getDeviceType().getIcon();
-			File imageFile = new File(imageFilePath);
-
-			if(imageFile.exists()){
-				try {
-					image = new Image(new FileInputStream(imageFile));
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					image = null;
-				}
-			}
-			
-			if(image == null){
-				
-			}
-			
-			return image;
 		}
 	}
 }

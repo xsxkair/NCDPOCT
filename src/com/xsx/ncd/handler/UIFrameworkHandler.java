@@ -228,7 +228,18 @@ public class UIFrameworkHandler {
 	}
 	
 	public void startMainUI() {
-		s_Stage = new Stage();
+		if(s_Stage == null){
+			s_Stage = new Stage();
+			s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
+		    s_Stage.setScene(s_Scene);
+		    s_Stage.setMinWidth(1280);
+		    s_Stage.setMinHeight(800);
+		    
+		    s_Stage.setOnCloseRequest((e)->{
+		    	System.exit(0);
+		    });
+		}
+		
 
 		/*JFXDecorator decorator = new JFXDecorator(s_Stage, root);
 		decorator.setCustomMaximize(true);
@@ -241,10 +252,7 @@ public class UIFrameworkHandler {
 			}
 		});*/
 
-		s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
-	    s_Stage.setScene(s_Scene);
-	    s_Stage.setMinWidth(1280);
-	    s_Stage.setMinHeight(800);
+		
 		s_Stage.show();
 	}
 	

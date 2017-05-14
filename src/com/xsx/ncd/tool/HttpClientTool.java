@@ -55,6 +55,10 @@ public class HttpClientTool {
         mapper.setDateFormat(outputFormat);
 	}
 	
+	public OkHttpClient getClient() {
+		return client;
+	}
+
 	/*
 	 * 同步方式post json数据
 	 */
