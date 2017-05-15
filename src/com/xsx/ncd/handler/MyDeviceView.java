@@ -1,21 +1,11 @@
 package com.xsx.ncd.handler;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
 
 import com.jfoenix.controls.JFXSpinner;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.define.UserFilePath;
 import com.xsx.ncd.entity.Device;
-import com.xsx.ncd.handler.DepartmentDeviceListHandler.QueryThisDepartmentAllDeviceService.MyTask;
 import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
 
@@ -39,7 +29,6 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 	
 	private Device device = null;
 	private ImageView imageView = null;
-	private Image image = null;
 	
 	private ObservableList<Message> myMessagesList = null;
 
@@ -70,7 +59,30 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 			}
 		});
 		
-		getDeviceImage();
+		new Runnable() {	
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), 
+						device.getDeviceType().getIcon());
+				Request request = new Request.Builder()
+				      .url("http://116.62.108.201:8080/NCDPOCT_Server/DownloadDeviceIco")
+				      .post(body)
+				      .build();
+
+				try {
+					Response response = SpringFacktory.GetBean(HttpClientTool.class).getClient().newCall(request).execute();
+					
+					if(response.isSuccessful()) {
+						imageView.setImage(new Image(response.body().byteStream()));
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					imageView.setImage(null);
+				}
+			}
+		}.run();
 		
 		myMessagesList = FXCollections.observableArrayList();
         myMessagesList.addListener(new ListChangeListener<Message>(){
@@ -95,63 +107,6 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 				}
 			}
         });
-	}
-	
-	private void getDeviceImage(){
-		int lastchart = device.getDeviceType().getIcon().lastIndexOf('/');
-		int endIndex = device.getDeviceType().getIcon().length();
-		String imageFilePath =  SpringFacktory.GetBean(UserFilePath.class).getDeviceIcoDirPath() + "\\" 
-				+ device.getDeviceType().getIcon().substring(lastchart+1, endIndex);
-		File imageFile = new File(imageFilePath);
-		System.out.println(imageFilePath);
-		if(imageFile.exists()){
-			try {
-				image = new Image(new FileInputStream(imageFile));
-				imageView.setImage(image);
-				return;
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				image = null;
-			}
-		}
-		else{
-			new Runnable() {
-				
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), 
-							device.getDeviceType().getIcon());
-					Request request = new Request.Builder()
-					      .url("http://116.62.108.201:8080/NCDPOCT_Server/DownloadDeviceIco")
-					      .post(body)
-					      .build();
-
-					try {
-						Response response = SpringFacktory.GetBean(HttpClientTool.class).getClient().newCall(request).execute();
-						
-						if(response.isSuccessful()) {
-							imageFile.createNewFile();
-							FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-							InputStream inputStream = response.body().byteStream();
-							byte[] imageByte = new byte[4096];
-							int read = 0;
-							while ((read = inputStream.read(imageByte)) > 0) {
-								fileOutputStream.write(imageByte, 0, read);
-							}
-							fileOutputStream.close();
-							
-							imageView.setImage(new Image(new FileInputStream(imageFile)));
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						imageView.setImage(null);
-					}
-				}
-			}.run();
-		}
 	}
 	
 	class QueryDeviceStatusService extends ScheduledService<Void>{

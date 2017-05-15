@@ -41,7 +41,6 @@ public class HttpClientTool {
 	
 	//private final String ServerUrlHead = "http://192.168.0.56:8080/NCDPOCT_Server";
 	private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
-	private StringBuffer urlStringBuffer = new StringBuffer();
 	
 	private final MediaType mediaJsonType = MediaType.parse("application/json; charset=utf-8");
 	private final MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
@@ -63,6 +62,8 @@ public class HttpClientTool {
 	 * 同步方式post json数据
 	 */
 	public String myHttpSynchronousPostJson(String url, Object parm){
+		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
+		urlBuffer.append(url);
 		
 		try {
 			jsonString = mapper.writeValueAsString(parm);
@@ -72,13 +73,10 @@ public class HttpClientTool {
 			return null;
 		}
 		
-		urlStringBuffer.setLength(0);
-		urlStringBuffer.append(ServerUrlHead);
-		urlStringBuffer.append(url);
 		
 		RequestBody body = RequestBody.create(mediaJsonType, jsonString);
 		Request request = new Request.Builder()
-		      .url(urlStringBuffer.toString())
+		      .url(urlBuffer.toString())
 		      .post(body)
 		      .build();
 
@@ -102,6 +100,8 @@ public class HttpClientTool {
 	public Boolean myHttpAsynchronousPostJson(HttpTemplet httpTemplet, ServiceEnum serviceEnum, Object parm){
 
 		Message message = new Message(serviceEnum, null);
+		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
+		urlBuffer.append(serviceEnum.getName());
 
 		try {
 			jsonString = mapper.writeValueAsString(parm);
@@ -112,14 +112,10 @@ public class HttpClientTool {
 			httpTemplet.PostMessageToThisActivity(message);
 			return false;
 		}
-
-		urlStringBuffer.setLength(0);
-		urlStringBuffer.append(ServerUrlHead);
-		urlStringBuffer.append(serviceEnum.getName());
 		
 		RequestBody body = RequestBody.create(mediaJsonType, jsonString);
 		Request request = new Request.Builder()
-		      .url(urlStringBuffer.toString())
+		      .url(urlBuffer.toString())
 		      .post(body)
 		      .build();
 		Call call = client.newCall(request);
@@ -164,10 +160,8 @@ public class HttpClientTool {
 			DeviceType deviceType, File onFile){
 		
 		Message message = new Message(serviceEnum, "Error");
-		
-		urlStringBuffer.setLength(0);
-		urlStringBuffer.append(ServerUrlHead);
-		urlStringBuffer.append(serviceEnum.getName());
+		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
+		urlBuffer.append(serviceEnum.getName());
 		
 		try {
 			jsonString = mapper.writeValueAsString(deviceType);
@@ -188,7 +182,7 @@ public class HttpClientTool {
 				.build();
 		
 		Request request = new Request.Builder()
-		      .url(urlStringBuffer.toString())
+		      .url(urlBuffer.toString())
 		      .post(requestBody)
 		      .build();
 		
