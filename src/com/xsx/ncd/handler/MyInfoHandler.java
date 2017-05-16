@@ -106,6 +106,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
         loader.setController(this);
         try {
         	rootpane = loader.load(in);
+        	in.close();
         	SVGGlyphLoader.clear();
 
 			SVGGlyphLoader.loadGlyphsFont(this.getClass().getResourceAsStream("/RES/icomoon.svg"), "icomoon.svg");

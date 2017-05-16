@@ -80,6 +80,7 @@ public class LoginHandler {
         
         try {
         	root = loader.load(in);
+        	in.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

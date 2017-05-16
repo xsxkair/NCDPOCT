@@ -107,6 +107,7 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
         loader.setController(this);
         try {
         	rootPane = loader.load(in);
+        	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

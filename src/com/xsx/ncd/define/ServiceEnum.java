@@ -9,11 +9,14 @@ import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.entity.Repertory;
 import com.xsx.ncd.entity.User;
 
+import javafx.scene.image.Image;
+
 /*
  * NONE(url, 返回数据类型, 返回数据拆包类)
  * 1, 代表list
  * 2，代表bean
  * 3，代表bool字符串
+ * 4, 代表返回数据为image的二进制数据流
  */
 public enum ServiceEnum {
 	Error("Error", 0, null), 
@@ -44,6 +47,8 @@ public enum ServiceEnum {
 	
 	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", 2, String.class),
 	QueryAllDeviceType("/QueryAllDeviceType", 1, DeviceType.class),
+	QueryAllDeviceIcoPath("/QueryAllDeviceIcoPath", 1, String.class),
+	DownloadDeviceIco("/DownloadDeviceIco", 4, DeviceIcoInfo.class),
 	
 	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", 1, Device.class),
 	AddNewDevice("/AddNewDevice", 2, String.class);

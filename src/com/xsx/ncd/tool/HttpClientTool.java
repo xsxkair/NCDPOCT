@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xsx.ncd.define.DeviceIcoInfo;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Device;
@@ -23,6 +25,7 @@ import com.xsx.ncd.entity.DeviceType;
 import com.xsx.ncd.handler.HttpTemplet;
 import com.xsx.ncd.spring.ActivitySession;
 
+import javafx.scene.image.Image;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -62,8 +65,12 @@ public class HttpClientTool {
 	 * 同步方式post json数据
 	 */
 	public String myHttpSynchronousPostJson(String url, Object parm){
+		
+		String value = null;
+		
 		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
 		urlBuffer.append(url);
+		
 		
 		try {
 			jsonString = mapper.writeValueAsString(parm);
@@ -84,14 +91,15 @@ public class HttpClientTool {
 			Response response = client.newCall(request).execute();
 			
 			if(response.isSuccessful()) {
-				return response.body().string();
+				value = response.body().string();
+				response.body().close();;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return null;	
+		return value;	
 	}
 	
 	/*
@@ -125,23 +133,30 @@ public class HttpClientTool {
 			public void onResponse(Call arg0, Response arg1){
 				// TODO Auto-generated method stub
 				try {
-					jsonString = arg1.body().string();
-					
 					if(serviceEnum.getIndex() == 1){
 						JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
-						message.setObj(mapper.readValue(jsonString, javaType));
+						message.setObj(mapper.readValue(arg1.body().string(), javaType));
 					}
 					else if(serviceEnum.getIndex() == 2){
 						if(serviceEnum.getObjectclass().equals(String.class))
-							message.setObj(jsonString);
+							message.setObj(arg1.body().string());
 						else{
-							message.setObj(mapper.readValue(jsonString, serviceEnum.getObjectclass()));
+							message.setObj(mapper.readValue(arg1.body().string(), serviceEnum.getObjectclass()));
 						}
+					}
+					else if(serviceEnum.getIndex() == 4)
+					{
+						String name = arg1.header("Content-disposition");
+						name = (name.split("="))[1];
+						
+						message.setObj(new DeviceIcoInfo(name, new Image(arg1.body().byteStream())));
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				arg1.body().close();
 				
 				httpTemplet.PostMessageToThisActivity(message);
 			}
@@ -190,17 +205,17 @@ public class HttpClientTool {
 		call.enqueue(new Callback() {
 			
 			@Override
-			public void onResponse(Call arg0, Response arg1) throws IOException {
+			public void onResponse(Call arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				try {
-					jsonString = arg1.body().string();
-
-					message.setObj(jsonString);
-				
+					message.setObj(arg1.body().string());
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				arg1.body().close();
 				
 				httpTemplet.PostMessageToThisActivity(message);
 			}

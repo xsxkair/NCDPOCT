@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -19,8 +20,10 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXRadioButton;
+import com.xsx.ncd.define.DeviceIcoInfo;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.define.UserFilePath;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.entity.DeviceType;
@@ -35,6 +38,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -51,6 +56,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import net.coobird.thumbnailator.Thumbnails;
 
 @Component
 public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
@@ -109,9 +115,15 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	private Device device = null;
 	private Set<Operator> deviceOperators = null;
 	
+	private ObservableSet<String> deviceIcoPathSet = null;
+	private SetChangeListener<String> deviceIcoPathChangeListener = null;
+	private ObservableList<DeviceIcoInfo> deviceIcoList = null;
+	private ListChangeListener<DeviceIcoInfo> deviceIcoInfoListChangeListener = null;
+	
 	@Autowired UserSession userSession;
 	@Autowired ActivitySession activitySession;
 	@Autowired HttpClientTool httpClientTool;
+	@Autowired UserFilePath userFilePath;
 	
 	@PostConstruct
 	@Override
@@ -123,6 +135,7 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
         loader.setController(this);
         try {
         	rootPane = loader.load(in);
+        	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,6 +193,7 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
    		 	File selectedFile = fileChooser.showOpenDialog(null);
    		 
    		 	if(selectedFile != null){ 
+  		 		
    		 		try {
    		 			DeviceIcoImageView.setImage(new Image(new FileInputStream(selectedFile)));
    		 			DeviceIcoImageView.setUserData(selectedFile);
@@ -252,6 +266,18 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
         	LogDialog.close();
         });
         
+        deviceIcoPathChangeListener = (javafx.collections.SetChangeListener.Change<? extends String> change)->{
+        	startHttpWork(ServiceEnum.DownloadDeviceIco, change.getElementAdded());
+        };
+        
+        deviceIcoInfoListChangeListener = (javafx.collections.ListChangeListener.Change<? extends DeviceIcoInfo> c)->{
+        	while(c.next()){
+        		if(c.wasAdded()){
+        			
+        		}
+        	}
+        };
+        
         myMessagesList = FXCollections.observableArrayList();
         myMessagesList.addListener(new ListChangeListener<Message>(){
 
@@ -286,7 +312,18 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 								case ReadAllDepartment:
 									showAllDepartment(message.getObj(List.class));
 									break;
+								
+									//读取所有图标路径
+								case QueryAllDeviceIcoPath:
+									deviceIcoPathSet.addAll(message.getObj(List.class));
+									break;
 									
+								case DownloadDeviceIco:
+									DeviceIcoInfo map = message.getObj(DeviceIcoInfo.class);
+									if(map != null){
+										deviceIcoList.add(map);
+									}
+									break;
 								default:
 									break;
 							}
@@ -304,14 +341,29 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
             	device = new Device();
             	deviceOperators = new HashSet<>();
             	
+            	//deviceIcoPathSet = FXCollections.observableSet();
+            	//deviceIcoPathSet.addListener(deviceIcoPathChangeListener);
+            	
+            	//deviceIcoList = FXCollections.observableArrayList();
+            	//deviceIcoList.addListener(deviceIcoInfoListChangeListener);
+            	
         		startHttpWork(ServiceEnum.ReadAllDepartment, null);
+        		//startHttpWork(ServiceEnum.QueryAllDeviceIcoPath, null);
         	}
-        	else{
+        	else if(this.equals(oldValue)){
         		deviceItemSet = null;
             	deviceType = null;
             	
+            	//deviceIcoPathSet.removeListener(deviceIcoPathChangeListener);
+            	//deviceIcoPathSet = null;
+            	
+            	//deviceIcoList.removeListener(deviceIcoInfoListChangeListener);
+            	//deviceIcoList = null;
+            	
             	device = null;
             	deviceOperators = null;
+            	
+            	this.distroyActivity();
         	}
         });
         AnchorPane.setTopAnchor(rootPane, 0.0);
@@ -347,7 +399,11 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	@Override
 	public void distroyActivity() {
 		// TODO Auto-generated method stub
-		
+		for (Node node : DepartmentFlowPane.getChildren()) {
+			DepartmentDeviceListHandler departmentDeviceListHandler = (DepartmentDeviceListHandler) node;
+			departmentDeviceListHandler.distroyActivity();
+		}
+		DepartmentFlowPane.getChildren().clear();
 	}
 
 	@Override

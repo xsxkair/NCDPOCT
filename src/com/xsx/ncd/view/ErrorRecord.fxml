@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #dfdbd4;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="异常日期：" textFill="#1b3f82" />
+                  <JFXDatePicker fx:id="ErrorDateChoose" prefWidth="130.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="操作人：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="ErrorOperatorTextfield" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="异常设备：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="ErrorDeviceTextField" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="异常代码：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="ErrorCodeTextField" prefWidth="100.0" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+         </padding>
+      </HBox>
+      <TableView fx:id="ErrorTableView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
+        <columns>
+            <TableColumn fx:id="ErrorTimeTableColumn" editable="false" prefWidth="100.0" sortable="false" text="异常时间" />
+          <TableColumn fx:id="ErrorCodeTableColumn" editable="false" prefWidth="50.0" sortable="false" text="异常代码" />
+            <TableColumn fx:id="ErrorDeviceTableColumn" editable="false" prefWidth="158.0" sortable="false" text="异常设备" />
+            <TableColumn fx:id="ErrorOperatorTableColumn" editable="false" prefWidth="100.0" sortable="false" text="操作人" />
+            <TableColumn fx:id="ErrorDescTableColumn" editable="false" prefWidth="75.0" sortable="false" text="异常说明" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <Pagination fx:id="GB_Pagination" maxPageIndicatorCount="20" styleClass="bullet" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <VBox fx:id="GB_FreshPane" alignment="CENTER" layoutX="20.0" layoutY="20.0" spacing="10.0" style="-fx-background-color: rgba(0, 0, 0, 0.2);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXSpinner startingAngle="0.0" style="-fx-radius: 50;" />
+            <Label text="正在加载数据，请稍后" />
+         </children>
+         <cursor>
+            <Cursor fx:constant="WAIT" />
+         </cursor>
+      </VBox>
+   </children>
+</AnchorPane>

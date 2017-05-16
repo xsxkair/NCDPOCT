@@ -106,6 +106,7 @@ public class UIFrameworkHandler {
         
         try {
         	root = loader.load(in);
+        	in.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

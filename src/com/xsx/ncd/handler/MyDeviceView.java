@@ -1,13 +1,9 @@
 package com.xsx.ncd.handler;
 
-import java.io.IOException;
-
 import com.jfoenix.controls.JFXSpinner;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Device;
-import com.xsx.ncd.spring.SpringFacktory;
-import com.xsx.ncd.tool.HttpClientTool;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -16,21 +12,23 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class MyDeviceView extends VBox implements HttpTemplet{
+	
+	private JFXSpinner jfxSpinner = null;
+	private Label deviceName = null;
+	private Label deviceAddr = null;
+	private VBox vbBox = null;
+	private StackPane stackPane = null;
 	
 	private Device device = null;
 	private ImageView imageView = null;
 	
 	private ObservableList<Message> myMessagesList = null;
+	private ListChangeListener<Message> myMessageListeren = null;
 
 	public MyDeviceView(Device device) {
 		super();
@@ -39,15 +37,20 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 	}
 	
 	private void Init() {
-		imageView = new ImageView();
-		imageView.setFitWidth(100);
-		imageView.setFitHeight(100);
-		JFXSpinner jfxSpinner = new JFXSpinner();
-		StackPane stackPane = new StackPane(imageView, jfxSpinner);
+		StringBuffer url = new StringBuffer("http://116.62.108.201:8080/ico/");
 		
-		Label deviceName = new Label(device.getDeviceType().getName()+"("+device.getDeviceType().getModel()+")");
-		Label deviceAddr = new Label(device.getAddr());
-		VBox vbBox = new VBox(deviceName, deviceAddr);
+		int lastchart = device.getDeviceType().getIcon().lastIndexOf('/');
+		int endIndex = device.getDeviceType().getIcon().length();
+		url.append(device.getDeviceType().getIcon().substring(lastchart+1, endIndex));
+
+		imageView = new ImageView(url.toString());
+		imageView.setFitWidth(100);
+		jfxSpinner = new JFXSpinner();
+		stackPane = new StackPane(imageView, jfxSpinner);
+		
+		deviceName = new Label(device.getDeviceType().getName()+"("+device.getDeviceType().getModel()+")");
+		deviceAddr = new Label(device.getAddr());
+		vbBox = new VBox(deviceName, deviceAddr);
 		
 		this.getChildren().addAll(stackPane, vbBox);
 		
@@ -59,54 +62,27 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 			}
 		});
 		
-		new Runnable() {	
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), 
-						device.getDeviceType().getIcon());
-				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/DownloadDeviceIco")
-				      .post(body)
-				      .build();
+		myMessageListeren = (javafx.collections.ListChangeListener.Change<? extends Message> c)->{
+			while(c.next()){
+				if(c.wasAdded()){
 
-				try {
-					Response response = SpringFacktory.GetBean(HttpClientTool.class).getClient().newCall(request).execute();
-					
-					if(response.isSuccessful()) {
-						imageView.setImage(new Image(response.body().byteStream()));
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					imageView.setImage(null);
-				}
-			}
-		}.run();
-		
-		myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-								case QueryThisDepartmentAllDeviceList:
-									
-									break;
-									
-								default:
-									break;
-							}
+					for (Message message : c.getAddedSubList()) {
+						switch (message.getWhat()) {
+							case QueryThisDepartmentAllDeviceList:
+								
+								break;
+								
+							default:
+								break;
 						}
 					}
 				}
 			}
-        });
+		};
+		myMessagesList = FXCollections.observableArrayList();
+        myMessagesList.addListener(myMessageListeren);
+        
+        url = null;
 	}
 	
 	class QueryDeviceStatusService extends ScheduledService<Void>{
@@ -127,7 +103,7 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 			}	
 		}
 	}
-
+	
 	@Override
 	public void PostMessageToThisActivity(Message message) {
 		// TODO Auto-generated method stub
@@ -139,8 +115,22 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 	@Override
 	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
 		// TODO Auto-generated method stub
-		if(!SpringFacktory.GetBean(HttpClientTool.class).myHttpAsynchronousPostJson(this, serviceEnum, parm)){
+		//if(!SpringFacktory.GetBean(HttpClientTool.class).myHttpAsynchronousPostJson(this, serviceEnum, parm)){
 			//GB_FreshPane.setVisible(false);
-		}
+		//}
+	}
+	
+	public void distroyDevice(){
+		jfxSpinner = null;
+		deviceName = null;
+		deviceAddr = null;
+		vbBox = null;
+		stackPane = null;
+		
+		myMessagesList.removeListener(myMessageListeren);
+		myMessageListeren = null;
+		myMessagesList = null;
+		
+		device = null;
 	}
 }

@@ -1,21 +1,11 @@
 package com.xsx.ncd.handler;
 
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.imageio.stream.FileImageInputStream;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.jfoenix.controls.JFXSpinner;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.define.UserFilePath;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.spring.SpringFacktory;
@@ -29,18 +19,15 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class DepartmentDeviceListHandler extends AnchorPane implements HttpTemplet{
+public class DepartmentDeviceListHandler extends AnchorPane implements HttpTemplet, ActivityTemplet{
 	
 	private AnchorPane rootPane = null;
 	
@@ -53,6 +40,7 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 	private QueryThisDepartmentAllDeviceService queryThisDepartmentAllDeviceService = null;
 	
 	private ObservableList<Message> myMessagesList = null;
+	private ListChangeListener<Message> myMessageListeren = null;
 	
 	public DepartmentDeviceListHandler(Department department, DeviceManageHandler fatherActivity){
 		departmentData = department;
@@ -60,7 +48,8 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 		this.UI_Init();
 	}
 	
-	private void UI_Init() {
+	@Override
+	public void UI_Init() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/DepartmentDeviceList.fxml"));
@@ -68,6 +57,7 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
         loader.setController(this);
         try {
         	rootPane = loader.load(in);
+        	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,29 +70,26 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
         	fatherActivity.showAddDeviceDialog(departmentData);
         });
         
-        myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
+        myMessageListeren = (javafx.collections.ListChangeListener.Change<? extends Message> c)->{
+        	while(c.next()){
+				if(c.wasAdded()){
 
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-								case QueryThisDepartmentAllDeviceList:
-									showAllDevice(message.getObj(List.class));
-									break;
-									
-								default:
-									break;
-							}
+					for (Message message : c.getAddedSubList()) {
+						switch (message.getWhat()) {
+							case QueryThisDepartmentAllDeviceList:
+								showAllDevice(message.getObj(List.class));
+								break;
+								
+							default:
+								break;
 						}
 					}
 				}
 			}
-        });
+        };
+
+        myMessagesList = FXCollections.observableArrayList();
+        myMessagesList.addListener(myMessageListeren);
         
         queryThisDepartmentAllDeviceService = new QueryThisDepartmentAllDeviceService();
         queryThisDepartmentAllDeviceService.setPeriod(Duration.minutes(5));
@@ -115,6 +102,7 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
         
         loader = null;
         in = null;
+        
 	}
 
 	public Pane getActivityRootPane() {
@@ -163,5 +151,43 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 				return null;
 			}	
 		}
+	}
+
+	@Override
+	public void startActivity(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resumeActivity() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void distroyActivity() {
+		// TODO Auto-generated method stub
+		for (Node node : DeviceListFlowPane.getChildren()) {
+			MyDeviceView deviceView = (MyDeviceView) node;
+			deviceView.distroyDevice();
+		}
+		DeviceListFlowPane.getChildren().clear();
+		
+		myMessagesList.removeListener(myMessageListeren);
+		myMessageListeren = null;
+		myMessagesList = null;
+		
+		queryThisDepartmentAllDeviceService.cancel();
+		queryThisDepartmentAllDeviceService = null;
+		
+		departmentData = null;
+		fatherActivity = null;
+	}
+
+	@Override
+	public String getActivityName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
