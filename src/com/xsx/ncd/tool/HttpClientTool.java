@@ -92,8 +92,9 @@ public class HttpClientTool {
 			
 			if(response.isSuccessful()) {
 				value = response.body().string();
-				response.body().close();;
 			}
+			
+			response.body().close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -228,73 +229,58 @@ public class HttpClientTool {
 		});
 	}
 	
-/*	public void myHttpPostDeviceType(ServiceEnum serviceEnum, DeviceType deviceType, File onFile,
-			File offFile, File errorFile){
+/*	public <T> T myHttpSynchronousPostForm(ServiceEnum serviceEnum, Map<String, String> values, Class<T> classV){
 		
-		Message message = new Message(serviceEnum, null);
+		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
+		urlBuffer.append(serviceEnum.getName());
 		
-		urlStringBuffer.setLength(0);
-		urlStringBuffer.append(ServerUrlHead);
-		urlStringBuffer.append(serviceEnum.getName());
-		
-		try {
-			jsonString = mapper.writeValueAsString(deviceType);
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+		Set<String> paramKeySet = values.keySet();
 
-			activitySession.getActivityPane().get().PostMessageToThisActivity(message);
-			return;
+		FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
+
+		for (String string : paramKeySet) {
+			requestFormBodyBuilder.add(string, values.get(string));
 		}
 		
-		RequestBody onFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), onFile);
-		RequestBody offFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), offFile);
-		RequestBody errorFileBody = RequestBody.create(MediaType.parse("application/octet-stream"), errorFile);
-
-		RequestBody requestBody = new MultipartBody.Builder()
-				.setType(MultipartBody.FORM)
-				.addFormDataPart("deviceType", jsonString)
-				.addFormDataPart("onico", onFile.getName(), onFileBody)
-				.addFormDataPart("offico", offFile.getName(), offFileBody)
-				.addFormDataPart("errorico", errorFile.getName(), errorFileBody)
-				.build();
+		RequestBody requestBody = requestFormBodyBuilder.build();
 		
 		Request request = new Request.Builder()
-		      .url(urlStringBuffer.toString())
+		      .url(urlBuffer.toString())
 		      .post(requestBody)
 		      .build();
+		
+		Response response = client.newCall(request).execute();
+		
+		if(response.isSuccessful()) {
+			Map<String,Object> userData = mapper.readValue(response.body().string(), Map.class);
+			return ;
+		}
 		
 		Call call = client.newCall(request);
 		call.enqueue(new Callback() {
 			
 			@Override
-			public void onResponse(Call arg0, Response arg1) throws IOException {
+			public void onResponse(Call arg0, Response arg1) {
 				// TODO Auto-generated method stub
 				try {
-					jsonString = arg1.body().string();
-
-					if(jsonString != null){
-						if(jsonString != null){
-							if(jsonString.indexOf("true") >= 0)
-								message.setObj(true);
-							else 
-								message.setObj(false);
-						}
-					}
-				
+					message.setObj(arg1.body().string());
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+				arg1.body().close();
+				
+				httpTemplet.PostMessageToThisActivity(message);
 			}
 			
 			@Override
 			public void onFailure(Call arg0, IOException arg1) {
 				// TODO Auto-generated method stub
-				activitySession.getActivityPane().get().PostMessageToThisActivity(message);
+				httpTemplet.PostMessageToThisActivity(message);
 			}
 		});
 	}*/
+
 }

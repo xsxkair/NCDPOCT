@@ -1,5 +1,7 @@
 package com.xsx.ncd.define;
 
+import java.util.Map;
+
 import com.xsx.ncd.entity.Card;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.Device;
@@ -51,7 +53,9 @@ public enum ServiceEnum {
 	DownloadDeviceIco("/DownloadDeviceIco", 4, DeviceIcoInfo.class),
 	
 	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", 1, Device.class),
-	AddNewDevice("/AddNewDevice", 2, String.class);
+	AddNewDevice("/AddNewDevice", 2, String.class),
+	
+	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", 2, Map.class);
 	
 	private final String name;
 	private final Integer index;

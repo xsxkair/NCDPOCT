@@ -42,7 +42,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
+public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
 
 	private AnchorPane rootPane = null;
 	

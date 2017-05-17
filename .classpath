@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/jackson-databind-2.8.5.jar"/>
 	<classpathentry kind="lib" path="lib/controlsfx-8.40.12.jar"/>
 	<classpathentry kind="lib" path="lib/thumbnailator-0.4.8.jar"/>
+	<classpathentry kind="lib" path="lib/spring-data-commons-1.6.2.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

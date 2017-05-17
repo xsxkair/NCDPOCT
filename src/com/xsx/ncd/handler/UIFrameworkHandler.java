@@ -95,6 +95,8 @@ public class UIFrameworkHandler {
 	@Autowired RepertoryPage repertoryPage;
 	//@Autowired AddDeviceTypeHandler addDeviceTypeHandler;
 	@Autowired DeviceManageHandler deviceManageHandler;
+	@Autowired ErrorRecordHandler errorRecordHandler;
+	@Autowired AdjustRecordHandler adjustRecordHandler;
 
 	@PostConstruct
 	public void UI_Init() {
@@ -222,6 +224,10 @@ public class UIFrameworkHandler {
         		repertoryPage.startActivity(null);
         	else if(newValue.equals(1))
         		deviceManageHandler.startActivity(null);
+        	else if(newValue.equals(7))
+        		errorRecordHandler.startActivity(null);
+        	else if(newValue.equals(6))
+        		adjustRecordHandler.startActivity(null);
         });
 
         loader = null;

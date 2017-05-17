@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import com.xsx.ncd.define.AdjustRecordItem;
 import com.xsx.ncd.define.ErrorRecordItem;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.RecordJson;
@@ -42,21 +43,23 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
+public class AdjustRecordHandler implements ActivityTemplet, HttpTemplet {
 
 	private AnchorPane rootPane = null;
 	
-	@FXML JFXDatePicker ErrorDateChoose;
-	@FXML JFXTextField ErrorOperatorTextfield;
-	@FXML JFXTextField ErrorDeviceTextField;
-	@FXML JFXTextField ErrorCodeTextField;
+	@FXML JFXDatePicker AdjustDateChoose;
+	@FXML JFXTextField AdjustOperatorTextfield;
+	@FXML JFXTextField AdjustDeviceTextField;
+	@FXML JFXTextField AdjustResultTextField;
 	
-	@FXML TableView<ErrorRecordItem> ErrorTableView;
-	@FXML TableColumn<ErrorRecordItem, Timestamp> ErrorTimeTableColumn;
-	@FXML TableColumn<ErrorRecordItem, Integer> ErrorCodeTableColumn;
-	@FXML TableColumn<ErrorRecordItem, String> ErrorDeviceTableColumn;
-	@FXML TableColumn<ErrorRecordItem, String> ErrorOperatorTableColumn;
-	@FXML TableColumn<ErrorRecordItem, String> ErrorDescTableColumn;
+	@FXML TableView<AdjustRecordItem> AdjustTableView;
+	@FXML TableColumn<AdjustRecordItem, Timestamp> AdjustTimeTableColumn;
+	@FXML TableColumn<AdjustRecordItem, Float> AdjustNormalValueTableColumn;
+	@FXML TableColumn<AdjustRecordItem, Float> AdjustMeasureValueTableColumn;
+	@FXML TableColumn<AdjustRecordItem, String> AdjustResultTableColumn;
+	@FXML TableColumn<AdjustRecordItem, String> AdjustDeviceTableColumn;
+	@FXML TableColumn<AdjustRecordItem, String> AdjustOperatorTableColumn;
+	@FXML TableColumn<AdjustRecordItem, String> AdjustDescTableColumn;
 	
 	@FXML Pagination GB_Pagination;
 	@FXML VBox GB_FreshPane;
@@ -65,7 +68,7 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 	private ObjectMapper mapper = null;
 	private QueryErrorRecordService queryErrorRecordService = null;
-	private ChangeListener<RecordJson<ErrorRecordItem>> queryErrorRecordServiceListener = null;
+	private ChangeListener<RecordJson<AdjustRecordItem>> queryErrorRecordServiceListener = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired HttpClientTool httpClientTool;
@@ -75,8 +78,8 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
 	public void UI_Init() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/ErrorRecord.fxml"));
-        InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/ErrorRecord.fxml");
+		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/AdjustRecord.fxml"));
+        InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/AdjustRecord.fxml");
         loader.setController(this);
         try {
         	rootPane = loader.load(in);
@@ -86,25 +89,27 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
 			e.printStackTrace();
 		}
         
-        ErrorTimeTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, Timestamp>("testTime"));
-        ErrorCodeTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, Integer>("errorCode"));
-        ErrorDeviceTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, String>("deviceId"));
-        ErrorOperatorTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, String>("userName"));
-        ErrorDescTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, String>("desc"));
+        AdjustTimeTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, Timestamp>("testTime"));;
+    	AdjustNormalValueTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, Float>("theoreticalValue"));;
+    	AdjustMeasureValueTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, Float>("measuredValue"));;
+    	AdjustResultTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, String>("result"));;
+    	AdjustDeviceTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, String>("deviceId"));;
+    	AdjustOperatorTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, String>("userName"));;
+    	AdjustDescTableColumn.setCellValueFactory(new PropertyValueFactory<AdjustRecordItem, String>("desc"));;
         
-        ErrorDateChoose.valueProperty().addListener((o, oldValue, newValue)->{
+    	AdjustDateChoose.valueProperty().addListener((o, oldValue, newValue)->{
         	startQueryDeviceErrorRecord();
         });
         
-        ErrorOperatorTextfield.lengthProperty().addListener((o, oldValue, newValue)->{
+    	AdjustOperatorTextfield.lengthProperty().addListener((o, oldValue, newValue)->{
         	startQueryDeviceErrorRecord();
         });
         
-        ErrorDeviceTextField.lengthProperty().addListener((o, oldValue, newValue)->{
+    	AdjustDeviceTextField.lengthProperty().addListener((o, oldValue, newValue)->{
         	startQueryDeviceErrorRecord();
         });
         
-        ErrorCodeTextField.lengthProperty().addListener((o, oldValue, newValue)->{
+    	AdjustResultTextField.lengthProperty().addListener((o, oldValue, newValue)->{
         	startQueryDeviceErrorRecord();
         });
         
@@ -116,12 +121,12 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
         	if(newValue != null){
         		GB_Pagination.setPageCount(newValue.getTotalPageNum());
             	
-            	ErrorTableView.getItems().setAll(newValue.getRecords());
+        		AdjustTableView.getItems().setAll(newValue.getRecords());
         	}
         	else{
         		GB_Pagination.setPageCount(-1);
             	
-            	ErrorTableView.getItems().clear();
+        		AdjustTableView.getItems().clear();
         	}
         		
         };
@@ -221,32 +226,32 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
 		queryErrorRecordService.restart();
 	}
 	
-	class QueryErrorRecordService extends Service<RecordJson<ErrorRecordItem>>{
+	class QueryErrorRecordService extends Service<RecordJson<AdjustRecordItem>>{
 
 		@Override
-		protected Task<RecordJson<ErrorRecordItem>> createTask() {
+		protected Task<RecordJson<AdjustRecordItem>> createTask() {
 			// TODO Auto-generated method stub
 			return new MyTask();
 		}
 		
-		class MyTask extends Task<RecordJson<ErrorRecordItem>>{
+		class MyTask extends Task<RecordJson<AdjustRecordItem>>{
 
 			@Override
-			protected RecordJson<ErrorRecordItem> call() {
+			protected RecordJson<AdjustRecordItem> call() {
 				// TODO Auto-generated method stub				
 				FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
 
-				if(ErrorDateChoose.getValue() != null)
-					requestFormBodyBuilder.add("date", ErrorDateChoose.getValue().toString());
+				if(AdjustDateChoose.getValue() != null)
+					requestFormBodyBuilder.add("date", AdjustDateChoose.getValue().toString());
 				
-				if(ErrorDeviceTextField.getLength() > 0)
-					requestFormBodyBuilder.add("deviceId", ErrorDeviceTextField.getText());
+				if(AdjustDeviceTextField.getLength() > 0)
+					requestFormBodyBuilder.add("deviceId", AdjustDeviceTextField.getText());
 				
-				if(ErrorOperatorTextfield.getLength() > 0)
-					requestFormBodyBuilder.add("operatorName", ErrorOperatorTextfield.getText());
+				if(AdjustOperatorTextfield.getLength() > 0)
+					requestFormBodyBuilder.add("operatorName", AdjustOperatorTextfield.getText());
 				
-				if(ErrorCodeTextField.getLength() > 0)
-					requestFormBodyBuilder.add("errorCode", ErrorCodeTextField.getText());
+				if(AdjustResultTextField.getLength() > 0)
+					requestFormBodyBuilder.add("result", AdjustResultTextField.getText());
 				
 				requestFormBodyBuilder.add("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
 				requestFormBodyBuilder.add("size", String.valueOf(50));
@@ -254,7 +259,7 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
 				RequestBody requestBody = requestFormBodyBuilder.build();
 				
 				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryDeviceErrorRecord")
+				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryDeviceAdjustRecord")
 				      .post(requestBody)
 				      .build();
 				
@@ -263,8 +268,8 @@ public class ErrorRecordHandler implements ActivityTemplet, HttpTemplet {
 					response = httpClientTool.getClient().newCall(request).execute();
 					
 					if(response.isSuccessful()) {
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(RecordJson.class, ErrorRecordItem.class); 
-						RecordJson<ErrorRecordItem> errorRecordJson = mapper.readValue(response.body().string(), javaType);
+						JavaType javaType = mapper.getTypeFactory().constructParametricType(RecordJson.class, AdjustRecordItem.class); 
+						RecordJson<AdjustRecordItem> errorRecordJson = mapper.readValue(response.body().string(), javaType);
 
 						response.body().close();
 						
