@@ -333,6 +333,30 @@
                         </HBox>
                         <HBox alignment="BOTTOM_CENTER" spacing="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="20.0">
                            <children>
+                              <StackPane fx:id="NotHandledReportStackPane">
+                                 <children>
+                                    <ImageView fitHeight="37.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/warn.png" />
+                                       </image>
+                                    </ImageView>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="NotHandledReportNumLabel" style="-fx-background-color: red; -fx-background-radius: 15;" textFill="WHITE" AnchorPane.rightAnchor="-10.0" AnchorPane.topAnchor="0.0">
+                                             <padding>
+                                                <Insets bottom="2.0" left="3.0" right="3.0" top="2.0" />
+                                             </padding>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets right="20.0" />
+                                 </HBox.margin>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </StackPane>
                               <HBox fx:id="GB_MyInfoHBox" alignment="BOTTOM_CENTER" spacing="5.0">
                                  <children>
                                     <ImageView fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">

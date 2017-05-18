@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" style="-fx-background-color: white;" stylesheets="@MainUI.css" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane fx:id="ListViewHeadGridPane" hgap="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="50.0" valignment="CENTER" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #EDECEC;">
+               <children>
+                  <Label text="科室" />
+                  <JFXTextField fx:id="DeviceDepartmentTextField" />
+               </children>
+            </HBox>
+            <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #EDECEC;" GridPane.columnIndex="1">
+               <children>
+                  <Label text="设备名称" />
+               </children>
+            </StackPane>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #EDECEC;" GridPane.columnIndex="2">
+               <children>
+                  <Label text="设备编号" />
+                  <JFXTextField fx:id="DeviceIdTextField" />
+               </children>
+            </HBox>
+            <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #EDECEC;" GridPane.columnIndex="3">
+               <children>
+                  <Label text="设备状态" />
+               </children>
+            </StackPane>
+         </children>
+      </GridPane>
+      <JFXListView fx:id="DeviceListView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
+      <VBox fx:id="GB_FreshPane" alignment="CENTER" layoutX="30.0" layoutY="30.0" spacing="10.0" style="-fx-background-color: rgba(0, 0, 0, 0.2);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXSpinner radius="30.0" startingAngle="0.0" style="-fx-radius: 80;" />
+            <Label text="正在加载数据，请稍后" />
+         </children>
+         <cursor>
+            <Cursor fx:constant="WAIT" />
+         </cursor>
+      </VBox>
+   </children>
+</AnchorPane>

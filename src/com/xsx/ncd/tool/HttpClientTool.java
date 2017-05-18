@@ -49,6 +49,8 @@ public class HttpClientTool {
 	private final MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
 	private final OkHttpClient client = new OkHttpClient();
 	
+	public static final String ServiceDeviceIcoUrl = "http://116.62.108.201:8080/ico/";
+	
 	@Autowired ActivitySession activitySession;
 	
 	@PostConstruct

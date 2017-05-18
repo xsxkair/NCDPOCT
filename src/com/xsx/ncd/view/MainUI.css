@@ -107,3 +107,12 @@
   	-fx-pref-width: 150px;
   	-fx-background-color: transparent ;
 	}
+
+/*¹¤×÷Ì¨*/
+#ListViewHeadGridPane{
+	-fx-background-color: transparent ;
+}
+
+#DeviceListView{
+	-fx-background-color: transparent ;
+}

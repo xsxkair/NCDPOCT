@@ -54,8 +54,11 @@ public enum ServiceEnum {
 	
 	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", 1, Device.class),
 	AddNewDevice("/AddNewDevice", 2, String.class),
+	QueryAllDeviceInRecordJson("/QueryAllDeviceInRecordJson", 1, DeviceItem.class),
 	
-	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", 2, Map.class);
+	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", 2, Map.class),
+	
+	QueryAllNotHandledReportNum("/QueryAllNotHandledReportNum", 2, Long.class);
 	
 	private final String name;
 	private final Integer index;

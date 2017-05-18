@@ -11,10 +11,15 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
+import com.xsx.ncd.define.DeviceItem;
+import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.handler.WorkSpaceHandler.QueryDeviceService.MyTask;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
+import com.xsx.ncd.tool.HttpClientTool;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -28,6 +33,9 @@ import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -37,9 +45,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 @Component
 public class UIFrameworkHandler {
@@ -81,22 +94,27 @@ public class UIFrameworkHandler {
 	@FXML ImageView topMenuSeparatorImageView2;
 	@FXML JFXButton childActivityButton;
 	
+	@FXML StackPane NotHandledReportStackPane;
+	@FXML Label NotHandledReportNumLabel;
 	@FXML HBox GB_MyInfoHBox;
 	@FXML Text GB_UserNameText;
 	@FXML HBox GB_UserOutHBox;
 	
 	@FXML AnchorPane GB_RootPane;
 
+	private QueryNotHandledReportNumService queryNotHandledReportNumService = null;
+	private ChangeListener<Long> queryNotHandledReportNumServiceListener = null;
 	
 	@Autowired UserSession userSession;
 	@Autowired LoginHandler loginHandler;
 	@Autowired ActivitySession activitySession;
 	@Autowired MyInfoHandler myInfoHandler;
 	@Autowired RepertoryPage repertoryPage;
-	//@Autowired AddDeviceTypeHandler addDeviceTypeHandler;
 	@Autowired DeviceManageHandler deviceManageHandler;
 	@Autowired ErrorRecordHandler errorRecordHandler;
 	@Autowired AdjustRecordHandler adjustRecordHandler;
+	@Autowired WorkSpaceHandler workSpaceHandler;
+	@Autowired HttpClientTool httpClientTool;
 
 	@PostConstruct
 	public void UI_Init() {
@@ -167,6 +185,21 @@ public class UIFrameworkHandler {
         	leftMenuExpande(false);
         });
         
+        NotHandledReportStackPane.setOnMouseClicked((e)->{
+        	leftMenuListView.getSelectionModel().select(0);
+        });
+        NotHandledReportNumLabel.visibleProperty().bind(NotHandledReportNumLabel.textProperty().length().greaterThan(0));
+        queryNotHandledReportNumServiceListener = (o, oldValue, newValue) -> {
+        	System.out.println(newValue);
+        	if(newValue != null)
+        		NotHandledReportNumLabel.setText(String.valueOf(newValue));
+        	else
+        		NotHandledReportNumLabel.setText("");
+        };
+        
+        GB_MyInfoHBox.setOnMouseClicked((e)->{
+        	leftMenuListView.getSelectionModel().select(5);
+        });
         //更新用户名
         userSession.getUserProperty().addListener((o, oldValue, newValue)->{
         	if(newValue != null)
@@ -177,10 +210,7 @@ public class UIFrameworkHandler {
         
         //注销
         GB_UserOutHBox.setOnMouseClicked((e)->{
-        	userSession.setUser(null);
-        	activitySession.setActivityPane(null);
-    		s_Stage.close();
-    		loginHandler.startLoginActivity();
+        	stopActivity();
         });
         
         rootActivityButton.visibleProperty().bind(activitySession.getRootActivity().isNotNull());
@@ -228,6 +258,8 @@ public class UIFrameworkHandler {
         		errorRecordHandler.startActivity(null);
         	else if(newValue.equals(6))
         		adjustRecordHandler.startActivity(null);
+        	else if(newValue.equals(0))
+        		workSpaceHandler.startActivity(null);
         });
 
         loader = null;
@@ -247,7 +279,6 @@ public class UIFrameworkHandler {
 		    });
 		}
 		
-
 		/*JFXDecorator decorator = new JFXDecorator(s_Stage, root);
 		decorator.setCustomMaximize(true);
 		decorator.setOnCloseButtonAction(new Runnable() {
@@ -259,8 +290,25 @@ public class UIFrameworkHandler {
 			}
 		});*/
 
+		queryNotHandledReportNumService = new QueryNotHandledReportNumService();
+		queryNotHandledReportNumService.lastValueProperty().addListener(queryNotHandledReportNumServiceListener);
+		queryNotHandledReportNumService.setPeriod(Duration.minutes(1));
+		queryNotHandledReportNumService.start();
+		
+		leftMenuListView.getSelectionModel().select(0);
 		
 		s_Stage.show();
+	}
+	
+	private void stopActivity(){
+		queryNotHandledReportNumService.cancel();
+		queryNotHandledReportNumService.lastValueProperty().removeListener(queryNotHandledReportNumServiceListener);
+		queryNotHandledReportNumService = null;
+		
+		userSession.setUser(null);
+    	activitySession.setActivityPane(null);
+		s_Stage.close();
+		loginHandler.startLoginActivity();
 	}
 	
 	private void leftMenuExpande(Boolean status){
@@ -273,4 +321,27 @@ public class UIFrameworkHandler {
 		}
 	}
 
+	class QueryNotHandledReportNumService extends ScheduledService<Long>{
+
+		@Override
+		protected Task<Long> createTask() {
+			// TODO Auto-generated method stub
+			return new MyTask();
+		}
+		
+		class MyTask extends Task<Long>{
+
+			@Override
+			protected Long call() {
+				// TODO Auto-generated method stub				
+				String value = httpClientTool.myHttpSynchronousPostJson(ServiceEnum.QueryAllNotHandledReportNum.getName(), null);
+				
+				if(value == null)
+					return null;
+				else{
+					return Long.valueOf(value);
+				}
+			}
+		}
+	}
 }

@@ -12,7 +12,7 @@ public class UserFilePath {
 	private String rootDirPath = null;
 	
 	private String deviceIcoDirPath = null;
-	
+
 	@PostConstruct
 	public void Init(){
 		makeUserDir();
