@@ -15,6 +15,7 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.DeviceItem;
 import com.xsx.ncd.spring.ActivitySession;
+import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
 
 import javafx.beans.value.ChangeListener;
@@ -46,10 +47,11 @@ public class WorkSpaceHandler implements ActivityTemplet{
 	
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired ActivitySession activitySession;
+	@Autowired DeviceReportListHandler deviceReportListHandler;
 	
 	@PostConstruct
 	@Override
-	public void UI_Init() {
+	public void onCreate() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/WorkSpace.fxml"));
@@ -64,11 +66,13 @@ public class WorkSpaceHandler implements ActivityTemplet{
 		}
 
         DeviceDepartmentTextField.lengthProperty().addListener((o, oldValue, newValue)->{
-        	queryDeviceService.restart();
+        	if(queryDeviceService != null)
+        		queryDeviceService.restart();
         });
         
         DeviceIdTextField.lengthProperty().addListener((o, oldValue, newValue)->{
-        	queryDeviceService.restart();
+        	if(queryDeviceService != null)
+        		queryDeviceService.restart();
         });
         
         queryDeviceServiceListener = (o, oldValue, newValue)->{
@@ -76,30 +80,16 @@ public class WorkSpaceHandler implements ActivityTemplet{
         	
         	if(newValue != null){
         		for (DeviceItem deviceWorkSpaceItem : newValue) {
-        			DeviceListView.getItems().add(new WorkSpaceDeviceListCellItem(deviceWorkSpaceItem));
+        			WorkSpaceDeviceListCellItem item = new WorkSpaceDeviceListCellItem(deviceWorkSpaceItem);
+        			DeviceListView.getItems().add(item);
+        			item.setOnMouseClicked((e)->{
+        	        	if(e.getClickCount() == 2){
+        	        		activitySession.pushActivity(deviceReportListHandler, deviceWorkSpaceItem);
+        	        	}
+        	        });
         		}
-        	}
-        		
+        	}	
         };
-        
-		activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-			if(this.equals(newValue)){
-				mapper = new ObjectMapper();
-				
-				queryDeviceService = new QueryDeviceService();
-				queryDeviceService.valueProperty().addListener(queryDeviceServiceListener);
-				GB_FreshPane.visibleProperty().bind(queryDeviceService.runningProperty());
-				
-				queryDeviceService.restart();
-			}
-			else if(this.equals(oldValue)){
-				mapper = null;
-				
-				queryDeviceService.valueProperty().removeListener(queryDeviceServiceListener);
-				GB_FreshPane.visibleProperty().unbind();
-				queryDeviceService = null;
-			}
-		});
 		
         AnchorPane.setTopAnchor(rootPane, 0.0);
         AnchorPane.setBottomAnchor(rootPane, 0.0);
@@ -117,24 +107,46 @@ public class WorkSpaceHandler implements ActivityTemplet{
 	}
 
 	@Override
-	public void startActivity(Object object) {
+	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setRootActivity(this);
-		activitySession.setFatherActivity(null);
-		activitySession.setChildActivity(null);
-		activitySession.setActivityPane(this);
+		DeviceDepartmentTextField.setText(null);
+		DeviceIdTextField.setText(null);
+		
+		mapper = new ObjectMapper();
+		
+		queryDeviceService = new QueryDeviceService();
+		queryDeviceService.valueProperty().addListener(queryDeviceServiceListener);
+		GB_FreshPane.visibleProperty().bind(queryDeviceService.runningProperty());
+		
+		queryDeviceService.restart();
 	}
 
 	@Override
-	public void resumeActivity() {
+	public void onPause() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("pause");
+	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		queryDeviceService.restart();
 	}
 
 	@Override
-	public void distroyActivity() {
+	public void onDestroy() {
 		// TODO Auto-generated method stub
+		mapper = null;
 		
+		queryDeviceService.valueProperty().removeListener(queryDeviceServiceListener);
+		GB_FreshPane.visibleProperty().unbind();
+		queryDeviceService = null;
+		
+		for (WorkSpaceDeviceListCellItem item : DeviceListView.getItems()) {
+			item.distroyDevice();
+		}
+		
+		DeviceListView.getItems().clear();
 	}
 
 	@Override

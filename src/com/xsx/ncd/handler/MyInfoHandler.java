@@ -98,7 +98,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 	
 	@PostConstruct
 	@Override
-	public void UI_Init(){
+	public void onCreate(){
 
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/MyInfoPagefxml.fxml"));
@@ -196,7 +196,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 		});
         
         GB_UserManageButton.setOnAction((e)->{
-        	userListHandler.startActivity(null);
+        	userListHandler.onStart(null);
         });
         
         myMessageListChangeListener = new ListChangeListener<Message>(){
@@ -226,7 +226,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
         };
         
         GB_OperatorManageButton.setOnAction((e)->{
-        	operatorListHandler.startActivity(null);
+        	operatorListHandler.onStart(null);
         });
         
         myUserListener = (o, oldValue, newValue)->{
@@ -304,22 +304,19 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 	}
 
 	@Override
-	public void startActivity(Object object) {
+	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setRootActivity(this);
-		activitySession.setFatherActivity(null);
-		activitySession.setChildActivity(null);
 		activitySession.setActivityPane(this);
 	}
 
 	@Override
-	public void resumeActivity() {
+	public void onResume() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void distroyActivity() {
+	public void onDestroy() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -353,4 +350,11 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
 		}	
 	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

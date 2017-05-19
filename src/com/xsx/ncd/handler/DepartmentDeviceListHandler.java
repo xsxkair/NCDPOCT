@@ -45,11 +45,11 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 	public DepartmentDeviceListHandler(Department department, DeviceManageHandler fatherActivity){
 		departmentData = department;
 		this.fatherActivity = fatherActivity;
-		this.UI_Init();
+		this.onCreate();
 	}
 	
 	@Override
-	public void UI_Init() {
+	public void onCreate() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/DepartmentDeviceList.fxml"));
@@ -154,19 +154,19 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 	}
 
 	@Override
-	public void startActivity(Object object) {
+	public void onStart(Object object) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void resumeActivity() {
+	public void onResume() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void distroyActivity() {
+	public void onDestroy() {
 		// TODO Auto-generated method stub
 		for (Node node : DeviceListFlowPane.getChildren()) {
 			MyDeviceView deviceView = (MyDeviceView) node;
@@ -190,4 +190,11 @@ public class DepartmentDeviceListHandler extends AnchorPane implements HttpTempl
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

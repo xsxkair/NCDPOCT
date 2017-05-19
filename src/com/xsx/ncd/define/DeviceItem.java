@@ -9,13 +9,14 @@ public class DeviceItem {
 	private String departmentName;
 	private Long lastTime;
 	private String deviceTypeCode;
+	private String deviceAddr;
 	
 	public DeviceItem() {
 
 	}
 	
 	public DeviceItem(Integer id, String name, String deviceId, String ico, String departmentName,
-			Long lastTime, String deviceTypeCode) {
+			Long lastTime, String deviceTypeCode, String deviceAddr) {
 
 		this.id = id;
 		this.name = name;
@@ -24,6 +25,7 @@ public class DeviceItem {
 		this.departmentName = departmentName;
 		this.lastTime = lastTime;
 		this.deviceTypeCode = deviceTypeCode;
+		this.deviceAddr = deviceAddr;
 	}
 	
 	public Integer getId() {
@@ -69,6 +71,14 @@ public class DeviceItem {
 
 	public void setDeviceTypeCode(String deviceTypeCode) {
 		this.deviceTypeCode = deviceTypeCode;
+	}
+
+	public String getDeviceAddr() {
+		return deviceAddr;
+	}
+
+	public void setDeviceAddr(String deviceAddr) {
+		this.deviceAddr = deviceAddr;
 	}
 	
 	

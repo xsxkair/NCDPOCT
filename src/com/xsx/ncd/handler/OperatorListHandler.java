@@ -93,7 +93,7 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 	
 	@PostConstruct
 	@Override
-	public void UI_Init(){
+	public void onCreate(){
 
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/OperatorListPage.fxml"));
@@ -303,9 +303,8 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 	}
 	
 	@Override
-	public void startActivity(Object object) {
+	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setFatherActivity(this);
 		activitySession.setActivityPane(this);
 	}
 	
@@ -405,13 +404,13 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 	}
 
 	@Override
-	public void resumeActivity() {
+	public void onResume() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void distroyActivity() {
+	public void onDestroy() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -445,4 +444,11 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
 		}	
 	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

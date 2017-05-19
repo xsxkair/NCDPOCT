@@ -127,7 +127,7 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	
 	@PostConstruct
 	@Override
-	public void UI_Init() {
+	public void onCreate() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/DeviceManagePage.fxml"));
@@ -363,7 +363,7 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
             	device = null;
             	deviceOperators = null;
             	
-            	this.distroyActivity();
+            	this.onDestroy();
         	}
         });
         AnchorPane.setTopAnchor(rootPane, 0.0);
@@ -382,26 +382,23 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	}
 
 	@Override
-	public void startActivity(Object object) {
+	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setRootActivity(this);
-		activitySession.setFatherActivity(null);
-		activitySession.setChildActivity(null);
 		activitySession.setActivityPane(this);
 	}
 
 	@Override
-	public void resumeActivity() {
+	public void onResume() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void distroyActivity() {
+	public void onDestroy() {
 		// TODO Auto-generated method stub
 		for (Node node : DepartmentFlowPane.getChildren()) {
 			DepartmentDeviceListHandler departmentDeviceListHandler = (DepartmentDeviceListHandler) node;
-			departmentDeviceListHandler.distroyActivity();
+			departmentDeviceListHandler.onDestroy();
 		}
 		DepartmentFlowPane.getChildren().clear();
 	}
@@ -502,4 +499,11 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	enum ActionType{
 		None, AddDevice, DeleteDevice, AddDeviceType;
 	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

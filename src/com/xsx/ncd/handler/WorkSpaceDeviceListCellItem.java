@@ -46,10 +46,10 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
 		super();
 		this.deviceWorkSpaceItem = deviceWorkSpaceItem;
 		
-		UI_Init();
+		onCreate();
 	}
 	
-	private void UI_Init(){
+	private void onCreate(){
 		
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/WorkSpaceDeviceItemCell.fxml"));
@@ -117,7 +117,6 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
         queryDeviceService.lastValueProperty().addListener(queryDeviceServiceListener);
         queryDeviceService.setPeriod(Duration.minutes(1));
         queryDeviceService.start();
-        
 	}
 	
 	public void distroyDevice() {

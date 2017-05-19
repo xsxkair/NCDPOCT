@@ -34,7 +34,7 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 	
 	@Override
 	@PostConstruct
-	public void UI_Init() {
+	public void onCreate() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/RepertoryPage.fxml"));
@@ -49,11 +49,11 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 		}
         
         CardInStorageButton.setOnAction((e)->{
-        	cardInStoragePage.startActivity(null);
+        	cardInStoragePage.onStart(null);
         });
         
         CardOutStorageButton.setOnAction((e)->{
-        	cardOutStoragePage.startActivity(null);
+        	cardOutStoragePage.onStart(null);
         });
         
         AnchorPane.setTopAnchor(rootPane, 0.0);
@@ -66,22 +66,19 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 	}
 
 	@Override
-	public void startActivity(Object object) {
+	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setRootActivity(this);
-		activitySession.setFatherActivity(null);
-		activitySession.setChildActivity(null);
 		activitySession.setActivityPane(this);
 	}
 
 	@Override
-	public void resumeActivity() {
+	public void onResume() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void distroyActivity() {
+	public void onDestroy() {
 		// TODO Auto-generated method stub
 
 	}
@@ -113,4 +110,11 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 //			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
 //		}	
 	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

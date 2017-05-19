@@ -2,8 +2,11 @@ package com.xsx.ncd.handler;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Stack;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +41,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -55,7 +59,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class UIFrameworkHandler {
+public class UIFrameworkHandler implements Observer{
 
 	private Stage s_Stage = null;
 	private AnchorPane root = null;
@@ -88,11 +92,12 @@ public class UIFrameworkHandler {
 	@FXML HBox leftMenuLogoHbox;
 	@FXML ImageView leftMenuLogoImageView;
 	
-	@FXML JFXButton rootActivityButton;
-	@FXML ImageView topMenuSeparatorImageView1;
-	@FXML JFXButton fatherActivityButton;
-	@FXML ImageView topMenuSeparatorImageView2;
-	@FXML JFXButton childActivityButton;
+	@FXML HBox topMenuHBox;
+	@FXML JFXButton activity1Button;
+	@FXML JFXButton activity2Button;
+	@FXML JFXButton activity3Button;
+	@FXML JFXButton activity4Button;
+	@FXML JFXButton activity5Button;
 	
 	@FXML StackPane NotHandledReportStackPane;
 	@FXML Label NotHandledReportNumLabel;
@@ -104,6 +109,7 @@ public class UIFrameworkHandler {
 
 	private QueryNotHandledReportNumService queryNotHandledReportNumService = null;
 	private ChangeListener<Long> queryNotHandledReportNumServiceListener = null;
+	int i=0;
 	
 	@Autowired UserSession userSession;
 	@Autowired LoginHandler loginHandler;
@@ -117,7 +123,7 @@ public class UIFrameworkHandler {
 	@Autowired HttpClientTool httpClientTool;
 
 	@PostConstruct
-	public void UI_Init() {
+	public void onCreate() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/UIFramework.fxml"));
@@ -185,12 +191,16 @@ public class UIFrameworkHandler {
         	leftMenuExpande(false);
         });
         
+        activity2Button.visibleProperty().bind(activity2Button.textProperty().length().greaterThan(0));
+        activity3Button.visibleProperty().bind(activity3Button.textProperty().length().greaterThan(0));
+        activity4Button.visibleProperty().bind(activity4Button.textProperty().length().greaterThan(0));
+        activity5Button.visibleProperty().bind(activity5Button.textProperty().length().greaterThan(0));
+        
         NotHandledReportStackPane.setOnMouseClicked((e)->{
         	leftMenuListView.getSelectionModel().select(0);
         });
         NotHandledReportNumLabel.visibleProperty().bind(NotHandledReportNumLabel.textProperty().length().greaterThan(0));
         queryNotHandledReportNumServiceListener = (o, oldValue, newValue) -> {
-        	System.out.println(newValue);
         	if(newValue != null)
         		NotHandledReportNumLabel.setText(String.valueOf(newValue));
         	else
@@ -213,53 +223,20 @@ public class UIFrameworkHandler {
         	stopActivity();
         });
         
-        rootActivityButton.visibleProperty().bind(activitySession.getRootActivity().isNotNull());
-        rootActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
-        	if(newValue){
-        		rootActivityButton.setText(activitySession.getRootActivity().get().getActivityName());
-        	}
-        });
-        rootActivityButton.setOnAction((e)->{
-        	activitySession.getRootActivity().get().startActivity(null);
-        });
-        
-        topMenuSeparatorImageView1.visibleProperty().bind(fatherActivityButton.visibleProperty());
-        fatherActivityButton.visibleProperty().bind(activitySession.getFatherActivity().isNotNull());
-        fatherActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
-        	if(newValue){
-        		fatherActivityButton.setText(activitySession.getFatherActivity().get().getActivityName());
-        	}
-        });
-        fatherActivityButton.setOnAction((e)->{
-        	activitySession.getFatherActivity().get().startActivity(null);
-        });
-        
-        topMenuSeparatorImageView2.visibleProperty().bind(childActivityButton.visibleProperty());
-        childActivityButton.visibleProperty().bind(activitySession.getChildActivity().isNotNull());
-        childActivityButton.visibleProperty().addListener((o, oldValue, newValue)->{
-        	if(newValue){
-        		childActivityButton.setText(activitySession.getChildActivity().get().getActivityName());
-        	}
-        });
-        
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	GB_RootPane.getChildren().clear();
-        	if(newValue != null)
-        		GB_RootPane.getChildren().add(newValue.getActivityRootPane());
-        });
-        leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
-        	if(newValue.equals(5))
-        		myInfoHandler.startActivity(null);
+       activitySession.addObserver(this);
+       leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
+    	   if(newValue.equals(5))
+    		   activitySession.clearAndSetOriginActivityAs(myInfoHandler, null);
         	else if(newValue.equals(2))
-        		repertoryPage.startActivity(null);
+        		activitySession.clearAndSetOriginActivityAs(repertoryPage, null);
         	else if(newValue.equals(1))
-        		deviceManageHandler.startActivity(null);
+        		activitySession.clearAndSetOriginActivityAs(deviceManageHandler, null);
         	else if(newValue.equals(7))
-        		errorRecordHandler.startActivity(null);
+        		activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
         	else if(newValue.equals(6))
-        		adjustRecordHandler.startActivity(null);
+        		activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
         	else if(newValue.equals(0))
-        		workSpaceHandler.startActivity(null);
+        		activitySession.clearAndSetOriginActivityAs(workSpaceHandler, null);
         });
 
         loader = null;
@@ -342,6 +319,34 @@ public class UIFrameworkHandler {
 					return Long.valueOf(value);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		GB_RootPane.getChildren().clear();
+    	
+		GB_RootPane.getChildren().add(activitySession.getActivityStack().peek().getActivityRootPane());
+		
+		activitySession.getActivityStack().peek().onStart(arg1);
+		
+		ActivityTemplet activityTemplet = activitySession.getActivityStack().getFirst();
+		activity1Button.setText(activityTemplet.getActivityName());
+		activity1Button.setUserData(activityTemplet);
+		
+		Iterator<ActivityTemplet> iterable = activitySession.getActivityStack().descendingIterator();
+		i=0;
+		while(iterable.hasNext()){
+			ActivityTemplet tempActivityTemplet = iterable.next();
+			topMenuHBox.getChildren().get(i).setUserData(tempActivityTemplet);
+			((JFXButton) topMenuHBox.getChildren().get(i)).setText(tempActivityTemplet.getActivityName());
+			i++;
+		}
+		
+		for(;i<topMenuHBox.getChildren().size(); i++){
+			topMenuHBox.getChildren().get(i).setUserData(null);
+			((JFXButton) topMenuHBox.getChildren().get(i)).setText(null);
 		}
 	}
 }

@@ -293,9 +293,9 @@
                <children>
                   <AnchorPane maxHeight="50.0" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #CA1119; -fx-border-color: #094987; -fx-border-width: 0 0 0 2;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <HBox fx:id="topMenuHBox" alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <JFXButton fx:id="rootActivityButton" text="rootActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity1Button" text="rootActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -303,31 +303,65 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </JFXButton>
-                              <ImageView fx:id="topMenuSeparatorImageView1" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../../../RES/min.png" />
-                                 </image>
-                              </ImageView>
-                              <JFXButton fx:id="fatherActivityButton" text="fatherActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity2Button" text="fatherActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
+                                 <graphic>
+                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/min.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
                               </JFXButton>
-                              <ImageView fx:id="topMenuSeparatorImageView2" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../../../RES/min.png" />
-                                 </image>
-                              </ImageView>
-                              <JFXButton fx:id="childActivityButton" text="childActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity3Button" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
+                                 <graphic>
+                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/min.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton fx:id="activity4Button" text="childActivityName" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                                 <graphic>
+                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/min.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </JFXButton>
+                              <JFXButton fx:id="activity5Button" text="childActivityName" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                                 <graphic>
+                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/min.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
                               </JFXButton>
                            </children>
                         </HBox>

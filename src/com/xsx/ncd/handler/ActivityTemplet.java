@@ -1,20 +1,20 @@
 package com.xsx.ncd.handler;
 
-import com.xsx.ncd.define.Message;
-
 import javafx.scene.layout.Pane;
 
 public interface ActivityTemplet {
 	
-	public void UI_Init();
+	public void onCreate();
+
+	public void onStart(Object object);
 	
-	public Pane getActivityRootPane();
+	public void onResume();
 	
-	public void startActivity(Object object);
+	public void onDestroy();
 	
-	public void resumeActivity();
-	
-	public void distroyActivity();
+	public void onPause();
 
 	public String getActivityName();
+	
+	public Pane getActivityRootPane();
 }

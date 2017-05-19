@@ -1,5 +1,10 @@
 package com.xsx.ncd.spring;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Observable;
+import java.util.Stack;
+
 import org.springframework.stereotype.Component;
 
 import com.xsx.ncd.handler.ActivityTemplet;
@@ -9,14 +14,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Pane;
 
 @Component
-public class ActivitySession {
+public class ActivitySession extends Observable{
 		
 		//主界面的显示界面
 		private ObjectProperty<ActivityTemplet> ActivityPane = new SimpleObjectProperty<>();
 		
-		private ObjectProperty<ActivityTemplet> rootActivity = new SimpleObjectProperty<>();
-		private ObjectProperty<ActivityTemplet> fatherActivity = new SimpleObjectProperty<>();
-		private ObjectProperty<ActivityTemplet> childActivity = new SimpleObjectProperty<>();
+		private Deque<ActivityTemplet> activityStack = new ArrayDeque<>();
 
 		public ObjectProperty<ActivityTemplet> getActivityPane() {
 			return ActivityPane;
@@ -26,29 +29,54 @@ public class ActivitySession {
 			ActivityPane.set(activityPane);
 		}
 
-		public ObjectProperty<ActivityTemplet> getRootActivity() {
-			return rootActivity;
+		public Deque<ActivityTemplet> getActivityStack() {
+			return activityStack;
 		}
 
-		public void setRootActivity(ActivityTemplet rootActivity) {
-			this.rootActivity.set(rootActivity);
+		public void clearActivityStach(){
+			while(!activityStack.isEmpty()){
+				ActivityTemplet activityTemplet = activityStack.pop();
+				activityTemplet.onDestroy();
+			}
 		}
-
-		public ObjectProperty<ActivityTemplet> getFatherActivity() {
-			return fatherActivity;
-		}
-
-		public void setFatherActivity(ActivityTemplet fatherActivity) {
-			this.fatherActivity.set(fatherActivity);
-		}
-
-		public ObjectProperty<ActivityTemplet> getChildActivity() {
-			return childActivity;
-		}
-
-		public void setChildActivity(ActivityTemplet childActivity) {
-			this.childActivity.set(childActivity);
-		}
-
 		
+		public void clearAndSetOriginActivityAs(ActivityTemplet activity, Object object){
+			
+			clearActivityStach();
+			
+			activityStack.push(activity);
+			
+			setChanged();
+			
+			notifyObservers(object);
+		}
+		
+		public void pushActivity(ActivityTemplet activity, Object object){
+			
+			activityStack.peek().onPause();
+			
+			activityStack.push(activity);
+			
+			setChanged();
+			
+			notifyObservers(object);
+		}
+		
+		public void backToThisActivity(ActivityTemplet activity){
+			ActivityTemplet tempActivity = null;
+			
+			//检查栈顶元素是不是要返回的
+			tempActivity = activityStack.peek();
+			if(tempActivity.equals(activity))
+				return;11
+			
+			while((tempActivity = activityStack.peek()) != null){
+				if(tempActivity.equals(activity))
+					break;
+				else{
+					tempActivity.onDestroy();
+					activityStack.pop();
+				}
+			}
+		}
 }
