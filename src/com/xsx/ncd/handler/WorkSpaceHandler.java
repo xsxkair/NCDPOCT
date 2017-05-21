@@ -13,10 +13,13 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
+import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.DeviceItem;
+import com.xsx.ncd.define.Message;
+import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.ActivitySession;
-import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
+import com.xsx.ncd.tool.XsxLog;
 
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Service;
@@ -24,7 +27,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -32,9 +34,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class WorkSpaceHandler implements ActivityTemplet{
-	
-	private AnchorPane rootPane = null;
+public class WorkSpaceHandler extends Activity{
 	
 	@FXML JFXListView<WorkSpaceDeviceListCellItem> DeviceListView;
 	@FXML VBox GB_FreshPane;
@@ -48,6 +48,7 @@ public class WorkSpaceHandler implements ActivityTemplet{
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired ActivitySession activitySession;
 	@Autowired DeviceReportListHandler deviceReportListHandler;
+	@Autowired XsxLog xsxLog;
 	
 	@PostConstruct
 	@Override
@@ -58,7 +59,7 @@ public class WorkSpaceHandler implements ActivityTemplet{
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/WorkSpace.fxml");
         loader.setController(this);
         try {
-        	rootPane = loader.load(in);
+        	this.setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -84,26 +85,24 @@ public class WorkSpaceHandler implements ActivityTemplet{
         			DeviceListView.getItems().add(item);
         			item.setOnMouseClicked((e)->{
         	        	if(e.getClickCount() == 2){
-        	        		activitySession.pushActivity(deviceReportListHandler, deviceWorkSpaceItem);
+        	        		activitySession.startActivity(deviceReportListHandler, deviceWorkSpaceItem);
         	        	}
         	        });
         		}
-        	}	
+        	}
         };
-		
-        AnchorPane.setTopAnchor(rootPane, 0.0);
-        AnchorPane.setBottomAnchor(rootPane, 0.0);
-        AnchorPane.setLeftAnchor(rootPane, 0.0);
-        AnchorPane.setRightAnchor(rootPane, 0.0);
+        
+        this.setActivityName("工作台");
+        this.setActivityStatus(ActivityStatusEnum.Create);
+        xsxLog.info("工作台创建");
+        
+        AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(this.getRootPane(), 0.0);
         
         loader = null;
         in = null;
-	}
-	
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootPane;
 	}
 
 	@Override
@@ -119,18 +118,21 @@ public class WorkSpaceHandler implements ActivityTemplet{
 		GB_FreshPane.visibleProperty().bind(queryDeviceService.runningProperty());
 		
 		queryDeviceService.restart();
+		
+		xsxLog.info("工作台启动");
 	}
 
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
-		System.out.println("pause");
+		xsxLog.info("工作台暂停");
 	}
 	
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		queryDeviceService.restart();
+		xsxLog.info("工作台恢复");
 	}
 
 	@Override
@@ -147,12 +149,8 @@ public class WorkSpaceHandler implements ActivityTemplet{
 		}
 		
 		DeviceListView.getItems().clear();
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "工作台";
+		
+		xsxLog.info("工作台销毁");
 	}
 
 	class QueryDeviceService extends Service<List<DeviceItem>>{
@@ -199,10 +197,10 @@ public class WorkSpaceHandler implements ActivityTemplet{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
+
 				return null;
 			}
 		}
 	}
+
 }

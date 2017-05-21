@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import org.springframework.stereotype.Component;
 
+import com.xsx.ncd.handler.Activity;
 import com.xsx.ncd.handler.ActivityTemplet;
 
 import javafx.beans.property.ObjectProperty;
@@ -19,7 +20,7 @@ public class ActivitySession extends Observable{
 		//主界面的显示界面
 		private ObjectProperty<ActivityTemplet> ActivityPane = new SimpleObjectProperty<>();
 		
-		private Deque<ActivityTemplet> activityStack = new ArrayDeque<>();
+		private Deque<Activity> activityStack = new ArrayDeque<>();
 
 		public ObjectProperty<ActivityTemplet> getActivityPane() {
 			return ActivityPane;
@@ -29,29 +30,25 @@ public class ActivitySession extends Observable{
 			ActivityPane.set(activityPane);
 		}
 
-		public Deque<ActivityTemplet> getActivityStack() {
+		public Deque<Activity> getActivityStack() {
 			return activityStack;
 		}
 
 		public void clearActivityStach(){
 			while(!activityStack.isEmpty()){
-				ActivityTemplet activityTemplet = activityStack.pop();
+				Activity activityTemplet = activityStack.pop();
 				activityTemplet.onDestroy();
 			}
 		}
 		
-		public void clearAndSetOriginActivityAs(ActivityTemplet activity, Object object){
+		public void clearAndSetOriginActivityAs(Activity activity, Object object){
 			
 			clearActivityStach();
 			
-			activityStack.push(activity);
-			
-			setChanged();
-			
-			notifyObservers(object);
+			startActivity(activity, object);
 		}
 		
-		public void pushActivity(ActivityTemplet activity, Object object){
+		public void pushActivity(Activity activity, Object object){
 			
 			activityStack.peek().onPause();
 			
@@ -62,21 +59,38 @@ public class ActivitySession extends Observable{
 			notifyObservers(object);
 		}
 		
-		public void backToThisActivity(ActivityTemplet activity){
-			ActivityTemplet tempActivity = null;
-			
-			//检查栈顶元素是不是要返回的
-			tempActivity = activityStack.peek();
-			if(tempActivity.equals(activity))
-				return;11
-			
+		public void backToThisActivity(Activity activity){
+			Activity tempActivity = null;
+
 			while((tempActivity = activityStack.peek()) != null){
 				if(tempActivity.equals(activity))
 					break;
 				else{
-					tempActivity.onDestroy();
-					activityStack.pop();
+					finishActivity();
 				}
 			}
 		}
+		
+	public void startActivity(Activity activity, Object object){
+		Activity tempActivity = activityStack.peek();
+		if(tempActivity != null)
+			tempActivity.onPause();
+		
+		activityStack.push(activity);
+		activityStack.peek().onStart(object);
+		
+		setChanged();
+		
+		notifyObservers();
+	}
+	
+	public void finishActivity(){
+		activityStack.peek().onDestroy();
+		activityStack.pop();
+		activityStack.peek().onResume();
+		
+		setChanged();
+		
+		notifyObservers();
+	}
 }

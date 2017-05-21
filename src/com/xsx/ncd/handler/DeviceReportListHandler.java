@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.DeviceItem;
 import com.xsx.ncd.define.DeviceReportItem;
 import com.xsx.ncd.define.ErrorRecordItem;
@@ -45,9 +46,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class DeviceReportListHandler implements ActivityTemplet{
-
-	private AnchorPane rootPane = null;
+public class DeviceReportListHandler extends Activity{
 	
 	@FXML ImageView deviceImageView;
 	@FXML Label deviceReportNumLabel;
@@ -81,7 +80,7 @@ public class DeviceReportListHandler implements ActivityTemplet{
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/DeviceReportList.fxml");
         loader.setController(this);
         try {
-        	rootPane = loader.load(in);
+        	this.setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -134,64 +133,52 @@ public class DeviceReportListHandler implements ActivityTemplet{
         	}
         };
 
+        this.setActivityName("设备报告");
+        this.setActivityStatus(ActivityStatusEnum.Create);
         
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-			if(this.equals(newValue)){
-				mapper = new ObjectMapper();
-				
-				queryDeviceService = new QueryDeviceService();
-				queryDeviceService.setPeriod(Duration.minutes(1));
-				queryDeviceService.lastValueProperty().addListener(queryDeviceServiceListener);
-				queryDeviceService.restart();
-			}
-			else if(this.equals(oldValue)){
-				mapper = null;
-				
-				queryDeviceService.lastValueProperty().removeListener(queryDeviceServiceListener);
-				queryDeviceService = null;
-				
-				deviceItemProperty.set(null);
-			}
-		});
-        
-        AnchorPane.setTopAnchor(rootPane, 0.0);
-        AnchorPane.setBottomAnchor(rootPane, 0.0);
-        AnchorPane.setLeftAnchor(rootPane, 0.0);
-        AnchorPane.setRightAnchor(rootPane, 0.0);
+        AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(this.getRootPane(), 0.0);
         
         loader = null;
         in = null;
 	}
 
 	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootPane;
-	}
-
-	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
 		deviceItemProperty.set((DeviceItem) object);
-		activitySession.setActivityPane(this);
+		
+		mapper = new ObjectMapper();
+		
+		queryDeviceService = new QueryDeviceService();
+		queryDeviceService.setPeriod(Duration.minutes(1));
+		queryDeviceService.lastValueProperty().addListener(queryDeviceServiceListener);
+		queryDeviceService.restart();
 	}
 
 	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		queryDeviceService.cancel();
+	}
+	
+	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		
+		queryDeviceService.restart();
 	}
 
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		mapper = null;
 		
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "设备报告";
+		queryDeviceService.lastValueProperty().removeListener(queryDeviceServiceListener);
+		queryDeviceService = null;
+		
+		deviceItemProperty.set(null);
 	}
 	
 	class QueryDeviceService extends ScheduledService<RecordJson<DeviceReportItem>>{
@@ -240,11 +227,4 @@ public class DeviceReportListHandler implements ActivityTemplet{
 			}
 		}
 	}
-
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

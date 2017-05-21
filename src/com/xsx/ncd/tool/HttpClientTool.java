@@ -22,6 +22,7 @@ import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.entity.DeviceType;
+import com.xsx.ncd.handler.Activity;
 import com.xsx.ncd.handler.HttpTemplet;
 import com.xsx.ncd.spring.ActivitySession;
 
@@ -108,7 +109,7 @@ public class HttpClientTool {
 	/*
 	 * 异步方式post json数据
 	 */
-	public Boolean myHttpAsynchronousPostJson(HttpTemplet httpTemplet, ServiceEnum serviceEnum, Object parm){
+	public Boolean myHttpAsynchronousPostJson(Activity activity, ServiceEnum serviceEnum, Object parm){
 
 		Message message = new Message(serviceEnum, null);
 		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
@@ -120,7 +121,7 @@ public class HttpClientTool {
 			// TODO: handle exception
 			e.printStackTrace();
 
-			httpTemplet.PostMessageToThisActivity(message);
+			activity.PostMessageToThisActivity(message);
 			return false;
 		}
 		
@@ -161,13 +162,13 @@ public class HttpClientTool {
 				
 				arg1.body().close();
 				
-				httpTemplet.PostMessageToThisActivity(message);
+				activity.PostMessageToThisActivity(message);
 			}
 			
 			@Override
 			public void onFailure(Call arg0, IOException arg1) {
 				// TODO Auto-generated method stub
-				httpTemplet.PostMessageToThisActivity(message);
+				activity.PostMessageToThisActivity(message);
 			}
 		});
 		

@@ -195,6 +195,12 @@ public class UIFrameworkHandler implements Observer{
         activity3Button.visibleProperty().bind(activity3Button.textProperty().length().greaterThan(0));
         activity4Button.visibleProperty().bind(activity4Button.textProperty().length().greaterThan(0));
         activity5Button.visibleProperty().bind(activity5Button.textProperty().length().greaterThan(0));
+        for (Node node : topMenuHBox.getChildren()) {
+			JFXButton jfxButton = (JFXButton) node;
+			jfxButton.setOnAction((e)->{
+				activitySession.backToThisActivity((Activity) jfxButton.getUserData());
+			});
+		}
         
         NotHandledReportStackPane.setOnMouseClicked((e)->{
         	leftMenuListView.getSelectionModel().select(0);
@@ -225,7 +231,7 @@ public class UIFrameworkHandler implements Observer{
         
        activitySession.addObserver(this);
        leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
-    	   if(newValue.equals(5))
+    	   /*if(newValue.equals(5))
     		   activitySession.clearAndSetOriginActivityAs(myInfoHandler, null);
         	else if(newValue.equals(2))
         		activitySession.clearAndSetOriginActivityAs(repertoryPage, null);
@@ -236,7 +242,9 @@ public class UIFrameworkHandler implements Observer{
         	else if(newValue.equals(6))
         		activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
         	else if(newValue.equals(0))
-        		activitySession.clearAndSetOriginActivityAs(workSpaceHandler, null);
+        		activitySession.clearAndSetOriginActivityAs(workSpaceHandler, null);*/
+    	   if(newValue.equals(0))
+       			activitySession.clearAndSetOriginActivityAs(workSpaceHandler, null);
         });
 
         loader = null;
@@ -327,20 +335,18 @@ public class UIFrameworkHandler implements Observer{
 		// TODO Auto-generated method stub
 		GB_RootPane.getChildren().clear();
     	
-		GB_RootPane.getChildren().add(activitySession.getActivityStack().peek().getActivityRootPane());
+		GB_RootPane.getChildren().add(activitySession.getActivityStack().peek().getRootPane());
+
+		Activity activity = activitySession.getActivityStack().getFirst();
+		activity1Button.setText(activity.getActivityName());
+		activity1Button.setUserData(activity);
 		
-		activitySession.getActivityStack().peek().onStart(arg1);
-		
-		ActivityTemplet activityTemplet = activitySession.getActivityStack().getFirst();
-		activity1Button.setText(activityTemplet.getActivityName());
-		activity1Button.setUserData(activityTemplet);
-		
-		Iterator<ActivityTemplet> iterable = activitySession.getActivityStack().descendingIterator();
+		Iterator<Activity> iterable = activitySession.getActivityStack().descendingIterator();
 		i=0;
 		while(iterable.hasNext()){
-			ActivityTemplet tempActivityTemplet = iterable.next();
-			topMenuHBox.getChildren().get(i).setUserData(tempActivityTemplet);
-			((JFXButton) topMenuHBox.getChildren().get(i)).setText(tempActivityTemplet.getActivityName());
+			Activity tempActivity = iterable.next();
+			topMenuHBox.getChildren().get(i).setUserData(tempActivity);
+			((JFXButton) topMenuHBox.getChildren().get(i)).setText(tempActivity.getActivityName());
 			i++;
 		}
 		

@@ -56,12 +56,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import net.coobird.thumbnailator.Thumbnails;
 
 @Component
-public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
-	private AnchorPane rootPane = null;
-	
+public class DeviceManageHandler extends Activity {
+
 	@FXML StackPane rootStackPane;
 	
 	@FXML JFXButton addNewDeviceTypeButton;
@@ -106,8 +104,6 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	@FXML Label LogDialogContent;
 	@FXML JFXButton LogDialogCloseButton;
 	
-	private ObservableList<Message> myMessagesList = null;
-	
 	private DeviceType deviceType = null;
 	private Set<Item> deviceItemSet = null;
 	private ActionType actionType = ActionType.None;
@@ -119,10 +115,10 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	private SetChangeListener<String> deviceIcoPathChangeListener = null;
 	private ObservableList<DeviceIcoInfo> deviceIcoList = null;
 	private ListChangeListener<DeviceIcoInfo> deviceIcoInfoListChangeListener = null;
+	private ListChangeListener<Message> myMessageListChangeListener = null;
 	
 	@Autowired UserSession userSession;
 	@Autowired ActivitySession activitySession;
-	@Autowired HttpClientTool httpClientTool;
 	@Autowired UserFilePath userFilePath;
 	
 	@PostConstruct
@@ -134,7 +130,7 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/DeviceManagePage.fxml");
         loader.setController(this);
         try {
-        	rootPane = loader.load(in);
+        	this.setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -241,7 +237,7 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
         	if(userSession.getUser().getPassword().equals(userPasswordTextField.getText())){
         		switch (actionType) {
 				case AddDeviceType:
-					httpClientTool.myHttpPostDeviceType(this, ServiceEnum.SaveDeviceTypeAndIco, deviceType,
+					SpringFacktory.GetBean() startHttpWork(this, ServiceEnum.SaveDeviceTypeAndIco, deviceType,
 							(File) DeviceIcoImageView.getUserData());
 					break;
 				
@@ -277,114 +273,79 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
         		}
         	}
         };
-        
-        myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
 
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
+        myMessageListChangeListener = c ->{
+        	while(c.next()){
+				if(c.wasAdded()){
 
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-								case ReadAllItems:
-									showAddDeviceTypeAllItem(message.getObj(List.class));
-									break;
-									
-								case QueryOperatorByDepartment:
-									showAddDeviceOperator( message.getObj(List.class));
-									break;
-									
-								case SaveDeviceTypeAndIco:
-									showLogsDialog("消息", message.getObj(String.class));
-									break;
+					for (Message message : c.getAddedSubList()) {
+						switch (message.getWhat()) {
+							case ReadAllItems:
+								showAddDeviceTypeAllItem(message.getObj(List.class));
+								break;
 								
-								case QueryAllDeviceType:
-									DeviceTypeCombox.getItems().setAll(message.getObj(List.class));
-									break;
+							case QueryOperatorByDepartment:
+								showAddDeviceOperator( message.getObj(List.class));
+								break;
 								
-								case AddNewDevice:
-									showLogsDialog("消息", message.getObj(String.class));
-									break;
-									
-								case ReadAllDepartment:
-									showAllDepartment(message.getObj(List.class));
-									break;
+							case SaveDeviceTypeAndIco:
+								showLogsDialog("消息", message.getObj(String.class));
+								break;
+							
+							case QueryAllDeviceType:
+								DeviceTypeCombox.getItems().setAll(message.getObj(List.class));
+								break;
+							
+							case AddNewDevice:
+								showLogsDialog("消息", message.getObj(String.class));
+								break;
 								
-									//读取所有图标路径
-								case QueryAllDeviceIcoPath:
-									deviceIcoPathSet.addAll(message.getObj(List.class));
-									break;
-									
-								case DownloadDeviceIco:
-									DeviceIcoInfo map = message.getObj(DeviceIcoInfo.class);
-									if(map != null){
-										deviceIcoList.add(map);
-									}
-									break;
-								default:
-									break;
-							}
+							case ReadAllDepartment:
+								showAllDepartment(message.getObj(List.class));
+								break;
+							
+								//读取所有图标路径
+							case QueryAllDeviceIcoPath:
+								deviceIcoPathSet.addAll(message.getObj(List.class));
+								break;
+								
+							case DownloadDeviceIco:
+								DeviceIcoInfo map = message.getObj(DeviceIcoInfo.class);
+								if(map != null){
+									deviceIcoList.add(map);
+								}
+								break;
+							default:
+								break;
 						}
 					}
 				}
 			}
-        });
-        
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(this.equals(newValue)){
-        		deviceItemSet = new HashSet<>();
-            	deviceType = new DeviceType();
-            	
-            	device = new Device();
-            	deviceOperators = new HashSet<>();
-            	
-            	//deviceIcoPathSet = FXCollections.observableSet();
-            	//deviceIcoPathSet.addListener(deviceIcoPathChangeListener);
-            	
-            	//deviceIcoList = FXCollections.observableArrayList();
-            	//deviceIcoList.addListener(deviceIcoInfoListChangeListener);
-            	
-        		startHttpWork(ServiceEnum.ReadAllDepartment, null);
-        		//startHttpWork(ServiceEnum.QueryAllDeviceIcoPath, null);
-        	}
-        	else if(this.equals(oldValue)){
-        		deviceItemSet = null;
-            	deviceType = null;
-            	
-            	//deviceIcoPathSet.removeListener(deviceIcoPathChangeListener);
-            	//deviceIcoPathSet = null;
-            	
-            	//deviceIcoList.removeListener(deviceIcoInfoListChangeListener);
-            	//deviceIcoList = null;
-            	
-            	device = null;
-            	deviceOperators = null;
-            	
-            	this.onDestroy();
-        	}
-        });
-        AnchorPane.setTopAnchor(rootPane, 0.0);
-        AnchorPane.setBottomAnchor(rootPane, 0.0);
-        AnchorPane.setLeftAnchor(rootPane, 0.0);
-        AnchorPane.setRightAnchor(rootPane, 0.0);
+        };
+  
+        AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(this.getRootPane(), 0.0);
         
         loader = null;
         in = null;
 	}
 
 	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootPane;
-	}
-
-	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+		
+		this.setMyMessagesList(FXCollections.observableArrayList());
+		this.getMyMessagesList().addListener(myMessageListChangeListener);
+		
+		deviceItemSet = new HashSet<>();
+    	deviceType = new DeviceType();
+    	
+    	device = new Device();
+    	deviceOperators = new HashSet<>();
+    	
+    	startHttpWork(ServiceEnum.ReadAllDepartment, null);
 	}
 
 	@Override
@@ -396,11 +357,20 @@ public class DeviceManageHandler implements ActivityTemplet, HttpTemplet {
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		deviceItemSet = null;
+    	deviceType = null;
+    	
+    	device = null;
+    	deviceOperators = null;
+    	
 		for (Node node : DepartmentFlowPane.getChildren()) {
 			DepartmentDeviceListHandler departmentDeviceListHandler = (DepartmentDeviceListHandler) node;
 			departmentDeviceListHandler.onDestroy();
 		}
 		DepartmentFlowPane.getChildren().clear();
+		
+		this.getMyMessagesList().removeListener(myMessageListChangeListener);
+		this.setMyMessagesList(null);
 	}
 
 	@Override
