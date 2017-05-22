@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.ActivitySession;
@@ -21,14 +22,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
 @Component
-public class RepertoryPage implements ActivityTemplet, HttpTemplet {
-
-	private AnchorPane rootPane = null;
+public class RepertoryPage extends Activity {
 	
 	@FXML JFXButton CardInStorageButton;
 	@FXML JFXButton CardOutStorageButton;
 	
-	@Autowired private ActivitySession activitySession;
+	@Autowired ActivitySession activitySession;
 	@Autowired CardInStoragePage cardInStoragePage;
 	@Autowired CardOutStoragePage cardOutStoragePage;
 	
@@ -41,7 +40,7 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/RepertoryPage.fxml");
         loader.setController(this);
         try {
-        	rootPane = loader.load(in);
+        	this.setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -49,17 +48,20 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 		}
         
         CardInStorageButton.setOnAction((e)->{
-        	cardInStoragePage.onStart(null);
+        	activitySession.startActivity(cardInStoragePage, null);
         });
         
         CardOutStorageButton.setOnAction((e)->{
-        	cardOutStoragePage.onStart(null);
+        	activitySession.startActivity(cardOutStoragePage, null);
         });
         
-        AnchorPane.setTopAnchor(rootPane, 0.0);
-        AnchorPane.setBottomAnchor(rootPane, 0.0);
-        AnchorPane.setLeftAnchor(rootPane, 0.0);
-        AnchorPane.setRightAnchor(rootPane, 0.0);
+        this.setActivityName("库存管理");
+        this.setActivityStatus(ActivityStatusEnum.Create);
+        
+        AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(this.getRootPane(), 0.0);
         
         loader = null;
         in = null;
@@ -68,7 +70,7 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+
 	}
 
 	@Override
@@ -81,34 +83,6 @@ public class RepertoryPage implements ActivityTemplet, HttpTemplet {
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "试剂卡管理";
-	}
-
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootPane;
-	}
-
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-//		GB_FreshPane.setVisible(true);
-		
-//		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-//			GB_FreshPane.setVisible(false);
-//			showLogsDialog("错误", "数据转换失败，请重试！");
-//		}	
 	}
 
 	@Override

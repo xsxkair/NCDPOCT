@@ -16,6 +16,8 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
+import com.xsx.ncd.define.ActivityStatusEnum;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.MyUserActionEnum;
 import com.xsx.ncd.define.ServiceEnum;
@@ -45,10 +47,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 @Component
-public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
+public class OperatorListHandler extends Activity{
 
-	private AnchorPane rootpane;
-	
 	@FXML StackPane rootStackPane;
 	
 	@FXML JFXListView<ListViewCell> GB_UserListView;
@@ -85,7 +85,7 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
 	private Operator tempOperator = null;
 	private User itsMe = null;
-	private ObservableList<Message> myMessagesList = null;
+	private ListChangeListener<Message> myMessageListChangeListener = null;
 
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserSession userSession;
@@ -100,7 +100,7 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/OperatorListPage.fxml");
         loader.setController(this);
         try {
-        	rootpane = loader.load(in);
+        	setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -114,100 +114,96 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.EDIT);
-        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
             GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	startHttpWork(ServiceEnum.ReadAllOperator, null);
+        	startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.ADD);
         	clearUserInfo();
         	GB_ActionType = MyUserActionEnum.ADD;
-        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	startHttpWork(ServiceEnum.ReadAllOperator, null);
+        	startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
         });
         
-        myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-						GB_FreshPane.setVisible(false);
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-							case DeleteOperator:
-								if(message.getObj(Boolean.class)){
-									startHttpWork(ServiceEnum.ReadAllOperator, null);
-			            		}
-			        			else{
-			        				showLogsDialog("错误", "删除失败！");
-			        			}
-								break;
-							case SaveOperator:
-								tempOperator = message.getObj(Operator.class);
-			            		
-			            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-			            			if(tempOperator == null){
-			            				showLogsDialog("错误", "添加失败！");
-			            			}
-			            			else{
-			            				startHttpWork(ServiceEnum.ReadAllOperator, null);
-			            			}
-			            			
-			            		}
-			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-			            			if(tempOperator == null){
-			            				showLogsDialog("错误", "修改失败！");
-			            			}
-			            			else{
-			            				startHttpWork(ServiceEnum.ReadAllOperator, null);
-			            			}
-			            		}
-								break;
-							case ReadAllOperator:
-								upUserList(message.getObj(List.class));
-								setUserInfoInStatus(MyUserActionEnum.NONE);
-								break;
-							case CheckOperatorIsExist:
-								if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-
-			            			if(message.getObj(Boolean.class)){
-			            				showLogsDialog("错误", "用户已存在，请检查！");
-			                		}
-			            			else{
-			            				startHttpWork(ServiceEnum.SaveOperator, tempOperator);
-			            			}
-			            		}
-			            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-			            			if(message.getObj(Boolean.class)){
-			            				startHttpWork(ServiceEnum.SaveOperator, tempOperator);
-			                		}
-			            			else{
-			            				showLogsDialog("错误", "用户不存在，请检查！");
-			            			}
-			            		}
-								break;
-							case ReadAllDepartment:
-								GB_UserDepartmentCombox.getItems().setAll(message.getObj(List.class));
-								break;
-							default:
-								break;
-							}
+        myMessageListChangeListener = c ->{
+        	while(c.next()){
+				if(c.wasAdded()){
+					GB_FreshPane.setVisible(false);
+					for (Message message : c.getAddedSubList()) {
+						switch (message.getWhat()) {
+						case DeleteOperator:
+							boolean result = message.getObj();
+							if(result){
+								startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
+		            		}
+		        			else{
+		        				showLogsDialog("错误", "删除失败！");
+		        			}
+							break;
+						case SaveOperator:
+							tempOperator = message.getObj();
+		            		
+		            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+		            			if(tempOperator == null){
+		            				showLogsDialog("错误", "添加失败！");
+		            			}
+		            			else{
+		            				startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
+		            			}
+		            			
+		            		}
+		            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+		            			if(tempOperator == null){
+		            				showLogsDialog("错误", "修改失败！");
+		            			}
+		            			else{
+		            				startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
+		            			}
+		            		}
+							break;
+						case ReadAllOperator:
+							upUserList(message.getObj());
+							setUserInfoInStatus(MyUserActionEnum.NONE);
+							break;
+						case CheckOperatorIsExist:
+							boolean result1 = message.getObj();
+							if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+		            			if(result1){
+		            				showLogsDialog("错误", "用户已存在，请检查！");
+		                		}
+		            			else{
+		            				startHttpWork(ServiceEnum.SaveOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
+		            			}
+		            		}
+		            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+		            			if(result1){
+		            				startHttpWork(ServiceEnum.SaveOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
+		                		}
+		            			else{
+		            				showLogsDialog("错误", "用户不存在，请检查！");
+		            			}
+		            		}
+							break;
+						case ReadAllDepartment:
+							List<Department> departments = message.getObj();
+							GB_UserDepartmentCombox.getItems().setAll(departments);
+							break;
+						default:
+							break;
 						}
 					}
 				}
 			}
-        });
+        };
         
 		GB_FreshPane.setVisible(false);
 
@@ -220,7 +216,7 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
         		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
         			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-        			startHttpWork(ServiceEnum.DeleteOperator, tempOperator);
+        			startHttpWork(ServiceEnum.DeleteOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
         			tempOperator = new Operator();
@@ -234,7 +230,7 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			startHttpWork(ServiceEnum.CheckOperatorIsExist, tempOperator);
+        			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
         			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
@@ -248,7 +244,7 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
         			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
         			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
 
-        			startHttpWork(ServiceEnum.CheckOperatorIsExist, tempOperator);
+        			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
         		}
         	}
         	else
@@ -283,20 +279,13 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
         		oldValue.setDeleteIcoVisible(false);
         });
         
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(this.equals(newValue)){
-        		itsMe = userSession.getUser();
-        		startHttpWork(ServiceEnum.ReadAllOperator, itsMe);
-        	}
-        	else {
-        		itsMe = null;
-        	}
-        });
+        this.setActivityName("操作人管理");
+        this.setActivityStatus(ActivityStatusEnum.Create);
         
-        AnchorPane.setTopAnchor(rootpane, 0.0);
-        AnchorPane.setBottomAnchor(rootpane, 0.0);
-        AnchorPane.setLeftAnchor(rootpane, 0.0);
-        AnchorPane.setRightAnchor(rootpane, 0.0);
+        AnchorPane.setTopAnchor(getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(getRootPane(), 0.0);
         
         loader = null;
         in = null;
@@ -305,7 +294,11 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+		setMyMessagesList(FXCollections.observableArrayList());
+		getMyMessagesList().addListener(myMessageListChangeListener);
+		
+		itsMe = userSession.getUser();
+		startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, itsMe, null, null);
 	}
 	
 	private void upUserList(List<Operator> userList) {
@@ -412,37 +405,10 @@ public class OperatorListHandler implements ActivityTemplet, HttpTemplet{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		itsMe = null;
 		
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "操作人管理";
-	}
-
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootpane;
-	}
-
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
-	}
-	
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		GB_FreshPane.setVisible(true);
-		
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			GB_FreshPane.setVisible(false);
-			showLogsDialog("错误", "数据转换失败，请重试！");
-		}	
+		getMyMessagesList().removeListener(myMessageListChangeListener);
+		setMyMessagesList(null);
 	}
 
 	@Override

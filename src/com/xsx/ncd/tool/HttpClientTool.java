@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsx.ncd.define.DeviceIcoInfo;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Device;
@@ -65,15 +66,12 @@ public class HttpClientTool {
 	}
 
 	/*
-	 * 同步方式post json数据
+	 * 以json形式创建请求
 	 */
-	public String myHttpSynchronousPostJson(String url, Object parm){
-		
-		String value = null;
+	private Request makeMyJsonRequest(String url, Object parm){
 		
 		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
 		urlBuffer.append(url);
-		
 		
 		try {
 			jsonString = mapper.writeValueAsString(parm);
@@ -83,104 +81,125 @@ public class HttpClientTool {
 			return null;
 		}
 		
-		
 		RequestBody body = RequestBody.create(mediaJsonType, jsonString);
 		Request request = new Request.Builder()
 		      .url(urlBuffer.toString())
 		      .post(body)
 		      .build();
-
-		try {
-			Response response = client.newCall(request).execute();
-			
-			if(response.isSuccessful()) {
-				value = response.body().string();
-			}
-			
-			response.body().close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		return value;	
+		return request;
 	}
 	
 	/*
-	 * 异步方式post json数据
+	 * 以表单形式创建请求
 	 */
-	public Boolean myHttpAsynchronousPostJson(Activity activity, ServiceEnum serviceEnum, Object parm){
-
-		Message message = new Message(serviceEnum, null);
+	private Request makeMyFormRequest(String url, Map<String, String> parm){
+		
 		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
-		urlBuffer.append(serviceEnum.getName());
-
-		try {
-			jsonString = mapper.writeValueAsString(parm);
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-
-			activity.PostMessageToThisActivity(message);
-			return false;
+		urlBuffer.append(url);
+		
+		FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
+		
+		Set<String> keySet = parm.keySet();
+		for (String string : keySet) {
+			requestFormBodyBuilder.add(string, parm.get(string));
 		}
 		
-		RequestBody body = RequestBody.create(mediaJsonType, jsonString);
+		RequestBody requestBody = requestFormBodyBuilder.build();
+		
 		Request request = new Request.Builder()
 		      .url(urlBuffer.toString())
-		      .post(body)
+		      .post(requestBody)
 		      .build();
-		Call call = client.newCall(request);
-		call.enqueue(new Callback() {
-			
-			@Override
-			public void onResponse(Call arg0, Response arg1){
-				// TODO Auto-generated method stub
-				try {
-					if(serviceEnum.getIndex() == 1){
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, serviceEnum.getObjectclass()); 
-						message.setObj(mapper.readValue(arg1.body().string(), javaType));
-					}
-					else if(serviceEnum.getIndex() == 2){
-						if(serviceEnum.getObjectclass().equals(String.class))
-							message.setObj(arg1.body().string());
-						else{
-							message.setObj(mapper.readValue(arg1.body().string(), serviceEnum.getObjectclass()));
-						}
-					}
-					else if(serviceEnum.getIndex() == 4)
-					{
-						String name = arg1.header("Content-disposition");
-						name = (name.split("="))[1];
-						
-						message.setObj(new DeviceIcoInfo(name, new Image(arg1.body().byteStream())));
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				arg1.body().close();
-				
-				activity.PostMessageToThisActivity(message);
-			}
-			
-			@Override
-			public void onFailure(Call arg0, IOException arg1) {
-				// TODO Auto-generated method stub
-				activity.PostMessageToThisActivity(message);
-			}
-		});
 		
-		return true;
+		return request;
 	}
 	
-	public void myHttpPostDeviceType(HttpTemplet httpTemplet, ServiceEnum serviceEnum, 
+	public <T> T myHttpPost(Activity activity, ServiceEnum serviceEnum, HttpPostType httpPostType, Object jsonParm, 
+			Map<String, String> formParm){
+		T value = null;
+		Request request = null;
+		
+		if(httpPostType.getIsJson())
+			request = makeMyJsonRequest(serviceEnum.getUrl(), jsonParm);
+		else
+			request = makeMyFormRequest(serviceEnum.getUrl(), formParm);
+
+		if(request == null)
+			return value;
+
+		//异步
+		if(httpPostType.getIsAsynchronous()){
+			Message message = new Message(serviceEnum, null);
+			Call call = client.newCall(request);
+			call.enqueue(new Callback() {
+				
+				@Override
+				public void onResponse(Call arg0, Response arg1){
+					// TODO Auto-generated method stub
+					try {
+						if(serviceEnum.getClass1() == null){
+							if(serviceEnum.getClass0().equals(String.class))
+								message.setObj(arg1.body().string());
+							else
+								message.setObj(mapper.readValue(arg1.body().string(), serviceEnum.getClass0()));
+						}
+						else{
+							JavaType javaType = mapper.getTypeFactory().constructParametricType(serviceEnum.getClass0(), serviceEnum.getClass1()); 
+							message.setObj(mapper.readValue(arg1.body().string(), javaType));
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					arg1.body().close();
+					
+					activity.PostMessageToThisActivity(message);
+				}
+				
+				@Override
+				public void onFailure(Call arg0, IOException arg1) {
+					// TODO Auto-generated method stub
+					activity.PostMessageToThisActivity(message);
+				}
+			});
+		}
+		//同步
+		else{
+			
+			try {
+				Response response = client.newCall(request).execute();
+				
+				if(response.isSuccessful()) {
+					if(serviceEnum.getClass1() == null){
+						value = (T) mapper.readValue(response.body().string(), serviceEnum.getClass0());
+					}
+					else{
+						JavaType javaType = mapper.getTypeFactory().constructParametricType(serviceEnum.getClass0(), serviceEnum.getClass1()); 
+						value = mapper.readValue(response.body().string(), javaType);
+					}
+				}
+				
+				response.body().close();
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return value;
+		}
+		
+		return null;
+	}
+	
+	public void myHttpPostDeviceType(Activity activity, ServiceEnum serviceEnum, 
 			DeviceType deviceType, File onFile){
 		
 		Message message = new Message(serviceEnum, "Error");
 		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
-		urlBuffer.append(serviceEnum.getName());
+		urlBuffer.append(serviceEnum.getUrl());
 		
 		try {
 			jsonString = mapper.writeValueAsString(deviceType);
@@ -188,7 +207,7 @@ public class HttpClientTool {
 			// TODO: handle exception
 			e.printStackTrace();
 
-			httpTemplet.PostMessageToThisActivity(message);
+			activity.PostMessageToThisActivity(message);
 			return;
 		}
 		
@@ -221,69 +240,16 @@ public class HttpClientTool {
 				
 				arg1.body().close();
 				
-				httpTemplet.PostMessageToThisActivity(message);
+				activity.PostMessageToThisActivity(message);
 			}
 			
 			@Override
 			public void onFailure(Call arg0, IOException arg1) {
 				// TODO Auto-generated method stub
-				httpTemplet.PostMessageToThisActivity(message);
+				activity.PostMessageToThisActivity(message);
 			}
 		});
 	}
 	
-/*	public <T> T myHttpSynchronousPostForm(ServiceEnum serviceEnum, Map<String, String> values, Class<T> classV){
-		
-		StringBuffer urlBuffer = new StringBuffer(ServerUrlHead);
-		urlBuffer.append(serviceEnum.getName());
-		
-		Set<String> paramKeySet = values.keySet();
-
-		FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
-
-		for (String string : paramKeySet) {
-			requestFormBodyBuilder.add(string, values.get(string));
-		}
-		
-		RequestBody requestBody = requestFormBodyBuilder.build();
-		
-		Request request = new Request.Builder()
-		      .url(urlBuffer.toString())
-		      .post(requestBody)
-		      .build();
-		
-		Response response = client.newCall(request).execute();
-		
-		if(response.isSuccessful()) {
-			Map<String,Object> userData = mapper.readValue(response.body().string(), Map.class);
-			return ;
-		}
-		
-		Call call = client.newCall(request);
-		call.enqueue(new Callback() {
-			
-			@Override
-			public void onResponse(Call arg0, Response arg1) {
-				// TODO Auto-generated method stub
-				try {
-					message.setObj(arg1.body().string());
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				arg1.body().close();
-				
-				httpTemplet.PostMessageToThisActivity(message);
-			}
-			
-			@Override
-			public void onFailure(Call arg0, IOException arg1) {
-				// TODO Auto-generated method stub
-				httpTemplet.PostMessageToThisActivity(message);
-			}
-		});
-	}*/
 
 }

@@ -16,7 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class MyDeviceView extends VBox implements HttpTemplet{
+public class MyDeviceView extends VBox {
 	
 	private JFXSpinner jfxSpinner = null;
 	private Label deviceName = null;
@@ -103,23 +103,7 @@ public class MyDeviceView extends VBox implements HttpTemplet{
 			}	
 		}
 	}
-	
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
-	}
 
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		// TODO Auto-generated method stub
-		//if(!SpringFacktory.GetBean(HttpClientTool.class).myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			//GB_FreshPane.setVisible(false);
-		//}
-	}
-	
 	public void distroyDevice(){
 		jfxSpinner = null;
 		deviceName = null;

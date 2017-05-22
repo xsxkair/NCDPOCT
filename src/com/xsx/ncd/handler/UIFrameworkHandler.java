@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.xsx.ncd.define.DeviceItem;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.handler.WorkSpaceHandler.QueryDeviceService.MyTask;
 import com.xsx.ncd.spring.ActivitySession;
@@ -231,20 +232,22 @@ public class UIFrameworkHandler implements Observer{
         
        activitySession.addObserver(this);
        leftMenuListView.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue)->{
-    	   /*if(newValue.equals(5))
-    		   activitySession.clearAndSetOriginActivityAs(myInfoHandler, null);
-        	else if(newValue.equals(2))
-        		activitySession.clearAndSetOriginActivityAs(repertoryPage, null);
-        	else if(newValue.equals(1))
-        		activitySession.clearAndSetOriginActivityAs(deviceManageHandler, null);
-        	else if(newValue.equals(7))
-        		activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
-        	else if(newValue.equals(6))
-        		activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
-        	else if(newValue.equals(0))
-        		activitySession.clearAndSetOriginActivityAs(workSpaceHandler, null);*/
     	   if(newValue.equals(0))
        			activitySession.clearAndSetOriginActivityAs(workSpaceHandler, null);
+    	   else if(newValue.equals(1))
+       			activitySession.clearAndSetOriginActivityAs(deviceManageHandler, null);
+       		else if(newValue.equals(2))
+       			activitySession.clearAndSetOriginActivityAs(repertoryPage, null);
+       		else if(newValue.equals(3))
+       			activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
+       		else if(newValue.equals(4))
+       			activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
+       		else if(newValue.equals(5))
+       			activitySession.clearAndSetOriginActivityAs(myInfoHandler, null);
+       		else if(newValue.equals(6))
+       			activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
+       		else if(newValue.equals(7))
+       			activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
         });
 
         loader = null;
@@ -291,7 +294,6 @@ public class UIFrameworkHandler implements Observer{
 		queryNotHandledReportNumService = null;
 		
 		userSession.setUser(null);
-    	activitySession.setActivityPane(null);
 		s_Stage.close();
 		loginHandler.startLoginActivity();
 	}
@@ -319,13 +321,9 @@ public class UIFrameworkHandler implements Observer{
 			@Override
 			protected Long call() {
 				// TODO Auto-generated method stub				
-				String value = httpClientTool.myHttpSynchronousPostJson(ServiceEnum.QueryAllNotHandledReportNum.getName(), null);
 				
-				if(value == null)
-					return null;
-				else{
-					return Long.valueOf(value);
-				}
+				return httpClientTool.myHttpPost(null, ServiceEnum.QueryAllNotHandledReportNum, 
+						HttpPostType.SynchronousJson, null, null);
 			}
 		}
 	}

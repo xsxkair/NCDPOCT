@@ -8,7 +8,6 @@ import java.util.Stack;
 import org.springframework.stereotype.Component;
 
 import com.xsx.ncd.handler.Activity;
-import com.xsx.ncd.handler.ActivityTemplet;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -17,18 +16,7 @@ import javafx.scene.layout.Pane;
 @Component
 public class ActivitySession extends Observable{
 		
-		//主界面的显示界面
-		private ObjectProperty<ActivityTemplet> ActivityPane = new SimpleObjectProperty<>();
-		
 		private Deque<Activity> activityStack = new ArrayDeque<>();
-
-		public ObjectProperty<ActivityTemplet> getActivityPane() {
-			return ActivityPane;
-		}
-
-		public void setActivityPane(ActivityTemplet activityPane) {
-			ActivityPane.set(activityPane);
-		}
 
 		public Deque<Activity> getActivityStack() {
 			return activityStack;

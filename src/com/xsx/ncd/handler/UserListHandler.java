@@ -16,6 +16,8 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
+import com.xsx.ncd.define.ActivityStatusEnum;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.MyUserActionEnum;
 import com.xsx.ncd.define.ServiceEnum;
@@ -44,10 +46,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 @Component
-public class UserListHandler implements ActivityTemplet, HttpTemplet{
+public class UserListHandler extends Activity {
 
-	private AnchorPane rootpane;
-	
 	@FXML StackPane rootStackPane;
 	
 	@FXML JFXListView<ListViewCell> GB_UserListView;
@@ -89,12 +89,10 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
 	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
 	private User itsMe = null;
 	private User tempUser = null;
-	private ObservableList<Message> myMessagesList = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserSession userSession;
-	@Autowired private ActivitySession activitySession;
 	
 	@PostConstruct
 	@Override
@@ -105,7 +103,7 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/UserListPage.fxml");
         loader.setController(this);
         try {
-        	rootpane = loader.load(in);
+        	setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -119,24 +117,24 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.EDIT);
-        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
             GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
+        	startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
         	setUserInfoInStatus(MyUserActionEnum.ADD);
         	clearUserInfo();
         	GB_ActionType = MyUserActionEnum.ADD;
-        	startHttpWork(ServiceEnum.ReadAllDepartment, null);
+        	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
         	GB_ActionType = MyUserActionEnum.NONE;
-        	startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
+        	startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
         });
         
 		GB_FreshPane.setVisible(false);
@@ -149,7 +147,7 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
         		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
         			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-        			startHttpWork(ServiceEnum.DeleteUser, tempUser);
+        			startHttpWork(ServiceEnum.DeleteUser, HttpPostType.AsynchronousJson, tempUser, null, null);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
         			tempUser = new User();
@@ -168,7 +166,7 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
         			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
         			tempUser.setManagecard(GB_CardManageToggle.isSelected());
 
-        			startHttpWork(ServiceEnum.CheckUserIsExist, tempUser);
+        			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
         		}
         		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
         			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
@@ -187,7 +185,7 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
         			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
         			tempUser.setManagecard(GB_CardManageToggle.isSelected());
         			
-        			startHttpWork(ServiceEnum.CheckUserIsExist, tempUser);
+        			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
         		}
         	}
         	else
@@ -221,103 +219,87 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
         		oldValue.setDeleteIcoVisible(false);
         });
         
-        myMessageListChangeListener = new ListChangeListener<Message>(){
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-							
-								case DeleteUser:
-									
-									if(message.getObj(Boolean.class))
-										startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
-					    			else
-					    				showLogsDialog("¥ÌŒÛ", "…æ≥˝ ß∞‹£°");
-									
-									break;
-									
-								case SaveUser:
-									tempUser = message.getObj(User.class);
-					        		
-					        		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-					        			if(tempUser == null){
-					        				showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
-					        			}
-					        			else{
-					        				startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
-					        			}
-					        		}
-					        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-					        			if(tempUser == null){
-					        				showLogsDialog("¥ÌŒÛ", "–ﬁ∏ƒ ß∞‹£°");
-					        			}
-					        			else{
-					        				startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
-					        			}
-					        		}
-									break;
-									
-								case ReadAllOtherUser:
-									upUserList(message.getObj(List.class));
-									setUserInfoInStatus(MyUserActionEnum.NONE);
-									break;
-									
-								case CheckUserIsExist:
-									if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-					        			if(message.getObj(Boolean.class)){
-					        				showLogsDialog("¥ÌŒÛ", "”√ªß“—¥Ê‘⁄£¨«ÎºÏ≤È£°");
-					            		}
-					        			else{
-					        				startHttpWork(ServiceEnum.SaveUser, tempUser);
-					        			}
-					        		}
-					        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-					        			if(message.getObj(Boolean.class)){
-					        				startHttpWork(ServiceEnum.SaveUser, tempUser);
-					            		}
-					        			else{
-					        				showLogsDialog("¥ÌŒÛ", "”√ªß≤ª¥Ê‘⁄£¨«ÎºÏ≤È£°");
-					        			}
-					        		}
-									break;
-								case ReadAllDepartment:
-									GB_UserDepartmentCombox.getItems().setAll(message.getObj(List.class));
-									break;
-									
-								default:
-									break;
-							}
+        myMessageListChangeListener = c -> {
+        	while(c.next()){
+				if(c.wasAdded()){
+					for (Message message : c.getAddedSubList()) {
+						switch (message.getWhat()) {
+						
+							case DeleteUser:
+								boolean result = message.getObj();
+								if(result)
+									startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
+				    			else
+				    				showLogsDialog("¥ÌŒÛ", "…æ≥˝ ß∞‹£°");
+								
+								break;
+								
+							case SaveUser:
+								tempUser = message.getObj();
+				        		
+				        		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+				        			if(tempUser == null){
+				        				showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
+				        			}
+				        			else{
+				        				startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
+				        			}
+				        		}
+				        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+				        			if(tempUser == null){
+				        				showLogsDialog("¥ÌŒÛ", "–ﬁ∏ƒ ß∞‹£°");
+				        			}
+				        			else{
+				        				startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
+				        			}
+				        		}
+								break;
+								
+							case ReadAllOtherUser:
+								upUserList(message.getObj());
+								setUserInfoInStatus(MyUserActionEnum.NONE);
+								break;
+								
+							case CheckUserIsExist:
+								boolean result1 = message.getObj();
+								if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+				        			if(result1){
+				        				showLogsDialog("¥ÌŒÛ", "”√ªß“—¥Ê‘⁄£¨«ÎºÏ≤È£°");
+				            		}
+				        			else{
+				        				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, tempUser, null, null);
+				        			}
+				        		}
+				        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+				        			if(result1){
+				        				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, tempUser, null, null);
+				            		}
+				        			else{
+				        				showLogsDialog("¥ÌŒÛ", "”√ªß≤ª¥Ê‘⁄£¨«ÎºÏ≤È£°");
+				        			}
+				        		}
+								break;
+							case ReadAllDepartment:
+								List<Department> departments = message.getObj();
+								GB_UserDepartmentCombox.getItems().setAll(departments);
+								break;
+								
+							default:
+								break;
 						}
-						GB_FreshPane.setVisible(false);
 					}
+					GB_FreshPane.setVisible(false);
 				}
 			}
         };
         
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(this.equals(newValue)){
-        		itsMe = userSession.getUser();
-        		
-        		myMessagesList = FXCollections.observableArrayList();
-        		myMessagesList.addListener(myMessageListChangeListener);
-        		
-        		startHttpWork(ServiceEnum.ReadAllOtherUser, itsMe);
-        	}
-        	else if(this.equals(oldValue)){
-        		myMessagesList.removeListener(myMessageListChangeListener);
-        		myMessagesList = null;
-        		itsMe = null;
-        	}
-        });
+        this.setActivityName("…Û∫À»Àπ‹¿Ì");
+        this.setActivityStatus(ActivityStatusEnum.Create);
         
-        AnchorPane.setTopAnchor(rootpane, 0.0);
-        AnchorPane.setBottomAnchor(rootpane, 0.0);
-        AnchorPane.setLeftAnchor(rootpane, 0.0);
-        AnchorPane.setRightAnchor(rootpane, 0.0);
+        AnchorPane.setTopAnchor(getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(getRootPane(), 0.0);
         
         loader = null;
         in = null;
@@ -326,7 +308,12 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+		itsMe = userSession.getUser();
+		
+		setMyMessagesList(FXCollections.observableArrayList());
+		getMyMessagesList().addListener(myMessageListChangeListener);
+		
+		startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
 	}
 	
 	private void upUserList(List<User> userList) {
@@ -448,37 +435,10 @@ public class UserListHandler implements ActivityTemplet, HttpTemplet{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		getMyMessagesList().removeListener(myMessageListChangeListener);
+		setMyMessagesList(null);
 		
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "…Û∫À»Àπ‹¿Ì";
-	}
-
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootpane;
-	}
-
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
-	}
-	
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		GB_FreshPane.setVisible(true);
-		
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			GB_FreshPane.setVisible(false);
-			showLogsDialog("¥ÌŒÛ", " ˝æ›◊™ªª ß∞‹£¨«Î÷ÿ ‘£°");
-		}	
+		itsMe = null;
 	}
 
 	@Override

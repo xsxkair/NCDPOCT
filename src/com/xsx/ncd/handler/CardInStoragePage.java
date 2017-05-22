@@ -20,6 +20,8 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.svg.SVGGlyphLoader;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import com.xsx.ncd.define.ActivityStatusEnum;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Card;
@@ -58,7 +60,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
 
 @Component
-public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
+public class CardInStoragePage extends Activity {
 
 	private AnchorPane rootPane = null;
 	
@@ -89,9 +91,9 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
 	private Card tempCard = null;
 	private Card tempCard2 = null;
 	private Repertory tempRepertory = null;
-	private ObservableList<Message> myMessagesList = null;
 	private ChangeListener<String> lotnumChangeListener = null;
 	private ObjectProperty<String> selectLotnumProperty = null;
+	private ListChangeListener<Message> myMessageListChangeListener = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired UserSession userSession;
@@ -106,7 +108,7 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/CardInStoragePage.fxml");
         loader.setController(this);
         try {
-        	rootPane = loader.load(in);
+        	this.setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -142,7 +144,7 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
         GB_CardLotNumTextfield.focusedProperty().addListener((o, oldValue, newValue)->{
         	if(!newValue){
         		if(GB_CardLotNumTextfield.getLength() > 0){
-        			startHttpWork(ServiceEnum.QueryCardByLotNum, GB_CardLotNumTextfield.getText());
+        			startHttpWork(ServiceEnum.QueryCardByLotNum, HttpPostType.AsynchronousJson, GB_CardLotNumTextfield.getText(), null, GB_FreshPane);
         		}
         	}
         });
@@ -193,84 +195,69 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
 				tempRepertory.setOperator(userSession.getUser());
 				tempRepertory.setTime(new Timestamp(System.currentTimeMillis()));
 
-				startHttpWork(ServiceEnum.SaveRepertoryRecord, tempRepertory);
+				startHttpWork(ServiceEnum.SaveRepertoryRecord, HttpPostType.AsynchronousJson, tempRepertory, null, GB_FreshPane);
 			}
 			else
 				showLogsDialog("´íÎó", "ÃÜÂë´íÎó£¬½ûÖ¹²Ù×÷£¡");
 		});
         
-        myMessagesList = FXCollections.observableArrayList();
-        myMessagesList.addListener(new ListChangeListener<Message>(){
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Message> c) {
-				// TODO Auto-generated method stub
-				while(c.next()){
-					if(c.wasAdded()){
-						GB_FreshPane.setVisible(false);
-						for (Message message : c.getAddedSubList()) {
-							switch (message.getWhat()) {
-							case SaveRepertoryRecord:
-								if(message.getObj(Repertory.class) == null)
-									showLogsDialog("´íÎó", "Èë¿âÊ§°Ü£¡");
-								else
-									clearPage();
-								break;
-							case QueryCardLotNumLikeThis:
-								//refreshCardLotnumList((List<String>)message.getObj());
-								//lotnumListContextMenu.setFocused(true);
-								break;
-							case ReadAllItems:
-								GB_CardTypeCombox.getItems().setAll(message.getObj(List.class));
-								break;
-							case QueryCardByLotNum:
-								tempCard = message.getObj(Card.class);
-								if(tempCard != null){									
-									GB_CardTypeCombox.getSelectionModel().select(tempCard.getItem());
-									
-									if(tempCard.getMakedate() != null)
-										GB_CardMakeTimeDatePicker.setValue(tempCard.getMakedate().toLocalDateTime().toLocalDate());
-									
-									if(tempCard.getPerioddate() != null)
-										GB_CardPeriodDateDatePicker.setValue(tempCard.getPerioddate().toLocalDateTime().toLocalDate());
-									
-									if(tempCard.getVender() != null)
-										GB_CardVenderTextField.setText(tempCard.getVender());
-								}
-								else{
-									GB_CardTypeCombox.getSelectionModel().select(null);
-									GB_CardMakeTimeDatePicker.setValue(null);
-									GB_CardPeriodDateDatePicker.setValue(null);
-									GB_CardVenderTextField.setText(null);
-								}
-								break;
-							default:
-								break;
+        myMessageListChangeListener = c ->{
+        	while(c.next()){
+				if(c.wasAdded()){
+					GB_FreshPane.setVisible(false);
+					for (Message message : c.getAddedSubList()) {
+						switch (message.getWhat()) {
+						case SaveRepertoryRecord:
+							Repertory repertory = message.getObj();
+							if(repertory == null)
+								showLogsDialog("´íÎó", "Èë¿âÊ§°Ü£¡");
+							else
+								clearPage();
+							break;
+						case QueryCardLotNumLikeThis:
+							//refreshCardLotnumList((List<String>)message.getObj());
+							//lotnumListContextMenu.setFocused(true);
+							break;
+						case ReadAllItems:
+							List<Item> items = message.getObj();
+							GB_CardTypeCombox.getItems().setAll(items);
+							break;
+						case QueryCardByLotNum:
+							tempCard = message.getObj();
+							if(tempCard != null){									
+								GB_CardTypeCombox.getSelectionModel().select(tempCard.getItem());
+								
+								if(tempCard.getMakedate() != null)
+									GB_CardMakeTimeDatePicker.setValue(tempCard.getMakedate().toLocalDateTime().toLocalDate());
+								
+								if(tempCard.getPerioddate() != null)
+									GB_CardPeriodDateDatePicker.setValue(tempCard.getPerioddate().toLocalDateTime().toLocalDate());
+								
+								if(tempCard.getVender() != null)
+									GB_CardVenderTextField.setText(tempCard.getVender());
 							}
+							else{
+								GB_CardTypeCombox.getSelectionModel().select(null);
+								GB_CardMakeTimeDatePicker.setValue(null);
+								GB_CardPeriodDateDatePicker.setValue(null);
+								GB_CardVenderTextField.setText(null);
+							}
+							break;
+						default:
+							break;
 						}
 					}
 				}
 			}
-        });
- 
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(this.equals(newValue)){
-        		tempCard2 = new Card();
-        		clearPage();
-        		lotnumListContextMenu = new ContextMenu();
-        		lotnumListContextMenu.setPrefWidth(200);
-        		startHttpWork(ServiceEnum.ReadAllItems, tempRepertory);
-        	}
-        	else {
-        		tempCard2 = null;
-        		lotnumListContextMenu = null;
-        	}
-        });
+        };
         
-        AnchorPane.setTopAnchor(rootPane, 0.0);
-        AnchorPane.setBottomAnchor(rootPane, 0.0);
-        AnchorPane.setLeftAnchor(rootPane, 0.0);
-        AnchorPane.setRightAnchor(rootPane, 0.0);
+        this.setActivityName("ÊÔ¼Á¿¨Èë¿â");
+        this.setActivityStatus(ActivityStatusEnum.Create);
+        
+        AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(this.getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(this.getRootPane(), 0.0);
         
         loader = null;
         in = null;
@@ -285,9 +272,22 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+		setMyMessagesList(FXCollections.observableArrayList());
+		getMyMessagesList().addListener(myMessageListChangeListener);
+		
+		tempCard2 = new Card();
+		clearPage();
+		lotnumListContextMenu = new ContextMenu();
+		lotnumListContextMenu.setPrefWidth(200);
+		startHttpWork(ServiceEnum.ReadAllItems, HttpPostType.AsynchronousJson, tempRepertory, null, GB_FreshPane);
 	}
 
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -297,29 +297,13 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-
+		tempCard2 = null;
+		lotnumListContextMenu = null;
+		
+		getMyMessagesList().removeListener(myMessageListChangeListener);
+		setMyMessagesList(null);
 	}
 
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "ÊÔ¼Á¿¨Èë¿â";
-	}
-
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootPane;
-	}
-
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
-	}
-	
 	private void clearPage(){
 		GB_CardLotNumTextfield.clear();
 		GB_CardTypeCombox.getSelectionModel().select(null);
@@ -349,21 +333,4 @@ public class CardInStoragePage implements ActivityTemplet, HttpTemplet {
 			selectLotnumProperty.set(null);
 		}
 	}
-	
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		GB_FreshPane.setVisible(true);
-		
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			GB_FreshPane.setVisible(false);
-			showLogsDialog("´íÎó", "Êý¾Ý×ª»»Ê§°Ü£¬ÇëÖØÊÔ£¡");
-		}	
-	}
-
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

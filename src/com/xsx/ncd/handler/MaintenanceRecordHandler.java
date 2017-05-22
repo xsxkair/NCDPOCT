@@ -13,10 +13,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.ErrorRecordItem;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.RecordJson;
 import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.handler.ErrorRecordHandler.QueryErrorRecordService;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.tool.HttpClientTool;
 
@@ -42,9 +44,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
-
-	private AnchorPane rootPane = null;
+public class MaintenanceRecordHandler extends Activity {
 	
 	@FXML JFXDatePicker ErrorDateChoose;
 	@FXML JFXTextField ErrorOperatorTextfield;
@@ -60,8 +60,7 @@ public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
 	
 	@FXML Pagination GB_Pagination;
 	@FXML VBox GB_FreshPane;
-	
-	private ObservableList<Message> myMessagesList = null;
+
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 	private ObjectMapper mapper = null;
 	private QueryErrorRecordService queryErrorRecordService = null;
@@ -79,7 +78,7 @@ public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/ErrorRecord.fxml");
         loader.setController(this);
         try {
-        	rootPane = loader.load(in);
+        	setRootPane(loader.load(in));
         	in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -130,72 +129,39 @@ public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
         	GB_FreshPane.setVisible(false);
         };
         
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(this.equals(newValue)){
-        		myMessagesList = FXCollections.observableArrayList();
-        		myMessagesList.addListener(myMessageListChangeListener);
-        		
-        		queryErrorRecordService = new QueryErrorRecordService();
-        		queryErrorRecordService.valueProperty().addListener(queryErrorRecordServiceListener);
-        		GB_FreshPane.visibleProperty().bind(queryErrorRecordService.runningProperty());
-        		
-        		mapper = new ObjectMapper();
-        		
-        		queryErrorRecordService.restart();
-        		
-        	}
-        	else if(this.equals(oldValue)){
-        		myMessagesList.removeListener(myMessageListChangeListener);
-        		myMessagesList = null;
-        		
-        		queryErrorRecordService.valueProperty().removeListener(queryErrorRecordServiceListener);
-        		GB_FreshPane.visibleProperty().unbind();
-        		queryErrorRecordService = null;
-        		
-        		
-        		mapper = null;
-        	}
-        });
+        this.setActivityName("保养记录");
+        this.setActivityStatus(ActivityStatusEnum.Create);
         
-        AnchorPane.setTopAnchor(rootPane, 0.0);
-        AnchorPane.setBottomAnchor(rootPane, 0.0);
-        AnchorPane.setLeftAnchor(rootPane, 0.0);
-        AnchorPane.setRightAnchor(rootPane, 0.0);
+        AnchorPane.setTopAnchor(getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(getRootPane(), 0.0);
         
         loader = null;
         in = null;
-	}
-	
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
-	}
-
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		// TODO Auto-generated method stub
-		GB_FreshPane.setVisible(true);
-		
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			GB_FreshPane.setVisible(false);
-		}
-	}
-
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootPane;
 	}
 
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+		setMyMessagesList(FXCollections.observableArrayList());
+		getMyMessagesList().addListener(myMessageListChangeListener);
+		
+		queryErrorRecordService = new QueryErrorRecordService();
+		queryErrorRecordService.valueProperty().addListener(queryErrorRecordServiceListener);
+		GB_FreshPane.visibleProperty().bind(queryErrorRecordService.runningProperty());
+		
+		mapper = new ObjectMapper();
+		
+		queryErrorRecordService.restart();
 	}
 
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -205,13 +171,14 @@ public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "异常管理";
+		queryErrorRecordService.valueProperty().removeListener(queryErrorRecordServiceListener);
+		GB_FreshPane.visibleProperty().unbind();
+		queryErrorRecordService = null;
+		
+		mapper = null;
+		
+		getMyMessagesList().removeListener(myMessageListChangeListener);
+		setMyMessagesList(null);
 	}
 
 	private void startQueryDeviceErrorRecord() {
@@ -277,12 +244,5 @@ public class MaintenanceRecordHandler implements ActivityTemplet, HttpTemplet {
 			}
 		}
 	}
-
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
 

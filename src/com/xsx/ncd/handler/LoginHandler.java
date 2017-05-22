@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.UserSession;
@@ -196,20 +197,7 @@ public class LoginHandler {
 			@Override
 			protected User call() throws Exception {
 				// TODO Auto-generated method stub
-				String responeString = null;
-				
-				responeString = httpClientTool.myHttpSynchronousPostJson(ServiceEnum.Login.getName(), loginUser);
-				
-				if(responeString != null){
-					try {
-						return mapper.readValue(responeString, User.class);
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-						return null;
-					}
-				}
-				return null;
+				return httpClientTool.myHttpPost(null, ServiceEnum.Login, HttpPostType.SynchronousJson, loginUser, null);
 			}
 		}
 	}

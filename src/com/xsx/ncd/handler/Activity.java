@@ -1,6 +1,9 @@
 package com.xsx.ncd.handler;
 
+import java.util.Map;
+
 import com.xsx.ncd.define.ActivityStatusEnum;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.SpringFacktory;
@@ -24,11 +27,11 @@ public abstract class Activity {
 
 	public abstract void onStart(Object object);
 	
+	public abstract void onPause();
+	
 	public abstract void onResume();
 	
 	public abstract void onDestroy();
-	
-	public abstract void onPause();
 	
 	public Pane getRootPane() {
 		return rootPane;
@@ -70,7 +73,12 @@ public abstract class Activity {
 		});
 	}
 
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		SpringFacktory.GetBean(HttpClientTool.class).myHttpAsynchronousPostJson(this, serviceEnum, parm);
+	public void startHttpWork(ServiceEnum serviceEnum, HttpPostType httpPostType, Object parm, Map<String, String> formParm,
+			Pane pane) {
+		
+		if(pane != null)
+			pane.setVisible(true);
+		
+		SpringFacktory.GetBean(HttpClientTool.class).myHttpPost(this, serviceEnum, httpPostType, parm, formParm);
 	}
 }

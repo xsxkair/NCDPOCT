@@ -19,7 +19,7 @@ public class Message {
 		this.what = what;
 	}
 
-	public <T> T getObj(Class<T> classType) {
+	public <T> T getObj() {
 		return (T)obj;
 	}
 

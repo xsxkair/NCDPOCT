@@ -13,6 +13,8 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.xsx.ncd.define.ActivityStatusEnum;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.User;
@@ -39,10 +41,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 @Component
-public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
-
-	private AnchorPane rootpane;
-	private final String activityName = "我的信息";
+public class MyInfoHandler extends Activity {
 	
 	@FXML StackPane rootStackPane;
 	
@@ -87,7 +86,6 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 	
 	private User itsMe = null;
 	private ChangeListener<User> myUserListener = null;
-	private ObservableList<Message> myMessagesList = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 	
 	@Autowired private UserSession userSession;
@@ -105,7 +103,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
         InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/MyInfoPagefxml.fxml");
         loader.setController(this);
         try {
-        	rootpane = loader.load(in);
+        	setRootPane(loader.load(in));
         	in.close();
         	SVGGlyphLoader.clear();
 
@@ -150,7 +148,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 				itsMe.setJob(GB_UserJobTextField.getText());
 				itsMe.setDes(GB_UserDescTextField.getText());
 
-				startHttpWork(ServiceEnum.SaveUser, itsMe);
+				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, itsMe, null, GB_FreshPane);
 			}
 			else
 				showLogsDialog("错误", "密码错误，禁止修改！");
@@ -182,7 +180,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 			}
 			else {
 				itsMe.setPassword(userNewPasswordTextField0.getText());
-				startHttpWork(ServiceEnum.SaveUser, itsMe);
+				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, itsMe, null, GB_FreshPane);
 			}
 		});
         
@@ -196,7 +194,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 		});
         
         GB_UserManageButton.setOnAction((e)->{
-        	userListHandler.onStart(null);
+        	activitySession.startActivity(userListHandler, null);
         });
         
         myMessageListChangeListener = new ListChangeListener<Message>(){
@@ -210,7 +208,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 							switch (message.getWhat()) {
 							
 								case SaveUser:
-									userSession.setUser(message.getObj(User.class));
+									userSession.setUser(message.getObj());
 									break;
 									
 								default:
@@ -226,7 +224,7 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
         };
         
         GB_OperatorManageButton.setOnAction((e)->{
-        	operatorListHandler.onStart(null);
+        	activitySession.startActivity(operatorListHandler, null);
         });
         
         myUserListener = (o, oldValue, newValue)->{
@@ -235,28 +233,13 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
         	upUserInfo();
         };
         
-        activitySession.getActivityPane().addListener((o, oldValue, newValue)->{
-        	if(this.equals(newValue)){
-        		userSession.getUserProperty().addListener(myUserListener);
-        		itsMe = userSession.getUser();
-        		setEditable(false);
-        		upUserInfo();
-        		
-        		myMessagesList = FXCollections.observableArrayList();
-        		myMessagesList.addListener(myMessageListChangeListener);
-        	}
-        	else if(this.equals(oldValue)){
-        		userSession.getUserProperty().removeListener(myUserListener);
-        		myMessagesList.removeListener(myMessageListChangeListener);
-        		myMessagesList = null;
-        		itsMe = null;
-        	}
-        });
+        this.setActivityName("我的信息");
+        this.setActivityStatus(ActivityStatusEnum.Create);
         
-        AnchorPane.setTopAnchor(rootpane, 0.0);
-        AnchorPane.setBottomAnchor(rootpane, 0.0);
-        AnchorPane.setLeftAnchor(rootpane, 0.0);
-        AnchorPane.setRightAnchor(rootpane, 0.0);
+        AnchorPane.setTopAnchor(getRootPane(), 0.0);
+        AnchorPane.setBottomAnchor(getRootPane(), 0.0);
+        AnchorPane.setLeftAnchor(getRootPane(), 0.0);
+        AnchorPane.setRightAnchor(getRootPane(), 0.0);
         
         loader = null;
         in = null;
@@ -306,7 +289,13 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		activitySession.setActivityPane(this);
+		setMyMessagesList(FXCollections.observableArrayList());
+		getMyMessagesList().addListener(myMessageListChangeListener);
+		
+		userSession.getUserProperty().addListener(myUserListener);
+		itsMe = userSession.getUser();
+		setEditable(false);
+		upUserInfo();
 	}
 
 	@Override
@@ -318,39 +307,12 @@ public class MyInfoHandler implements ActivityTemplet, HttpTemplet{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return activityName;
-	}
-
-	@Override
-	public Pane getActivityRootPane() {
-		// TODO Auto-generated method stub
-		return rootpane;
-	}
-
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
+		userSession.getUserProperty().removeListener(myUserListener);
+		getMyMessagesList().removeListener(myMessageListChangeListener);
+		setMyMessagesList(null);
+		itsMe = null;
 	}
 	
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		GB_FreshPane.setVisible(true);
-		
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			GB_FreshPane.setVisible(false);
-			showLogsDialog("错误", "数据转换失败，请重试！");
-		}	
-	}
-
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub

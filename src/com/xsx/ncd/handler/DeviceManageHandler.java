@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -18,9 +17,10 @@ import org.springframework.stereotype.Component;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXRadioButton;
+import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.DeviceIcoInfo;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.define.UserFilePath;
@@ -29,12 +29,11 @@ import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.entity.DeviceType;
 import com.xsx.ncd.entity.Item;
 import com.xsx.ncd.entity.Operator;
-import com.xsx.ncd.entity.User;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
+import com.xsx.ncd.spring.SpringFacktory;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -50,10 +49,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -120,6 +116,7 @@ public class DeviceManageHandler extends Activity {
 	@Autowired UserSession userSession;
 	@Autowired ActivitySession activitySession;
 	@Autowired UserFilePath userFilePath;
+	@Autowired HttpClientTool httpClientTool;
 	
 	@PostConstruct
 	@Override
@@ -144,7 +141,7 @@ public class DeviceManageHandler extends Activity {
         
         //添加设备类型
         addNewDeviceTypeButton.setOnAction((e)->{
-        	startHttpWork(ServiceEnum.ReadAllItems, null);
+        	startHttpWork(ServiceEnum.ReadAllItems, HttpPostType.AsynchronousJson, null, null, null);
         	clearAddDeviceTypeDialog();
         	actionType = ActionType.AddDeviceType;
         	addDeviceTypeDialog.show(rootStackPane);
@@ -237,12 +234,13 @@ public class DeviceManageHandler extends Activity {
         	if(userSession.getUser().getPassword().equals(userPasswordTextField.getText())){
         		switch (actionType) {
 				case AddDeviceType:
-					SpringFacktory.GetBean() startHttpWork(this, ServiceEnum.SaveDeviceTypeAndIco, deviceType,
+					httpClientTool.myHttpPostDeviceType(this, ServiceEnum.SaveDeviceTypeAndIco, deviceType,
 							(File) DeviceIcoImageView.getUserData());
 					break;
 				
 				case AddDevice:
-					httpClientTool.myHttpAsynchronousPostJson(this, ServiceEnum.AddNewDevice, device);
+					SpringFacktory.GetBean(DeviceManageHandler.class).startHttpWork(ServiceEnum.AddNewDevice, 
+							HttpPostType.AsynchronousJson, device, null, null);
 					break;
 
 				default:
@@ -261,18 +259,6 @@ public class DeviceManageHandler extends Activity {
         LogDialogCloseButton.setOnAction((e)->{
         	LogDialog.close();
         });
-        
-        deviceIcoPathChangeListener = (javafx.collections.SetChangeListener.Change<? extends String> change)->{
-        	startHttpWork(ServiceEnum.DownloadDeviceIco, change.getElementAdded());
-        };
-        
-        deviceIcoInfoListChangeListener = (javafx.collections.ListChangeListener.Change<? extends DeviceIcoInfo> c)->{
-        	while(c.next()){
-        		if(c.wasAdded()){
-        			
-        		}
-        	}
-        };
 
         myMessageListChangeListener = c ->{
         	while(c.next()){
@@ -281,39 +267,32 @@ public class DeviceManageHandler extends Activity {
 					for (Message message : c.getAddedSubList()) {
 						switch (message.getWhat()) {
 							case ReadAllItems:
-								showAddDeviceTypeAllItem(message.getObj(List.class));
+								showAddDeviceTypeAllItem(message.getObj());
 								break;
 								
 							case QueryOperatorByDepartment:
-								showAddDeviceOperator( message.getObj(List.class));
+								showAddDeviceOperator( message.getObj());
 								break;
 								
 							case SaveDeviceTypeAndIco:
-								showLogsDialog("消息", message.getObj(String.class));
+								showLogsDialog("消息", message.getObj());
 								break;
 							
 							case QueryAllDeviceType:
-								DeviceTypeCombox.getItems().setAll(message.getObj(List.class));
+								showAllDeviceType(message.getObj());
 								break;
 							
 							case AddNewDevice:
-								showLogsDialog("消息", message.getObj(String.class));
+								showLogsDialog("消息", message.getObj());
 								break;
 								
 							case ReadAllDepartment:
-								showAllDepartment(message.getObj(List.class));
+								showAllDepartment(message.getObj());
 								break;
 							
 								//读取所有图标路径
 							case QueryAllDeviceIcoPath:
-								deviceIcoPathSet.addAll(message.getObj(List.class));
-								break;
-								
-							case DownloadDeviceIco:
-								DeviceIcoInfo map = message.getObj(DeviceIcoInfo.class);
-								if(map != null){
-									deviceIcoList.add(map);
-								}
+								deviceIcoPathSet.addAll(message.getObj());
 								break;
 							default:
 								break;
@@ -322,6 +301,9 @@ public class DeviceManageHandler extends Activity {
 				}
 			}
         };
+        
+        this.setActivityName("设备管理");
+        this.setActivityStatus(ActivityStatusEnum.Create);
   
         AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
         AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
@@ -345,7 +327,13 @@ public class DeviceManageHandler extends Activity {
     	device = new Device();
     	deviceOperators = new HashSet<>();
     	
-    	startHttpWork(ServiceEnum.ReadAllDepartment, null);
+    	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
+	}
+	
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -372,20 +360,6 @@ public class DeviceManageHandler extends Activity {
 		this.getMyMessagesList().removeListener(myMessageListChangeListener);
 		this.setMyMessagesList(null);
 	}
-
-	@Override
-	public String getActivityName() {
-		// TODO Auto-generated method stub
-		return "设备管理";
-	}
-
-	@Override
-	public void PostMessageToThisActivity(Message message) {
-		// TODO Auto-generated method stub
-		Platform.runLater(()->{
-			myMessagesList.add(message);
-		});
-	}
 	
 	private void showAllDepartment(List<Department> departments) {
 		DepartmentFlowPane.getChildren().clear();
@@ -394,17 +368,9 @@ public class DeviceManageHandler extends Activity {
 			DepartmentFlowPane.getChildren().add(departmentDeviceListHandler);
 		}
 	}
-	
-	@Override
-	public void startHttpWork(ServiceEnum serviceEnum, Object parm) {
-		//GB_FreshPane.setVisible(true);
-		
-		if(!httpClientTool.myHttpAsynchronousPostJson(this, serviceEnum, parm)){
-			//GB_FreshPane.setVisible(false);
-			
-		}
+	private void showAllDeviceType(List<DeviceType> deviceTypes) {
+		DeviceTypeCombox.getItems().setAll(deviceTypes);
 	}
-	
 	private void showLogsDialog(String head, String logs) {
 		LogDialogHead.setText(head);
 		LogDialogContent.setText(logs);
@@ -417,9 +383,9 @@ public class DeviceManageHandler extends Activity {
 		DeviceDepartmentCombox.getSelectionModel().select(department);
 
 		//查找这个科室的操作人
-		startHttpWork(ServiceEnum.QueryOperatorByDepartment, department);
+		startHttpWork(ServiceEnum.QueryOperatorByDepartment, HttpPostType.AsynchronousJson, department, null, null);
 		//查找所有设备类型
-		startHttpWork(ServiceEnum.QueryAllDeviceType, null);
+		startHttpWork(ServiceEnum.QueryAllDeviceType, HttpPostType.AsynchronousJson, null, null, null);
 		actionType = actionType.AddDevice;
 		addDeviceDialog.show(rootStackPane);
 	}
@@ -469,11 +435,4 @@ public class DeviceManageHandler extends Activity {
 	enum ActionType{
 		None, AddDevice, DeleteDevice, AddDeviceType;
 	}
-
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
