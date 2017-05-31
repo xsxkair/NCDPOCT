@@ -3,30 +3,28 @@ package com.xsx.ncd.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.ActivityStatusEnum;
-import com.xsx.ncd.define.ErrorRecordItem;
+import com.xsx.ncd.define.HttpPostType;
+import com.xsx.ncd.define.MaintenanceRecordItem;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.RecordJson;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.handler.ErrorRecordHandler.QueryErrorRecordService;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.tool.HttpClientTool;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -36,35 +34,31 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Component
 public class MaintenanceRecordHandler extends Activity {
 	
-	@FXML JFXDatePicker ErrorDateChoose;
-	@FXML JFXTextField ErrorOperatorTextfield;
-	@FXML JFXTextField ErrorDeviceTextField;
-	@FXML JFXTextField ErrorCodeTextField;
+	@FXML JFXDatePicker MaintenanceDateChoose;
+	@FXML JFXTextField MaintenanceOperatorTextfield;
+	@FXML JFXTextField MaintenanceDeviceTextField;
+	@FXML JFXTextField MaintenanceResultTextField;
 	
-	@FXML TableView<ErrorRecordItem> ErrorTableView;
-	@FXML TableColumn<ErrorRecordItem, Timestamp> ErrorTimeTableColumn;
-	@FXML TableColumn<ErrorRecordItem, Integer> ErrorCodeTableColumn;
-	@FXML TableColumn<ErrorRecordItem, String> ErrorDeviceTableColumn;
-	@FXML TableColumn<ErrorRecordItem, String> ErrorOperatorTableColumn;
-	@FXML TableColumn<ErrorRecordItem, String> ErrorDescTableColumn;
+	@FXML TableView<MaintenanceRecordItem> MaintenanceTableView;
+	@FXML TableColumn<MaintenanceRecordItem, Timestamp> MaintenanceTimeTableColumn;
+	@FXML TableColumn<MaintenanceRecordItem, String> MaintenanceDeviceTableColumn;
+	@FXML TableColumn<MaintenanceRecordItem, String> MaintenanceOperatorTableColumn;
+	@FXML TableColumn<MaintenanceRecordItem, String> MaintenanceResultTableColumn;
+	@FXML TableColumn<MaintenanceRecordItem, String> MaintenanceDescTableColumn;
 	
 	@FXML Pagination GB_Pagination;
 	@FXML VBox GB_FreshPane;
 
+	private String deviceId = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
-	private ObjectMapper mapper = null;
+	private Map<String, String> formParm = null;
 	private QueryErrorRecordService queryErrorRecordService = null;
-	private ChangeListener<RecordJson<ErrorRecordItem>> queryErrorRecordServiceListener = null;
+	private ChangeListener<RecordJson<MaintenanceRecordItem>> queryErrorRecordServiceListener = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired HttpClientTool httpClientTool;
@@ -74,8 +68,8 @@ public class MaintenanceRecordHandler extends Activity {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/ErrorRecord.fxml"));
-        InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/ErrorRecord.fxml");
+		loader.setLocation(this.getClass().getResource("/com/xsx/ncd/view/MaintenanceRecord.fxml"));
+        InputStream in = this.getClass().getResourceAsStream("/com/xsx/ncd/view/MaintenanceRecord.fxml");
         loader.setController(this);
         try {
         	setRootPane(loader.load(in));
@@ -85,42 +79,42 @@ public class MaintenanceRecordHandler extends Activity {
 			e.printStackTrace();
 		}
         
-        ErrorTimeTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, Timestamp>("testTime"));
-        ErrorCodeTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, Integer>("errorCode"));
-        ErrorDeviceTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, String>("deviceId"));
-        ErrorOperatorTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, String>("userName"));
-        ErrorDescTableColumn.setCellValueFactory(new PropertyValueFactory<ErrorRecordItem, String>("desc"));
+        MaintenanceTimeTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, Timestamp>("testtime"));
+        MaintenanceDeviceTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("deviceId"));
+        MaintenanceOperatorTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("userName"));
+        MaintenanceResultTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("result"));
+        MaintenanceDescTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("dsc"));
         
-        ErrorDateChoose.valueProperty().addListener((o, oldValue, newValue)->{
-        	startQueryDeviceErrorRecord();
+        MaintenanceDateChoose.valueProperty().addListener((o, oldValue, newValue)->{
+        	queryErrorRecordService.restart();
         });
         
-        ErrorOperatorTextfield.lengthProperty().addListener((o, oldValue, newValue)->{
-        	startQueryDeviceErrorRecord();
+        MaintenanceOperatorTextfield.lengthProperty().addListener((o, oldValue, newValue)->{
+        	queryErrorRecordService.restart();
         });
         
-        ErrorDeviceTextField.lengthProperty().addListener((o, oldValue, newValue)->{
-        	startQueryDeviceErrorRecord();
+        MaintenanceDeviceTextField.lengthProperty().addListener((o, oldValue, newValue)->{
+        	queryErrorRecordService.restart();
         });
         
-        ErrorCodeTextField.lengthProperty().addListener((o, oldValue, newValue)->{
-        	startQueryDeviceErrorRecord();
+        MaintenanceResultTextField.lengthProperty().addListener((o, oldValue, newValue)->{
+        	queryErrorRecordService.restart();
         });
         
         GB_Pagination.currentPageIndexProperty().addListener((o, oldValue, newValue)->{
-        	startQueryDeviceErrorRecord();
+        	queryErrorRecordService.restart();
         });
         
         queryErrorRecordServiceListener = (o, oldValue, newValue)->{
         	if(newValue != null){
         		GB_Pagination.setPageCount(newValue.getTotalPageNum());
             	
-            	ErrorTableView.getItems().setAll(newValue.getRecords());
+        		MaintenanceTableView.getItems().setAll(newValue.getRecords());
         	}
         	else{
         		GB_Pagination.setPageCount(-1);
             	
-            	ErrorTableView.getItems().clear();
+        		MaintenanceTableView.getItems().clear();
         	}
         		
         };
@@ -144,6 +138,7 @@ public class MaintenanceRecordHandler extends Activity {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
+
 		setMyMessagesList(FXCollections.observableArrayList());
 		getMyMessagesList().addListener(myMessageListChangeListener);
 		
@@ -151,7 +146,10 @@ public class MaintenanceRecordHandler extends Activity {
 		queryErrorRecordService.valueProperty().addListener(queryErrorRecordServiceListener);
 		GB_FreshPane.visibleProperty().bind(queryErrorRecordService.runningProperty());
 		
-		mapper = new ObjectMapper();
+		deviceId = (String) object;
+		MaintenanceDeviceTextField.setText(deviceId);
+		
+		formParm = new HashMap<>();
 		
 		queryErrorRecordService.restart();
 	}
@@ -175,72 +173,44 @@ public class MaintenanceRecordHandler extends Activity {
 		GB_FreshPane.visibleProperty().unbind();
 		queryErrorRecordService = null;
 		
-		mapper = null;
+		formParm = null;
 		
 		getMyMessagesList().removeListener(myMessageListChangeListener);
 		setMyMessagesList(null);
 	}
-
-	private void startQueryDeviceErrorRecord() {
-		queryErrorRecordService.restart();
-	}
 	
-	class QueryErrorRecordService extends Service<RecordJson<ErrorRecordItem>>{
+	class QueryErrorRecordService extends Service<RecordJson<MaintenanceRecordItem>>{
 
 		@Override
-		protected Task<RecordJson<ErrorRecordItem>> createTask() {
+		protected Task<RecordJson<MaintenanceRecordItem>> createTask() {
 			// TODO Auto-generated method stub
 			return new MyTask();
 		}
 		
-		class MyTask extends Task<RecordJson<ErrorRecordItem>>{
+		class MyTask extends Task<RecordJson<MaintenanceRecordItem>>{
 
 			@Override
-			protected RecordJson<ErrorRecordItem> call() {
+			protected RecordJson<MaintenanceRecordItem> call() {
 				// TODO Auto-generated method stub				
-				FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
+				formParm.clear();
 
-				if(ErrorDateChoose.getValue() != null)
-					requestFormBodyBuilder.add("date", ErrorDateChoose.getValue().toString());
+				if(MaintenanceDateChoose.getValue() != null)
+					formParm.put("date", MaintenanceDateChoose.getValue().toString());
 				
-				if(ErrorDeviceTextField.getLength() > 0)
-					requestFormBodyBuilder.add("deviceId", ErrorDeviceTextField.getText());
+				if(MaintenanceDeviceTextField.getLength() > 0)
+					formParm.put("deviceId", MaintenanceDeviceTextField.getText());
 				
-				if(ErrorOperatorTextfield.getLength() > 0)
-					requestFormBodyBuilder.add("operatorName", ErrorOperatorTextfield.getText());
+				if(MaintenanceOperatorTextfield.getLength() > 0)
+					formParm.put("operatorName", MaintenanceOperatorTextfield.getText());
 				
-				if(ErrorCodeTextField.getLength() > 0)
-					requestFormBodyBuilder.add("errorCode", ErrorCodeTextField.getText());
+				if(MaintenanceResultTextField.getLength() > 0)
+					formParm.put("result", MaintenanceResultTextField.getText());
 				
-				requestFormBodyBuilder.add("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
-				requestFormBodyBuilder.add("size", String.valueOf(50));
+				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("size", String.valueOf(50));
 				
-				RequestBody requestBody = requestFormBodyBuilder.build();
-				
-				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryDeviceErrorRecord")
-				      .post(requestBody)
-				      .build();
-				
-				Response response;
-				try {
-					response = httpClientTool.getClient().newCall(request).execute();
-					
-					if(response.isSuccessful()) {
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(RecordJson.class, ErrorRecordItem.class); 
-						RecordJson<ErrorRecordItem> errorRecordJson = mapper.readValue(response.body().string(), javaType);
+				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceMaintenanceRecord, HttpPostType.SynchronousForm, null, formParm);
 
-						response.body().close();
-						
-						return errorRecordJson;
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-				return null;
 			}
 		}
 	}

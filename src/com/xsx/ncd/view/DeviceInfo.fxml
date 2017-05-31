@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDialog?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane fx:id="rootStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXDialog fx:id="LogDialog">
+               <JFXDialogLayout>
+					<heading>
+						<Label fx:id="LogDialogHead">信息</Label>
+					</heading>
+					<body>
+						 <Label fx:id="LogDialogContent" />
+					</body>
+					<actions>
+						<JFXButton fx:id="logDialogCommitButton" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <JFXDialog fx:id="addOperatorDialog">
+              	<JFXDialogLayout>
+					<heading>
+						<Label>添加操作人</Label>
+					</heading>
+					<body>
+						 <FlowPane fx:id="opratorRadioFlowPane" hgap="10.0" vgap="5.0" />
+					</body>
+					<actions>
+						<JFXButton fx:id="addOperatorDialogCancelButton" styleClass="dialog-accept">取消</JFXButton>
+						<JFXButton fx:id="addOperatorDialogCommitButton" styleClass="dialog-accept">确认</JFXButton>
+					</actions>
+				</JFXDialogLayout>
+            </JFXDialog>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+               <children>
+                  <ImageView fx:id="deviceImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  <HBox spacing="100.0" style="-fx-background-color: white;">
+                     <children>
+                        <VBox spacing="20.0">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text="设备名称：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="deviceNameLabel" text="Label">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label text="设备编号：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="deviceIdLabel" text="Label">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label text="生产厂家：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="deviceVenderLabel" text="Label">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label text="安装地点：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="deviceAddrLabel" text="Label">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label text="检测项目：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <FlowPane fx:id="deviceItemFlowPane" hgap="10.0" vgap="5.0" />
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label text="负责人：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="deviceUserLabel" text="Label">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label text="操作人：">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <FlowPane fx:id="deviceOperatorFlowPane" hgap="10.0" vgap="5.0" />
+                                    <ImageView fx:id="modifyOperatorImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../../RES/addUserIco.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox spacing="10.0">
+                           <children>
+                              <JFXButton fx:id="deviceMaintenanceRecordButton" buttonType="RAISED" defaultButton="true" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="设备保养记录" textFill="WHITE">
+                                 <font>
+                                    <Font name="Bodoni MT Bold" size="17.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                              <JFXButton fx:id="deviceUseRecordButton" buttonType="RAISED" defaultButton="true" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="设备使用记录" textFill="WHITE">
+                                 <font>
+                                    <Font name="Bodoni MT Bold" size="17.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                              <JFXButton fx:id="deviceAdjustRecordButton" buttonType="RAISED" defaultButton="true" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="设备校准记录" textFill="WHITE">
+                                 <font>
+                                    <Font name="Bodoni MT Bold" size="17.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                              <JFXButton fx:id="deviceQualityRecordButton" buttonType="RAISED" defaultButton="true" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="设备质控记录" textFill="WHITE">
+                                 <font>
+                                    <Font name="Bodoni MT Bold" size="17.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                              <JFXButton fx:id="deviceErrorRecordButton" buttonType="RAISED" defaultButton="true" ripplerFill="#db9b5e" style="-fx-background-color: linear-gradient(to bottom, #F0949D, #CE3B45);" text="设备故障记录" textFill="WHITE">
+                                 <font>
+                                    <Font name="Bodoni MT Bold" size="17.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </JFXButton>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </StackPane>
+      <VBox fx:id="GB_FreshPane" alignment="CENTER" layoutX="10.0" layoutY="10.0" spacing="10.0" style="-fx-background-color: rgba(0, 0, 0, 0.2);" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXSpinner radius="50.0" startingAngle="0.0" style="-fx-radius: 100;" />
+            <Label text="正在加载数据，请稍后" />
+         </children>
+         <cursor>
+            <Cursor fx:constant="WAIT" />
+         </cursor>
+      </VBox>
+   </children>
+</AnchorPane>

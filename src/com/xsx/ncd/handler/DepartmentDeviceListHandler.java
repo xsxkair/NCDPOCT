@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xsx.ncd.define.DeviceJson;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Department;
-import com.xsx.ncd.entity.Device;
+import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
+import com.xsx.ncd.tool.XsxLog;
 
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -36,12 +36,10 @@ public class DepartmentDeviceListHandler extends AnchorPane {
 	private Department departmentData = null;
 	private DeviceManageHandler fatherActivity = null;
 	private QueryThisDepartmentAllDeviceService queryThisDepartmentAllDeviceService = null;
-	private ObjectMapper mapper = null;
 	
 	public DepartmentDeviceListHandler(Department department, DeviceManageHandler fatherActivity){
 		departmentData = department;
 		this.fatherActivity = fatherActivity;
-		mapper = new ObjectMapper();
 		this.onCreate();
 	}
 
@@ -65,17 +63,22 @@ public class DepartmentDeviceListHandler extends AnchorPane {
         AddDeviceImageView.setOnMouseClicked((e)->{
         	fatherActivity.showAddDeviceDialog(departmentData);
         });
-        
+
         queryThisDepartmentAllDeviceService = new QueryThisDepartmentAllDeviceService();
-        queryThisDepartmentAllDeviceService.setPeriod(Duration.minutes(5));
+        queryThisDepartmentAllDeviceService.setPeriod(Duration.minutes(1));
         queryThisDepartmentAllDeviceService.start();
         
         queryThisDepartmentAllDeviceService.lastValueProperty().addListener((o, oldValue, newValue)->{
-        	DeviceListFlowPane.getChildren().clear();
         	
+        	DeviceListFlowPane.getChildren().clear();
+        	SpringFacktory.GetBean(XsxLog.class).info("设备更新");
+
         	if(newValue != null){
-        		for (Device device : newValue) {
+        		for (DeviceJson device : newValue) {
         			MyDeviceView deviceView = new MyDeviceView(device);
+        			deviceView.setOnMouseClicked((e)->{
+        				SpringFacktory.GetBean(ActivitySession.class).startActivity(SpringFacktory.GetBean(DeviceInfoHandler.class), device.getDeviceId());
+        			});
         			DeviceListFlowPane.getChildren().add(deviceView);
         		}
         	}
@@ -96,21 +99,21 @@ public class DepartmentDeviceListHandler extends AnchorPane {
 		return rootPane;
 	}
 	
-	class QueryThisDepartmentAllDeviceService extends ScheduledService<List<Device>>{
+	class QueryThisDepartmentAllDeviceService extends ScheduledService<List<DeviceJson>>{
 
 		@Override
-		protected Task<List<Device>> createTask() {
+		protected Task<List<DeviceJson>> createTask() {
 			// TODO Auto-generated method stub
 			return new MyTask();
 		}
 
-		class MyTask extends Task<List<Device>>{
+		class MyTask extends Task<List<DeviceJson>>{
 
 			@Override
-			protected List<Device> call() throws Exception {
+			protected List<DeviceJson> call() throws Exception {
 				// TODO Auto-generated method stub
 
-				return SpringFacktory.GetBean(HttpClientTool.class).myHttpPost(null, ServiceEnum.QueryThisDepartmentAllDeviceList, 
+				return SpringFacktory.GetBean(HttpClientTool.class).myHttpPost(null, ServiceEnum.QueryAllDeviceByDepartmentInSample, 
 						HttpPostType.SynchronousJson, departmentData, null);
 			}	
 		}
@@ -124,11 +127,9 @@ public class DepartmentDeviceListHandler extends AnchorPane {
 		}
 		DeviceListFlowPane.getChildren().clear();
 		
-		mapper = null;
-		
 		queryThisDepartmentAllDeviceService.cancel();
 		queryThisDepartmentAllDeviceService = null;
-		
+
 		departmentData = null;
 		fatherActivity = null;
 	}

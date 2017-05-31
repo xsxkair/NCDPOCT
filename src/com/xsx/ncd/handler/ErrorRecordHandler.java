@@ -3,6 +3,8 @@ package com.xsx.ncd.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +17,7 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.ErrorRecordItem;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.RecordJson;
 import com.xsx.ncd.define.ServiceEnum;
@@ -60,7 +63,8 @@ public class ErrorRecordHandler extends Activity {
 	@FXML Pagination GB_Pagination;
 	@FXML VBox GB_FreshPane;
 	
-	private ObjectMapper mapper = null;
+	private String deviceId = null;
+	private Map<String, String> formParm = null;
 	private QueryErrorRecordService queryErrorRecordService = null;
 	private ChangeListener<RecordJson<ErrorRecordItem>> queryErrorRecordServiceListener = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
@@ -143,6 +147,7 @@ public class ErrorRecordHandler extends Activity {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
+		
 		setMyMessagesList(FXCollections.observableArrayList());
 		getMyMessagesList().addListener(myMessageListChangeListener);
 		
@@ -150,7 +155,10 @@ public class ErrorRecordHandler extends Activity {
 		queryErrorRecordService.valueProperty().addListener(queryErrorRecordServiceListener);
 		GB_FreshPane.visibleProperty().bind(queryErrorRecordService.runningProperty());
 		
-		mapper = new ObjectMapper();
+		deviceId = (String) object;
+		ErrorDeviceTextField.setText(deviceId);
+		
+		formParm = new HashMap<>();
 		
 		queryErrorRecordService.restart();
 	}
@@ -174,7 +182,7 @@ public class ErrorRecordHandler extends Activity {
 		GB_FreshPane.visibleProperty().unbind();
 		queryErrorRecordService = null;
 		
-		mapper = null;
+		formParm = null;
 		
 		getMyMessagesList().removeListener(myMessageListChangeListener);
 		setMyMessagesList(null);
@@ -193,49 +201,25 @@ public class ErrorRecordHandler extends Activity {
 			@Override
 			protected RecordJson<ErrorRecordItem> call() {
 				// TODO Auto-generated method stub				
-				FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
+
+				formParm.clear();
 
 				if(ErrorDateChoose.getValue() != null)
-					requestFormBodyBuilder.add("date", ErrorDateChoose.getValue().toString());
+					formParm.put("date", ErrorDateChoose.getValue().toString());
 				
 				if(ErrorDeviceTextField.getLength() > 0)
-					requestFormBodyBuilder.add("deviceId", ErrorDeviceTextField.getText());
+					formParm.put("deviceId", ErrorDeviceTextField.getText());
 				
 				if(ErrorOperatorTextfield.getLength() > 0)
-					requestFormBodyBuilder.add("operatorName", ErrorOperatorTextfield.getText());
+					formParm.put("operatorName", ErrorOperatorTextfield.getText());
 				
 				if(ErrorCodeTextField.getLength() > 0)
-					requestFormBodyBuilder.add("errorCode", ErrorCodeTextField.getText());
+					formParm.put("errorCode", ErrorCodeTextField.getText());
 				
-				requestFormBodyBuilder.add("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
-				requestFormBodyBuilder.add("size", String.valueOf(50));
+				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("size", String.valueOf(50));
 				
-				RequestBody requestBody = requestFormBodyBuilder.build();
-				
-				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryDeviceErrorRecord")
-				      .post(requestBody)
-				      .build();
-				
-				Response response;
-				try {
-					response = httpClientTool.getClient().newCall(request).execute();
-					
-					if(response.isSuccessful()) {
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(RecordJson.class, ErrorRecordItem.class); 
-						RecordJson<ErrorRecordItem> errorRecordJson = mapper.readValue(response.body().string(), javaType);
-
-						response.body().close();
-						
-						return errorRecordJson;
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-				return null;
+				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceErrorRecord, HttpPostType.SynchronousForm, null, formParm);
 			}
 		}
 	}

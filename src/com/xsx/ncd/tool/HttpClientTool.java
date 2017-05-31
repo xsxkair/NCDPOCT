@@ -2,10 +2,7 @@ package com.xsx.ncd.tool;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,20 +11,15 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xsx.ncd.define.DeviceIcoInfo;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.entity.Device;
 import com.xsx.ncd.entity.DeviceType;
 import com.xsx.ncd.handler.Activity;
-import com.xsx.ncd.handler.HttpTemplet;
 import com.xsx.ncd.spring.ActivitySession;
 
-import javafx.scene.image.Image;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;

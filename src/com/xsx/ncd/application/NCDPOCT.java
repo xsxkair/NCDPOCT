@@ -9,7 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.stage.Stage;
 
-public class AppStart extends Application{
+public class NCDPOCT extends Application{
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

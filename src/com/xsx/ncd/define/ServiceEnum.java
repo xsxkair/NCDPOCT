@@ -51,16 +51,23 @@ public enum ServiceEnum {
 	
 	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", String.class, null),
 	QueryAllDeviceType("/QueryAllDeviceType", List.class, DeviceType.class),
-	QueryAllDeviceIcoPath("/QueryAllDeviceIcoPath", List.class, String.class),
 	
+	QueryDeviceByDeviceId("/QueryDeviceByDeviceId", Device.class, null),
 	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", List.class, Device.class),
 	AddNewDevice("/AddNewDevice", String.class, null),
-	QueryAllDeviceInRecordJson("/QueryAllDeviceInRecordJson", List.class, DeviceItem.class),
+	UpDateDevice("/UpDateDevice", String.class, null),
+	QueryAllDeviceInSample("/QueryAllDeviceInSample", List.class, DeviceJson.class),
+	QueryAllDeviceByDepartmentInSample("/QueryAllDeviceByDepartmentInSample", List.class, DeviceJson.class),
 	
-	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", Map.class, null),
+	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", RecordJson.class, ErrorRecordItem.class),
+	QueryDeviceAdjustRecord("/QueryDeviceAdjustRecord", RecordJson.class, AdjustRecordItem.class),
+	QueryDeviceMaintenanceRecord("/QueryDeviceMaintenanceRecord", RecordJson.class, MaintenanceRecordItem.class),
+	QueryDeviceQualityRecord("/QueryDeviceQualityRecord", RecordJson.class, QualityRecordItem.class),
 	
 	QueryAllNotHandledReportNum("/QueryAllNotHandledReportNum", Long.class, null),
-	QueryNCDYGFXYReportById("/QueryNCDYGFXYReportById", NCD_YGFXY.class, null);
+	QueryDeviceReportNotHandled("/QueryDeviceReportNotHandled", RecordJson.class, DeviceReportItem.class),
+	QueryNcdYGFXYReportById("/QueryNcdYGFXYReportById", NCD_YGFXY.class, null),
+	SaveNcdYGFXYReport("/SaveNcdYGFXYReport",String.class, null);
 	
 	private final String url;
 	private final Class<?> class0;

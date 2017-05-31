@@ -3,31 +3,28 @@ package com.xsx.ncd.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.AdjustRecordItem;
-import com.xsx.ncd.define.ErrorRecordItem;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.RecordJson;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.handler.QualityRecordHandler.QueryErrorRecordService;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.tool.HttpClientTool;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -37,12 +34,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Component
 public class AdjustRecordHandler extends Activity {
@@ -64,10 +56,11 @@ public class AdjustRecordHandler extends Activity {
 	@FXML Pagination GB_Pagination;
 	@FXML VBox GB_FreshPane;
 	
+	private String deviceId = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
-	private ObjectMapper mapper = null;
 	private QueryErrorRecordService queryErrorRecordService = null;
 	private ChangeListener<RecordJson<AdjustRecordItem>> queryErrorRecordServiceListener = null;
+	private Map<String, String> formParm = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired HttpClientTool httpClientTool;
@@ -149,6 +142,7 @@ public class AdjustRecordHandler extends Activity {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
+		
 		setMyMessagesList(FXCollections.observableArrayList());
 		getMyMessagesList().addListener(myMessageListChangeListener);
 		
@@ -156,7 +150,10 @@ public class AdjustRecordHandler extends Activity {
 		queryErrorRecordService.valueProperty().addListener(queryErrorRecordServiceListener);
 		GB_FreshPane.visibleProperty().bind(queryErrorRecordService.runningProperty());
 		
-		mapper = new ObjectMapper();
+		deviceId = (String) object;
+		AdjustDeviceTextField.setText(deviceId);
+		
+		formParm = new HashMap<>();
 		
 		queryErrorRecordService.restart();
 	}
@@ -180,7 +177,7 @@ public class AdjustRecordHandler extends Activity {
 		GB_FreshPane.visibleProperty().unbind();
 		queryErrorRecordService = null;
 		
-		mapper = null;
+		formParm = null;
 		
 		getMyMessagesList().removeListener(myMessageListChangeListener);
 		setMyMessagesList(null);
@@ -198,50 +195,26 @@ public class AdjustRecordHandler extends Activity {
 
 			@Override
 			protected RecordJson<AdjustRecordItem> call() {
-				// TODO Auto-generated method stub				
-				FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
+				// TODO Auto-generated method stub		
+				formParm.clear();
 
 				if(AdjustDateChoose.getValue() != null)
-					requestFormBodyBuilder.add("date", AdjustDateChoose.getValue().toString());
+					formParm.put("date", AdjustDateChoose.getValue().toString());
 				
 				if(AdjustDeviceTextField.getLength() > 0)
-					requestFormBodyBuilder.add("deviceId", AdjustDeviceTextField.getText());
+					formParm.put("deviceId", AdjustDeviceTextField.getText());
 				
 				if(AdjustOperatorTextfield.getLength() > 0)
-					requestFormBodyBuilder.add("operatorName", AdjustOperatorTextfield.getText());
+					formParm.put("operatorName", AdjustOperatorTextfield.getText());
 				
 				if(AdjustResultTextField.getLength() > 0)
-					requestFormBodyBuilder.add("result", AdjustResultTextField.getText());
+					formParm.put("result", AdjustResultTextField.getText());
 				
-				requestFormBodyBuilder.add("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
-				requestFormBodyBuilder.add("size", String.valueOf(50));
+				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("size", String.valueOf(50));
 				
-				RequestBody requestBody = requestFormBodyBuilder.build();
-				
-				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryDeviceAdjustRecord")
-				      .post(requestBody)
-				      .build();
-				
-				Response response;
-				try {
-					response = httpClientTool.getClient().newCall(request).execute();
-					
-					if(response.isSuccessful()) {
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(RecordJson.class, AdjustRecordItem.class); 
-						RecordJson<AdjustRecordItem> errorRecordJson = mapper.readValue(response.body().string(), javaType);
+				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceAdjustRecord, HttpPostType.SynchronousForm, null, formParm);
 
-						response.body().close();
-						
-						return errorRecordJson;
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-				return null;
 			}
 		}
 	}

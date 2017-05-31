@@ -19,7 +19,6 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXRadioButton;
 import com.xsx.ncd.define.ActivityStatusEnum;
-import com.xsx.ncd.define.DeviceIcoInfo;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
@@ -32,11 +31,11 @@ import com.xsx.ncd.entity.Operator;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
+import com.xsx.ncd.tool.XsxLog;
 import com.xsx.ncd.spring.SpringFacktory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
@@ -108,15 +107,13 @@ public class DeviceManageHandler extends Activity {
 	private Set<Operator> deviceOperators = null;
 	
 	private ObservableSet<String> deviceIcoPathSet = null;
-	private SetChangeListener<String> deviceIcoPathChangeListener = null;
-	private ObservableList<DeviceIcoInfo> deviceIcoList = null;
-	private ListChangeListener<DeviceIcoInfo> deviceIcoInfoListChangeListener = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 	
 	@Autowired UserSession userSession;
 	@Autowired ActivitySession activitySession;
 	@Autowired UserFilePath userFilePath;
 	@Autowired HttpClientTool httpClientTool;
+	@Autowired XsxLog xsxLog;
 	
 	@PostConstruct
 	@Override
@@ -289,11 +286,6 @@ public class DeviceManageHandler extends Activity {
 							case ReadAllDepartment:
 								showAllDepartment(message.getObj());
 								break;
-							
-								//读取所有图标路径
-							case QueryAllDeviceIcoPath:
-								deviceIcoPathSet.addAll(message.getObj());
-								break;
 							default:
 								break;
 						}
@@ -304,6 +296,7 @@ public class DeviceManageHandler extends Activity {
         
         this.setActivityName("设备管理");
         this.setActivityStatus(ActivityStatusEnum.Create);
+        xsxLog.info("设备管理界面创建");
   
         AnchorPane.setTopAnchor(this.getRootPane(), 0.0);
         AnchorPane.setBottomAnchor(this.getRootPane(), 0.0);
@@ -328,18 +321,20 @@ public class DeviceManageHandler extends Activity {
     	deviceOperators = new HashSet<>();
     	
     	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
+    	
+    	xsxLog.info("设备管理界面启动");
 	}
 	
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
-		
+		xsxLog.info("设备管理界面暂停");
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		
+		xsxLog.info("设备管理界面恢复");
 	}
 
 	@Override
@@ -359,6 +354,8 @@ public class DeviceManageHandler extends Activity {
 		
 		this.getMyMessagesList().removeListener(myMessageListChangeListener);
 		this.setMyMessagesList(null);
+		
+		xsxLog.info("设备管理界面销毁");
 	}
 	
 	private void showAllDepartment(List<Department> departments) {

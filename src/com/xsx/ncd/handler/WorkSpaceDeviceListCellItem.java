@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xsx.ncd.define.DeviceItem;
+import com.xsx.ncd.define.DeviceJson;
 import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
 
@@ -28,7 +28,7 @@ import okhttp3.Response;
 
 public class WorkSpaceDeviceListCellItem extends AnchorPane{
 
-	private DeviceItem deviceWorkSpaceItem = null;
+	private DeviceJson deviceWorkSpaceItem = null;
 	
 	private GridPane RootPane = null;
 	@FXML Label departmentNameLabel = null;
@@ -42,7 +42,7 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
 	private ChangeListener<List<Long>> queryDeviceServiceListener = null;
 	private ObjectMapper mapper = null;
 
-	public WorkSpaceDeviceListCellItem(DeviceItem deviceWorkSpaceItem) {
+	public WorkSpaceDeviceListCellItem(DeviceJson deviceWorkSpaceItem) {
 		super();
 		this.deviceWorkSpaceItem = deviceWorkSpaceItem;
 		

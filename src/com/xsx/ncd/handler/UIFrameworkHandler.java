@@ -1,26 +1,19 @@
 package com.xsx.ncd.handler;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Stack;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
-import com.xsx.ncd.define.DeviceItem;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.ServiceEnum;
-import com.xsx.ncd.handler.WorkSpaceHandler.QueryDeviceService.MyTask;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
@@ -28,17 +21,8 @@ import com.xsx.ncd.tool.HttpClientTool;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableNumberValue;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,16 +32,11 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Component
 public class UIFrameworkHandler implements Observer{
@@ -120,6 +99,8 @@ public class UIFrameworkHandler implements Observer{
 	@Autowired DeviceManageHandler deviceManageHandler;
 	@Autowired ErrorRecordHandler errorRecordHandler;
 	@Autowired AdjustRecordHandler adjustRecordHandler;
+	@Autowired QualityRecordHandler qualityRecordHandler;
+	@Autowired MaintenanceRecordHandler maintenanceRecordHandler;
 	@Autowired WorkSpaceHandler workSpaceHandler;
 	@Autowired HttpClientTool httpClientTool;
 
@@ -239,13 +220,13 @@ public class UIFrameworkHandler implements Observer{
        		else if(newValue.equals(2))
        			activitySession.clearAndSetOriginActivityAs(repertoryPage, null);
        		else if(newValue.equals(3))
-       			activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
+       			activitySession.clearAndSetOriginActivityAs(maintenanceRecordHandler, null);
        		else if(newValue.equals(4))
        			activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
        		else if(newValue.equals(5))
        			activitySession.clearAndSetOriginActivityAs(myInfoHandler, null);
        		else if(newValue.equals(6))
-       			activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
+       			activitySession.clearAndSetOriginActivityAs(qualityRecordHandler, null);
        		else if(newValue.equals(7))
        			activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
         });

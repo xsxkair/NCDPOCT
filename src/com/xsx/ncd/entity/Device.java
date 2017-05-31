@@ -24,6 +24,8 @@ public class Device {
 	
 	private String addr;
 
+	private Long modifyTimeStamp;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -94,6 +96,14 @@ public class Device {
 
 	public void setAddr(String addr) {
 		this.addr = addr;
+	}
+
+	public Long getModifyTimeStamp() {
+		return modifyTimeStamp;
+	}
+
+	public void setModifyTimeStamp(Long modifyTimeStamp) {
+		this.modifyTimeStamp = modifyTimeStamp;
 	}
 
 }

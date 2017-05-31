@@ -2,7 +2,9 @@ package com.xsx.ncd.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -14,7 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.ActivityStatusEnum;
-import com.xsx.ncd.define.DeviceItem;
+import com.xsx.ncd.define.DeviceJson;
+import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.ActivitySession;
@@ -42,8 +45,8 @@ public class WorkSpaceHandler extends Activity{
 	@FXML JFXTextField DeviceIdTextField;
 	
 	private QueryDeviceService queryDeviceService = null;
-	private ChangeListener<List<DeviceItem>> queryDeviceServiceListener = null;
-	private ObjectMapper mapper = null;
+	private ChangeListener<List<DeviceJson>> queryDeviceServiceListener = null;
+	private Map<String, String> formParm = null;
 	
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired ActivitySession activitySession;
@@ -80,7 +83,7 @@ public class WorkSpaceHandler extends Activity{
         	DeviceListView.getItems().clear();
         	
         	if(newValue != null){
-        		for (DeviceItem deviceWorkSpaceItem : newValue) {
+        		for (DeviceJson deviceWorkSpaceItem : newValue) {
         			WorkSpaceDeviceListCellItem item = new WorkSpaceDeviceListCellItem(deviceWorkSpaceItem);
         			DeviceListView.getItems().add(item);
         			item.setOnMouseClicked((e)->{
@@ -111,7 +114,7 @@ public class WorkSpaceHandler extends Activity{
 		DeviceDepartmentTextField.setText(null);
 		DeviceIdTextField.setText(null);
 		
-		mapper = new ObjectMapper();
+		formParm = new HashMap<>();
 		
 		queryDeviceService = new QueryDeviceService();
 		queryDeviceService.valueProperty().addListener(queryDeviceServiceListener);
@@ -138,8 +141,6 @@ public class WorkSpaceHandler extends Activity{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-		mapper = null;
-		
 		queryDeviceService.valueProperty().removeListener(queryDeviceServiceListener);
 		GB_FreshPane.visibleProperty().unbind();
 		queryDeviceService = null;
@@ -150,55 +151,33 @@ public class WorkSpaceHandler extends Activity{
 		
 		DeviceListView.getItems().clear();
 		
+		formParm = null;
+		
 		xsxLog.info("工作台销毁");
 	}
 
-	class QueryDeviceService extends Service<List<DeviceItem>>{
+	class QueryDeviceService extends Service<List<DeviceJson>>{
 
 		@Override
-		protected Task<List<DeviceItem>> createTask() {
+		protected Task<List<DeviceJson>> createTask() {
 			// TODO Auto-generated method stub
 			return new MyTask();
 		}
 		
-		class MyTask extends Task<List<DeviceItem>>{
+		class MyTask extends Task<List<DeviceJson>>{
 
 			@Override
-			protected List<DeviceItem> call() {
+			protected List<DeviceJson> call() {
 				// TODO Auto-generated method stub				
-				FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
-
+				formParm.clear();
+				
 				if(DeviceDepartmentTextField.getLength() > 0)
-					requestFormBodyBuilder.add("departmentName", DeviceDepartmentTextField.getText());
+					formParm.put("departmentName", DeviceDepartmentTextField.getText());
 				
 				if(DeviceIdTextField.getLength() > 0)
-					requestFormBodyBuilder.add("deviceId", DeviceIdTextField.getText());
+					formParm.put("deviceId", DeviceIdTextField.getText());
 				
-				RequestBody requestBody = requestFormBodyBuilder.build();
-				
-				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryAllDeviceInSample")
-				      .post(requestBody)
-				      .build();
-				
-				Response response;
-				try {
-					response = httpClientTool.getClient().newCall(request).execute();
-					
-					if(response.isSuccessful()) {
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, DeviceItem.class); 
-						List<DeviceItem> errorRecordJson = mapper.readValue(response.body().string(), javaType);
-
-						response.body().close();
-						
-						return errorRecordJson;
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				return null;
+				return httpClientTool.myHttpPost(null, ServiceEnum.QueryAllDeviceInSample, HttpPostType.SynchronousForm, null, formParm);
 			}
 		}
 	}
