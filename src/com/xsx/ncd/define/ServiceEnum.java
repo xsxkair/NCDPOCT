@@ -64,6 +64,7 @@ public enum ServiceEnum {
 	QueryDeviceMaintenanceRecord("/QueryDeviceMaintenanceRecord", RecordJson.class, MaintenanceRecordItem.class),
 	QueryDeviceQualityRecord("/QueryDeviceQualityRecord", RecordJson.class, QualityRecordItem.class),
 	
+	QueryThisDeviceNotHandledReportNumAndLastTime("/QueryThisDeviceNotHandledReportNumAndLastTime", List.class, Long.class),
 	QueryAllNotHandledReportNum("/QueryAllNotHandledReportNum", Long.class, null),
 	QueryDeviceReportNotHandled("/QueryDeviceReportNotHandled", RecordJson.class, DeviceReportItem.class),
 	QueryNcdYGFXYReportById("/QueryNcdYGFXYReportById", NCD_YGFXY.class, null),

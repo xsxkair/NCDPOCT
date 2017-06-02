@@ -2,11 +2,13 @@ package com.xsx.ncd.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsx.ncd.define.DeviceJson;
+import com.xsx.ncd.define.HttpPostType;
+import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
 
@@ -21,10 +23,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class WorkSpaceDeviceListCellItem extends AnchorPane{
 
@@ -40,7 +38,7 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
 	
 	private QueryDeviceService queryDeviceService = null;
 	private ChangeListener<List<Long>> queryDeviceServiceListener = null;
-	private ObjectMapper mapper = null;
+	private Map<String, String> formParm = null;
 
 	public WorkSpaceDeviceListCellItem(DeviceJson deviceWorkSpaceItem) {
 		super();
@@ -94,7 +92,7 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
         AnchorPane.setLeftAnchor(RootPane, 0.0);
         AnchorPane.setRightAnchor(RootPane, 0.0);
         
-        mapper = new ObjectMapper();
+        formParm = new HashMap<>();
         queryDeviceServiceListener = (o, oldValue, newValue)->{
         	if(newValue != null){
         		if((newValue.get(0) != null) && newValue.get(0) != 0)
@@ -124,7 +122,7 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
 		queryDeviceService.lastValueProperty().removeListener(queryDeviceServiceListener);
 		queryDeviceService = null;
 		queryDeviceServiceListener = null;
-		mapper = null;
+		formParm = null;
 	}
 	
 	class QueryDeviceService extends ScheduledService<List<Long>>{
@@ -140,36 +138,12 @@ public class WorkSpaceDeviceListCellItem extends AnchorPane{
 			@Override
 			protected List<Long> call() {
 				// TODO Auto-generated method stub				
-				FormBody.Builder requestFormBodyBuilder = new FormBody.Builder();
-
-				requestFormBodyBuilder.add("deviceTypeCode", deviceWorkSpaceItem.getDeviceTypeCode());
-				requestFormBodyBuilder.add("deviceId", deviceWorkSpaceItem.getDeviceId());
+				formParm.clear();
 				
-				RequestBody requestBody = requestFormBodyBuilder.build();
+				formParm.put("deviceTypeCode", deviceWorkSpaceItem.getDeviceTypeCode());
+				formParm.put("deviceId", deviceWorkSpaceItem.getDeviceId());
 				
-				Request request = new Request.Builder()
-				      .url("http://116.62.108.201:8080/NCDPOCT_Server/QueryThisDeviceNotHandledReportNumAndLastTime")
-				      .post(requestBody)
-				      .build();
-				
-				Response response;
-				try {
-					response = SpringFacktory.GetBean(HttpClientTool.class).getClient().newCall(request).execute();
-					
-					if(response.isSuccessful()) {
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, Long.class); 
-						List<Long> errorRecordJson = mapper.readValue(response.body().string(), javaType);
-
-						response.body().close();
-						
-						return errorRecordJson;
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				return null;
+				return SpringFacktory.GetBean(HttpClientTool.class).myHttpPost(null, ServiceEnum.QueryThisDeviceNotHandledReportNumAndLastTime, HttpPostType.SynchronousForm, null, formParm);
 			}
 		}
 	}

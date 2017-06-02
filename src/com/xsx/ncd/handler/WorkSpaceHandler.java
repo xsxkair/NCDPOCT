@@ -11,14 +11,11 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.DeviceJson;
 import com.xsx.ncd.define.HttpPostType;
-import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.tool.HttpClientTool;
@@ -31,10 +28,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Component
 public class WorkSpaceHandler extends Activity{

@@ -1,7 +1,10 @@
 package com.xsx.ncd.tool;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +14,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsx.ncd.define.HttpPostType;
@@ -46,6 +50,7 @@ public class HttpClientTool {
 	public static final String ServiceDeviceIcoUrl = "http://116.62.108.201:8080/ico/";
 	
 	@Autowired ActivitySession activitySession;
+
 	
 	@PostConstruct
 	private void init(){
@@ -130,6 +135,7 @@ public class HttpClientTool {
 				public void onResponse(Call arg0, Response arg1){
 					// TODO Auto-generated method stub
 					try {
+												
 						if(serviceEnum.getClass1() == null){
 							if(serviceEnum.getClass0().equals(String.class))
 								message.setObj(arg1.body().string());
@@ -164,6 +170,7 @@ public class HttpClientTool {
 				Response response = client.newCall(request).execute();
 				
 				if(response.isSuccessful()) {
+					
 					if(serviceEnum.getClass1() == null){
 						value = (T) mapper.readValue(response.body().string(), serviceEnum.getClass0());
 					}
