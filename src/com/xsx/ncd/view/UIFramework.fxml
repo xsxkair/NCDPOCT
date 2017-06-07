@@ -303,6 +303,11 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </JFXButton>
+                              <ImageView fx:id="topMenuDivideImageview1" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
                               <JFXButton fx:id="activity2Button" text="fatherActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
@@ -310,14 +315,12 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
-                                 <graphic>
-                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../../../RES/min.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
                               </JFXButton>
+                              <ImageView fx:id="topMenuDivideImageview2" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
                               <JFXButton fx:id="activity3Button" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
@@ -325,14 +328,12 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
-                                 <graphic>
-                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../../../RES/min.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
                               </JFXButton>
+                              <ImageView fx:id="topMenuDivideImageview3" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
                               <JFXButton fx:id="activity4Button" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
@@ -340,14 +341,12 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
-                                 <graphic>
-                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../../../RES/min.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
                               </JFXButton>
+                              <ImageView fx:id="topMenuDivideImageview4" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
                               <JFXButton fx:id="activity5Button" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
@@ -355,14 +354,12 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
-                                 <graphic>
-                                    <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../../../RES/min.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
                               </JFXButton>
+                              <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                                 <image>
+                                    <Image url="@../../../../RES/min.png" />
+                                 </image>
+                              </ImageView>
                            </children>
                         </HBox>
                         <HBox alignment="BOTTOM_CENTER" spacing="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="20.0">

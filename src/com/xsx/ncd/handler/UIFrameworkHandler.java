@@ -74,9 +74,13 @@ public class UIFrameworkHandler implements Observer{
 	
 	@FXML HBox topMenuHBox;
 	@FXML JFXButton activity1Button;
+	@FXML ImageView topMenuDivideImageview1;
 	@FXML JFXButton activity2Button;
+	@FXML ImageView topMenuDivideImageview2;
 	@FXML JFXButton activity3Button;
+	@FXML ImageView topMenuDivideImageview3;
 	@FXML JFXButton activity4Button;
+	@FXML ImageView topMenuDivideImageview4;
 	@FXML JFXButton activity5Button;
 	
 	@FXML StackPane NotHandledReportStackPane;
@@ -173,15 +177,20 @@ public class UIFrameworkHandler implements Observer{
         	leftMenuExpande(false);
         });
         
+        topMenuDivideImageview1.visibleProperty().bind(activity2Button.visibleProperty());
         activity2Button.visibleProperty().bind(activity2Button.textProperty().length().greaterThan(0));
+        topMenuDivideImageview2.visibleProperty().bind(activity3Button.visibleProperty());
         activity3Button.visibleProperty().bind(activity3Button.textProperty().length().greaterThan(0));
+        topMenuDivideImageview3.visibleProperty().bind(activity4Button.visibleProperty());
         activity4Button.visibleProperty().bind(activity4Button.textProperty().length().greaterThan(0));
+        topMenuDivideImageview4.visibleProperty().bind(activity5Button.visibleProperty());
         activity5Button.visibleProperty().bind(activity5Button.textProperty().length().greaterThan(0));
         for (Node node : topMenuHBox.getChildren()) {
-			JFXButton jfxButton = (JFXButton) node;
-			jfxButton.setOnAction((e)->{
-				activitySession.backToThisActivity((Activity) jfxButton.getUserData());
-			});
+        	if(node instanceof JFXButton){
+        		((JFXButton) node).setOnAction(e->{
+        			activitySession.backToThisActivity((Activity) node.getUserData());
+        		});
+        	}
 		}
         
         NotHandledReportStackPane.setOnMouseClicked((e)->{
@@ -324,14 +333,14 @@ public class UIFrameworkHandler implements Observer{
 		i=0;
 		while(iterable.hasNext()){
 			Activity tempActivity = iterable.next();
-			topMenuHBox.getChildren().get(i).setUserData(tempActivity);
-			((JFXButton) topMenuHBox.getChildren().get(i)).setText(tempActivity.getActivityName());
+			topMenuHBox.getChildren().get(i*2).setUserData(tempActivity);
+			((JFXButton) topMenuHBox.getChildren().get(i*2)).setText(tempActivity.getActivityName());
 			i++;
 		}
 		
-		for(;i<topMenuHBox.getChildren().size(); i++){
-			topMenuHBox.getChildren().get(i).setUserData(null);
-			((JFXButton) topMenuHBox.getChildren().get(i)).setText(null);
+		for(;i<topMenuHBox.getChildren().size()/2; i++){
+			topMenuHBox.getChildren().get(i*2).setUserData(null);
+			((JFXButton) topMenuHBox.getChildren().get(i*2)).setText(null);
 		}
 	}
 }
