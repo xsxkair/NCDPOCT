@@ -65,11 +65,6 @@ public class MyInfoHandler extends Activity {
 	@FXML JFXButton GB_UserManageButton;
 	@FXML JFXButton GB_OperatorManageButton;
 	
-	@FXML JFXDialog modifyUserInfoDialog;
-	@FXML PasswordField userPasswordTextField;
-	@FXML JFXButton acceptButton0;
-	@FXML JFXButton cancelButton0;
-	
 	@FXML JFXDialog modifyUserPasswordDialog;
 	@FXML PasswordField userNewPasswordTextField0;
 	@FXML PasswordField userNewPasswordTextField1;
@@ -112,8 +107,7 @@ public class MyInfoHandler extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        rootStackPane.getChildren().remove(modifyUserInfoDialog);
+
         rootStackPane.getChildren().remove(modifyUserPasswordDialog);
         rootStackPane.getChildren().remove(LogDialog);
         
@@ -131,33 +125,15 @@ public class MyInfoHandler extends Activity {
         });
         
         GB_SaveUserInfoButton.setOnAction((e)->{
-        	userPasswordTextField.clear();
-    		modifyUserInfoDialog.show(rootStackPane);
+        	itsMe.setName(GB_UserNameTextField.getText());
+			itsMe.setAge(GB_UserAgeTextField.getText());
+			itsMe.setSex(GB_UserSexTextField.getText());
+			itsMe.setPhone(GB_UserPhoneTextField.getText());
+			itsMe.setJob(GB_UserJobTextField.getText());
+			itsMe.setDes(GB_UserDescTextField.getText());
+
+			startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, itsMe, null, GB_FreshPane);
         });
-
-        //确认修改个人信息
-        acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
-        acceptButton0.setOnMouseClicked((e)->{
-			modifyUserInfoDialog.close();
-
-			if(userPasswordTextField.getText().equals(itsMe.getPassword())){
-				itsMe.setName(GB_UserNameTextField.getText());
-				itsMe.setAge(GB_UserAgeTextField.getText());
-				itsMe.setSex(GB_UserSexTextField.getText());
-				itsMe.setPhone(GB_UserPhoneTextField.getText());
-				itsMe.setJob(GB_UserJobTextField.getText());
-				itsMe.setDes(GB_UserDescTextField.getText());
-
-				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, itsMe, null, GB_FreshPane);
-			}
-			else
-				showLogsDialog("错误", "密码错误，禁止修改！");
-		});
-        
-        //取消修改个人信息
-        cancelButton0.setOnMouseClicked((e)->{
-			modifyUserInfoDialog.close();
-		});
         
         GB_ModifyUserPassWordButton.setOnAction((e)->{
         	userNewPasswordTextField0.clear();

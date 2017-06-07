@@ -70,11 +70,6 @@ public class OperatorListHandler extends Activity{
 	@FXML StackPane GB_ModifyIcoStackPane;
 	@FXML Button GB_SaveUserInfoButton;
 	
-	@FXML JFXDialog modifyUserInfoDialog;
-	@FXML PasswordField userPasswordTextField;
-	@FXML JFXButton acceptButton0;
-	@FXML JFXButton cancelButton0;
-	
 	@FXML JFXDialog LogDialog;
 	@FXML Label LogDialogHead;
 	@FXML Label LogDialogContent;
@@ -108,7 +103,6 @@ public class OperatorListHandler extends Activity{
 		}
         
         deleteUserIco = new Image(this.getClass().getResourceAsStream("/RES/deleteUserIco.png"));
-        rootStackPane.getChildren().remove(modifyUserInfoDialog);
         rootStackPane.getChildren().remove(LogDialog);
         
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
@@ -206,53 +200,6 @@ public class OperatorListHandler extends Activity{
         };
         
 		GB_FreshPane.setVisible(false);
-
-        
-        //权限确认
-        acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
-        acceptButton0.setOnAction((e)->{
-        	modifyUserInfoDialog.close();
-        	if(userPasswordTextField.getText().equals(itsMe.getPassword())){
-        		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
-        			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-
-        			startHttpWork(ServiceEnum.DeleteOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
-        		}
-        		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-        			tempOperator = new Operator();
-        				
-        			tempOperator.setName(GB_UserNameTextField.getText());
-        			tempOperator.setAge(GB_UserAgeTextField.getText());
-        			tempOperator.setSex(GB_UserSexTextField.getText());
-        			tempOperator.setPhone(GB_UserPhoneTextField.getText());
-        			tempOperator.setJob(GB_UserJobTextField.getText());
-        			tempOperator.setDes(GB_UserDescTextField.getText());
-        			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-        			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
-
-        			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
-        		}
-        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-        			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-    				
-        			tempOperator.setName(GB_UserNameTextField.getText());
-        			tempOperator.setAge(GB_UserAgeTextField.getText());
-        			tempOperator.setSex(GB_UserSexTextField.getText());
-        			tempOperator.setPhone(GB_UserPhoneTextField.getText());
-        			tempOperator.setJob(GB_UserJobTextField.getText());
-        			tempOperator.setDes(GB_UserDescTextField.getText());
-        			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-        			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
-
-        			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
-        		}
-        	}
-        	else
-        		showLogsDialog("错误", "密码错误，禁止操作！");
-        });
-        cancelButton0.setOnAction((e)->{
-        	modifyUserInfoDialog.close();
-        });
         
         //取消修改密码
         acceptButton2.setOnMouseClicked((e)->{
@@ -263,9 +210,34 @@ public class OperatorListHandler extends Activity{
         GB_SaveUserInfoButton.disableProperty().bind(GB_UserNameTextField.lengthProperty().lessThan(1).
         		or(GB_UserDepartmentCombox.getSelectionModel().selectedItemProperty().isNull()));
         GB_SaveUserInfoButton.setOnAction((e)->{
-			userPasswordTextField.clear();
-    		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
-    		modifyUserInfoDialog.show(rootStackPane);
+        	if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+    			tempOperator = new Operator();
+    				
+    			tempOperator.setName(GB_UserNameTextField.getText());
+    			tempOperator.setAge(GB_UserAgeTextField.getText());
+    			tempOperator.setSex(GB_UserSexTextField.getText());
+    			tempOperator.setPhone(GB_UserPhoneTextField.getText());
+    			tempOperator.setJob(GB_UserJobTextField.getText());
+    			tempOperator.setDes(GB_UserDescTextField.getText());
+    			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+    			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
+
+    			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
+    		}
+    		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+    			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+				
+    			tempOperator.setName(GB_UserNameTextField.getText());
+    			tempOperator.setAge(GB_UserAgeTextField.getText());
+    			tempOperator.setSex(GB_UserSexTextField.getText());
+    			tempOperator.setPhone(GB_UserPhoneTextField.getText());
+    			tempOperator.setJob(GB_UserJobTextField.getText());
+    			tempOperator.setDes(GB_UserDescTextField.getText());
+    			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+    			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
+
+    			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
+    		}
         });
         
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
@@ -379,9 +351,9 @@ public class OperatorListHandler extends Activity{
 			imageView.setCursor(Cursor.HAND);
 			imageView.setOnMouseClicked((e)->{
 				GB_ActionType = MyUserActionEnum.DELETE;
-				userPasswordTextField.clear();
-	    		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
-	    		modifyUserInfoDialog.show(rootStackPane);
+				tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+
+    			startHttpWork(ServiceEnum.DeleteOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
 			});
 			AnchorPane.setTopAnchor(imageView, 0.0);
 	        AnchorPane.setBottomAnchor(imageView, 0.0);

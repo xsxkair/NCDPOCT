@@ -23,23 +23,6 @@
    <children>
       <StackPane fx:id="rootStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <JFXDialog fx:id="modifyUserInfoDialog">
-               <JFXDialogLayout>
-					<heading>
-						<Label>权限认证</Label>
-					</heading>
-					<body>
-						 <HBox alignment="CENTER_LEFT" spacing="20.0">
-						 	<Label>密码：</Label>
-						 	<PasswordField fx:id="userPasswordTextField" text="密码" />
-						 </HBox>
-					</body>
-					<actions>
-						<JFXButton fx:id="cancelButton0" styleClass="dialog-accept">取消</JFXButton>
-						<JFXButton fx:id="acceptButton0" styleClass="dialog-accept">确认</JFXButton>
-					</actions>
-				</JFXDialogLayout>
-            </JFXDialog>
             <JFXDialog fx:id="modifyUserPasswordDialog">
                <JFXDialogLayout>
 					<heading>

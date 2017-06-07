@@ -26,27 +26,6 @@
    <children>
       <StackPane fx:id="rootStackPane" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <JFXDialog fx:id="modifyUserInfoDialog">
-               <content>
-                  <JFXDialogLayout>
-                     <heading>
-                        <Label text="权限确认" />
-                     </heading>
-                     <body>
-                        <HBox alignment="CENTER_LEFT" spacing="20.0">
-                           <children>
-                              <Label text="密码：" />
-                              <PasswordField fx:id="userPasswordTextField" text="密码" />
-                           </children>
-                        </HBox>
-                     </body>
-                     <actions>
-                        <JFXButton fx:id="cancelButton0" styleClass="dialog-accept">取消</JFXButton>
-                        <JFXButton fx:id="acceptButton0" styleClass="dialog-accept">确认</JFXButton>
-                     </actions>
-                  </JFXDialogLayout>
-               </content>
-            </JFXDialog>
             <JFXDialog fx:id="LogDialog">
                <content>
                   <JFXDialogLayout>

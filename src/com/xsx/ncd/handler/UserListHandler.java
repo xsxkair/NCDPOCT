@@ -74,11 +74,6 @@ public class UserListHandler extends Activity {
 	@FXML StackPane GB_ModifyIcoStackPane;
 	@FXML Button GB_SaveUserInfoButton;
 	
-	@FXML JFXDialog modifyUserInfoDialog;
-	@FXML PasswordField userPasswordTextField;
-	@FXML JFXButton acceptButton0;
-	@FXML JFXButton cancelButton0;
-	
 	@FXML JFXDialog LogDialog;
 	@FXML Label LogDialogHead;
 	@FXML Label LogDialogContent;
@@ -111,7 +106,6 @@ public class UserListHandler extends Activity {
 		}
         
         deleteUserIco = new Image(this.getClass().getResourceAsStream("/RES/deleteUserIco.png"));
-        rootStackPane.getChildren().remove(modifyUserInfoDialog);
         rootStackPane.getChildren().remove(LogDialog);
         
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
@@ -138,62 +132,6 @@ public class UserListHandler extends Activity {
         });
         
 		GB_FreshPane.setVisible(false);
-
-        //权限确认
-        acceptButton0.disableProperty().bind(userPasswordTextField.lengthProperty().lessThan(6));
-        acceptButton0.setOnAction((e)->{
-        	modifyUserInfoDialog.close();
-        	if(userPasswordTextField.getText().equals(itsMe.getPassword())){
-        		if(GB_ActionType.equals(MyUserActionEnum.DELETE)){
-        			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-
-        			startHttpWork(ServiceEnum.DeleteUser, HttpPostType.AsynchronousJson, tempUser, null, null);
-        		}
-        		else if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-        			tempUser = new User();
-        				
-        			tempUser.setAccount(GB_UserAccountTextField.getText());
-        			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
-        			tempUser.setName(GB_UserNameTextField.getText());
-        			tempUser.setAge(GB_UserAgeTextField.getText());
-        			tempUser.setSex(GB_UserSexTextField.getText());
-        			tempUser.setPhone(GB_UserPhoneTextField.getText());
-        			tempUser.setJob(GB_UserJobTextField.getText());
-        			tempUser.setDes(GB_UserDescTextField.getText());
-        			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-        			tempUser.setManageuser(GB_UserManageToggle.isSelected());
-        			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
-        			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
-        			tempUser.setManagecard(GB_CardManageToggle.isSelected());
-
-        			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
-        		}
-        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-        			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-        			
-        			tempUser.setAccount(GB_UserAccountTextField.getText());
-        			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
-        			tempUser.setName(GB_UserNameTextField.getText());
-        			tempUser.setAge(GB_UserAgeTextField.getText());
-        			tempUser.setSex(GB_UserSexTextField.getText());
-        			tempUser.setPhone(GB_UserPhoneTextField.getText());
-        			tempUser.setJob(GB_UserJobTextField.getText());
-        			tempUser.setDes(GB_UserDescTextField.getText());
-        			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-        			tempUser.setManageuser(GB_UserManageToggle.isSelected());
-        			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
-        			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
-        			tempUser.setManagecard(GB_CardManageToggle.isSelected());
-        			
-        			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
-        		}
-        	}
-        	else
-        		showLogsDialog("错误", "密码错误，禁止操作！");
-        });
-        cancelButton0.setOnAction((e)->{
-        	modifyUserInfoDialog.close();
-        });
         
         //取消修改密码   
         acceptButton2.setOnMouseClicked((e)->{
@@ -205,9 +143,44 @@ public class UserListHandler extends Activity {
         		or(GB_UserPassWordPassWordField.lengthProperty().lessThan(6)).
         		or(GB_UserNameTextField.lengthProperty().lessThan(1)).or(GB_UserListView.getSelectionModel().selectedItemProperty().isNull()));
         GB_SaveUserInfoButton.setOnAction((e)->{
-			userPasswordTextField.clear();
-    		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
-    		modifyUserInfoDialog.show(rootStackPane);
+        	if(GB_ActionType.equals(MyUserActionEnum.ADD)){
+    			tempUser = new User();
+    				
+    			tempUser.setAccount(GB_UserAccountTextField.getText());
+    			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
+    			tempUser.setName(GB_UserNameTextField.getText());
+    			tempUser.setAge(GB_UserAgeTextField.getText());
+    			tempUser.setSex(GB_UserSexTextField.getText());
+    			tempUser.setPhone(GB_UserPhoneTextField.getText());
+    			tempUser.setJob(GB_UserJobTextField.getText());
+    			tempUser.setDes(GB_UserDescTextField.getText());
+    			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+    			tempUser.setManageuser(GB_UserManageToggle.isSelected());
+    			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
+    			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
+    			tempUser.setManagecard(GB_CardManageToggle.isSelected());
+
+    			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
+    		}
+    		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
+    			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+    			
+    			tempUser.setAccount(GB_UserAccountTextField.getText());
+    			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
+    			tempUser.setName(GB_UserNameTextField.getText());
+    			tempUser.setAge(GB_UserAgeTextField.getText());
+    			tempUser.setSex(GB_UserSexTextField.getText());
+    			tempUser.setPhone(GB_UserPhoneTextField.getText());
+    			tempUser.setJob(GB_UserJobTextField.getText());
+    			tempUser.setDes(GB_UserDescTextField.getText());
+    			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+    			tempUser.setManageuser(GB_UserManageToggle.isSelected());
+    			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
+    			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
+    			tempUser.setManagecard(GB_CardManageToggle.isSelected());
+    			
+    			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
+    		}
         });
 
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
@@ -408,9 +381,10 @@ public class UserListHandler extends Activity {
 			imageView.setCursor(Cursor.HAND);
 			imageView.setOnMouseClicked((e)->{
 				GB_ActionType = MyUserActionEnum.DELETE;
-				userPasswordTextField.clear();
-	    		modifyUserInfoDialog.setTransitionType(DialogTransition.CENTER);
-	    		modifyUserInfoDialog.show(rootStackPane);
+
+	    		tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+
+    			startHttpWork(ServiceEnum.DeleteUser, HttpPostType.AsynchronousJson, tempUser, null, null);
 			});
 			AnchorPane.setTopAnchor(imageView, 0.0);
 	        AnchorPane.setBottomAnchor(imageView, 0.0);
