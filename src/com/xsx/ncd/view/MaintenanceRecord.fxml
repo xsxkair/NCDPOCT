@@ -35,12 +35,6 @@
                   <JFXTextField fx:id="MaintenanceDeviceTextField" prefWidth="100.0" />
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="5.0">
-               <children>
-                  <Label text="结论：" textFill="#1b3f82" />
-                  <JFXTextField fx:id="MaintenanceResultTextField" prefWidth="100.0" />
-               </children>
-            </HBox>
          </children>
          <padding>
             <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />

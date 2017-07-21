@@ -42,7 +42,6 @@ public class MaintenanceRecordHandler extends Activity {
 	@FXML JFXDatePicker MaintenanceDateChoose;
 	@FXML JFXTextField MaintenanceOperatorTextfield;
 	@FXML JFXTextField MaintenanceDeviceTextField;
-	@FXML JFXTextField MaintenanceResultTextField;
 	
 	@FXML TableView<MaintenanceRecordItem> MaintenanceTableView;
 	@FXML TableColumn<MaintenanceRecordItem, Timestamp> MaintenanceTimeTableColumn;
@@ -82,7 +81,7 @@ public class MaintenanceRecordHandler extends Activity {
         MaintenanceTimeTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, Timestamp>("testtime"));
         MaintenanceDeviceTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("deviceId"));
         MaintenanceOperatorTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("userName"));
-        MaintenanceResultTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("result"));
+        MaintenanceResultTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("resultstr"));
         MaintenanceDescTableColumn.setCellValueFactory(new PropertyValueFactory<MaintenanceRecordItem, String>("dsc"));
         
         MaintenanceDateChoose.valueProperty().addListener((o, oldValue, newValue)->{
@@ -94,10 +93,6 @@ public class MaintenanceRecordHandler extends Activity {
         });
         
         MaintenanceDeviceTextField.lengthProperty().addListener((o, oldValue, newValue)->{
-        	queryErrorRecordService.restart();
-        });
-        
-        MaintenanceResultTextField.lengthProperty().addListener((o, oldValue, newValue)->{
         	queryErrorRecordService.restart();
         });
         
@@ -203,10 +198,7 @@ public class MaintenanceRecordHandler extends Activity {
 				if(MaintenanceOperatorTextfield.getLength() > 0)
 					formParm.put("operatorName", MaintenanceOperatorTextfield.getText());
 				
-				if(MaintenanceResultTextField.getLength() > 0)
-					formParm.put("result", MaintenanceResultTextField.getText());
-				
-				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("startIndex", String.valueOf(GB_Pagination.getCurrentPageIndex()));
 				formParm.put("size", String.valueOf(50));
 				
 				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceMaintenanceRecord, HttpPostType.SynchronousForm, null, formParm);

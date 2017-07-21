@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <LineChart fx:id="qualityChart" prefHeight="400.0" title="偏差分布图">
+              <xAxis>
+                <NumberAxis autoRanging="false" lowerBound="1.0" minorTickVisible="false" side="BOTTOM" tickUnit="1.0" upperBound="10.0" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis fx:id="Y_NumberAxis" autoRanging="false" lowerBound="400.0" minorTickVisible="false" side="LEFT" upperBound="500.0" />
+              </yAxis>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </LineChart>
+            <GridPane gridLinesVisible="true">
+              <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="测量值" GridPane.rowIndex="1" />
+                  <Label text="偏差率" GridPane.rowIndex="2" />
+                  <Label text="测试次数" />
+                  <Label text="第一次" GridPane.columnIndex="1" />
+                  <Label text="第二次" GridPane.columnIndex="2" />
+                  <Label text="第三次" GridPane.columnIndex="3" />
+                  <Label text="第四次" GridPane.columnIndex="4" />
+                  <Label text="第五次" GridPane.columnIndex="5" />
+                  <Label text="第六次" GridPane.columnIndex="6" />
+                  <Label text="第七次" GridPane.columnIndex="7" />
+                  <Label text="第八次" GridPane.columnIndex="8" />
+                  <Label text="第九次" GridPane.columnIndex="9" />
+                  <Label text="第十次" GridPane.columnIndex="10" />
+                  <Label text="质控项目" GridPane.rowIndex="4" />
+                  <Label text="最大偏差率" GridPane.rowIndex="3" />
+                  <Label text="最小偏差率" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <Label text="平均偏差率" GridPane.columnIndex="6" GridPane.rowIndex="3" />
+                  <Label text="质控说明" GridPane.rowIndex="5" />
+                  <Label text="质控结果" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                  <Label fx:id="valueLabel1" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel2" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel3" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel4" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel5" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel6" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel7" text="Label" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel8" text="Label" GridPane.columnIndex="8" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel9" text="Label" GridPane.columnIndex="9" GridPane.rowIndex="1" />
+                  <Label fx:id="valueLabel10" text="Label" GridPane.columnIndex="10" GridPane.rowIndex="1" />
+                  <Label fx:id="pianchaLabel1" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel2" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel3" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel4" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel5" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel6" text="Label" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel7" text="Label" GridPane.columnIndex="7" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel8" text="Label" GridPane.columnIndex="8" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel9" text="Label" GridPane.columnIndex="9" GridPane.rowIndex="2" />
+                  <Label fx:id="pianchaLabel10" text="Label" GridPane.columnIndex="10" GridPane.rowIndex="2" />
+                  <Label fx:id="maxPianchaLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="minPianchaLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                  <Label fx:id="avgPianchaLabel" text="Label" GridPane.columnIndex="7" GridPane.rowIndex="3" />
+                  <Label fx:id="itemLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label fx:id="resultLabel" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="10" GridPane.rowIndex="5">
+                     <children>
+                        <Label fx:id="resultDescLabel" text="Label">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" top="50.0" />
+               </VBox.margin>
+            </GridPane>
+         </children>
+      </VBox>
+      <Label fx:id="testValueLabel" style="-fx-background-color: gold;" />
+      <Label fx:id="normalValueLabel" style="-fx-background-color: salmon;" />
+   </children>
+</AnchorPane>

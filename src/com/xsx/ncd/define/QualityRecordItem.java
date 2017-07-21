@@ -9,7 +9,7 @@ public class QualityRecordItem {
 	
 	private Float theoreticalValue;					//理论值
 	
-	private Float measuredValue;					//测量值
+	private String measuredValue;					//测量值
 	
 	private java.sql.Timestamp testtime;
 
@@ -19,7 +19,9 @@ public class QualityRecordItem {
 	
 	private String operatorName;
 	
-	private String result;
+	private Boolean result;
+	
+	private String resultstr;
 	
 	private String dsc;
 
@@ -27,8 +29,8 @@ public class QualityRecordItem {
 
 	}
 
-	public QualityRecordItem(Integer id, Float theoreticalValue, Float measuredValue, Timestamp testtime, String itemName,
-			String deviceId, String operatorName, String result, String dsc) {
+	public QualityRecordItem(Integer id, Float theoreticalValue, String measuredValue, Timestamp testtime, String itemName,
+			String deviceId, String operatorName, Boolean result, String dsc) {
 		super();
 		this.id = id;
 		this.theoreticalValue = theoreticalValue;
@@ -57,11 +59,11 @@ public class QualityRecordItem {
 		this.theoreticalValue = theoreticalValue;
 	}
 
-	public Float getMeasuredValue() {
+	public String getMeasuredValue() {
 		return measuredValue;
 	}
 
-	public void setMeasuredValue(Float measuredValue) {
+	public void setMeasuredValue(String measuredValue) {
 		this.measuredValue = measuredValue;
 	}
 
@@ -97,11 +99,11 @@ public class QualityRecordItem {
 		this.operatorName = operatorName;
 	}
 
-	public String getResult() {
+	public Boolean getResult() {
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(Boolean result) {
 		this.result = result;
 	}
 
@@ -112,6 +114,11 @@ public class QualityRecordItem {
 	public void setDsc(String dsc) {
 		this.dsc = dsc;
 	}
-	
-	
+
+	public String getResultstr() {
+		if(this.result)
+			return StringDefine.ReportPass;
+		else
+			return StringDefine.ReportError;
+	}
 }

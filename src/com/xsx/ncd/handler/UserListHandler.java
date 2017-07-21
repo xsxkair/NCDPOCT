@@ -15,7 +15,6 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXToggleButton;
-import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.xsx.ncd.define.ActivityStatusEnum;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
@@ -23,14 +22,11 @@ import com.xsx.ncd.define.MyUserActionEnum;
 import com.xsx.ncd.define.ServiceEnum;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.User;
-import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.spring.UserSession;
 import com.xsx.ncd.tool.HttpClientTool;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -41,7 +37,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -81,8 +76,8 @@ public class UserListHandler extends Activity {
 	
 	@FXML VBox GB_FreshPane;
 
-	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
 	private User itsMe = null;
+	private User currentUser = null;
 	private User tempUser = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 
@@ -108,26 +103,57 @@ public class UserListHandler extends Activity {
         deleteUserIco = new Image(this.getClass().getResourceAsStream("/RES/deleteUserIco.png"));
         rootStackPane.getChildren().remove(LogDialog);
         
+        GB_UserAccountTextField.editableProperty().bind(GB_CancelAddUserImageView.visibleProperty());
+		GB_UserPassWordPassWordField.editableProperty().bind(GB_CancelAddUserImageView.visibleProperty().or(GB_CancelEditUserImageView.visibleProperty()));
+		GB_UserNameTextField.editableProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		GB_UserAgeTextField.editableProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		GB_UserSexTextField.editableProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		GB_UserPhoneTextField.editableProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		GB_UserJobTextField.editableProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		GB_UserDescTextField.editableProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		
+		GB_UserDepartmentCombox.disableProperty().bind(GB_UserPassWordPassWordField.editableProperty().not());
+		GB_UserManageToggle.disableProperty().bind(GB_UserPassWordPassWordField.editableProperty().not());
+		GB_ReportManageToggle.disableProperty().bind(GB_UserPassWordPassWordField.editableProperty().not());
+		GB_DeviceManageToggle.disableProperty().bind(GB_UserPassWordPassWordField.editableProperty().not());
+		GB_CardManageToggle.disableProperty().bind(GB_UserPassWordPassWordField.editableProperty().not());
+		
+		GB_SaveUserInfoButton.visibleProperty().bind(GB_UserPassWordPassWordField.editableProperty());
+		
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
-        	setUserInfoInStatus(MyUserActionEnum.EDIT);
+        	GB_EditUserImageView.setVisible(false);
+        	GB_CancelEditUserImageView.setVisible(true);
+        	GB_AddUserImageView.setVisible(false);
+        	GB_CancelAddUserImageView.setVisible(false);
+        	currentUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
         	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
-            GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
-        	GB_ActionType = MyUserActionEnum.NONE;
+        	GB_EditUserImageView.setVisible(true);
+        	GB_CancelEditUserImageView.setVisible(false);
+        	GB_AddUserImageView.setVisible(true);
+        	GB_CancelAddUserImageView.setVisible(false);
+        	currentUser = null;
         	startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
-        	setUserInfoInStatus(MyUserActionEnum.ADD);
         	clearUserInfo();
-        	GB_ActionType = MyUserActionEnum.ADD;
+        	GB_EditUserImageView.setVisible(false);
+        	GB_CancelEditUserImageView.setVisible(false);
+        	GB_AddUserImageView.setVisible(false);
+        	GB_CancelAddUserImageView.setVisible(true);
+        	currentUser = new User();
         	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
-        	GB_ActionType = MyUserActionEnum.NONE;
+        	GB_EditUserImageView.setVisible(true);
+        	GB_CancelEditUserImageView.setVisible(false);
+        	GB_AddUserImageView.setVisible(true);
+        	GB_CancelAddUserImageView.setVisible(false);
+        	currentUser = null;
         	startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
         });
         
@@ -143,50 +169,36 @@ public class UserListHandler extends Activity {
         		or(GB_UserPassWordPassWordField.lengthProperty().lessThan(6)).
         		or(GB_UserNameTextField.lengthProperty().lessThan(1)).or(GB_UserListView.getSelectionModel().selectedItemProperty().isNull()));
         GB_SaveUserInfoButton.setOnAction((e)->{
-        	if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-    			tempUser = new User();
-    				
-    			tempUser.setAccount(GB_UserAccountTextField.getText());
-    			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
-    			tempUser.setName(GB_UserNameTextField.getText());
-    			tempUser.setAge(GB_UserAgeTextField.getText());
-    			tempUser.setSex(GB_UserSexTextField.getText());
-    			tempUser.setPhone(GB_UserPhoneTextField.getText());
-    			tempUser.setJob(GB_UserJobTextField.getText());
-    			tempUser.setDes(GB_UserDescTextField.getText());
-    			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-    			tempUser.setManageuser(GB_UserManageToggle.isSelected());
-    			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
-    			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
-    			tempUser.setManagecard(GB_CardManageToggle.isSelected());
-
-    			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
-    		}
-    		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-    			tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-    			
-    			tempUser.setAccount(GB_UserAccountTextField.getText());
-    			tempUser.setPassword(GB_UserPassWordPassWordField.getText());
-    			tempUser.setName(GB_UserNameTextField.getText());
-    			tempUser.setAge(GB_UserAgeTextField.getText());
-    			tempUser.setSex(GB_UserSexTextField.getText());
-    			tempUser.setPhone(GB_UserPhoneTextField.getText());
-    			tempUser.setJob(GB_UserJobTextField.getText());
-    			tempUser.setDes(GB_UserDescTextField.getText());
-    			tempUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-    			tempUser.setManageuser(GB_UserManageToggle.isSelected());
-    			tempUser.setManagereport(GB_ReportManageToggle.isSelected());
-    			tempUser.setManagedevice(GB_DeviceManageToggle.isSelected());
-    			tempUser.setManagecard(GB_CardManageToggle.isSelected());
-    			
-    			startHttpWork(ServiceEnum.CheckUserIsExist, HttpPostType.AsynchronousJson, tempUser, null, null);
-    		}
+        	if(currentUser == null){
+        		showLogsDialog("¥ÌŒÛ", "∂‘œÛŒ™ø’");
+        	}
+        	else{
+        		currentUser.setAccount(GB_UserAccountTextField.getText());
+        		currentUser.setPassword(GB_UserPassWordPassWordField.getText());
+        		currentUser.setName(GB_UserNameTextField.getText());
+        		currentUser.setAge(GB_UserAgeTextField.getText());
+        		currentUser.setSex(GB_UserSexTextField.getText());
+    			currentUser.setPhone(GB_UserPhoneTextField.getText());
+    			currentUser.setJob(GB_UserJobTextField.getText());
+    			currentUser.setDes(GB_UserDescTextField.getText());
+    			currentUser.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+    			currentUser.setManageuser(GB_UserManageToggle.isSelected());
+    			currentUser.setManagereport(GB_ReportManageToggle.isSelected());
+    			currentUser.setManagedevice(GB_DeviceManageToggle.isSelected());
+    			currentUser.setManagecard(GB_CardManageToggle.isSelected());
+        	}
+        	startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, currentUser, null, null);
         });
 
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
         	if(newValue != null){
         		newValue.setDeleteIcoVisible(true);
         		showSelectUserInfo();
+        		
+        		GB_EditUserImageView.setVisible(true);
+            	GB_CancelEditUserImageView.setVisible(false);
+            	GB_AddUserImageView.setVisible(true);
+            	GB_CancelAddUserImageView.setVisible(false);
         	}
         	if(oldValue != null)
         		oldValue.setDeleteIcoVisible(false);
@@ -210,48 +222,18 @@ public class UserListHandler extends Activity {
 							case SaveUser:
 								tempUser = message.getObj();
 				        		
-				        		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-				        			if(tempUser == null){
-				        				showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
-				        			}
-				        			else{
-				        				startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
-				        			}
+				        		if(tempUser == null){
+				        			showLogsDialog("¥ÌŒÛ", " ß∞‹£°");
 				        		}
-				        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-				        			if(tempUser == null){
-				        				showLogsDialog("¥ÌŒÛ", "–ﬁ∏ƒ ß∞‹£°");
-				        			}
-				        			else{
-				        				startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
-				        			}
+				        		else{
+				        			startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
 				        		}
 								break;
 								
 							case ReadAllOtherUser:
 								upUserList(message.getObj());
-								setUserInfoInStatus(MyUserActionEnum.NONE);
 								break;
 								
-							case CheckUserIsExist:
-								boolean result1 = message.getObj();
-								if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-				        			if(result1){
-				        				showLogsDialog("¥ÌŒÛ", "”√ªß“—¥Ê‘⁄£¨«ÎºÏ≤È£°");
-				            		}
-				        			else{
-				        				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, tempUser, null, null);
-				        			}
-				        		}
-				        		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-				        			if(result1){
-				        				startHttpWork(ServiceEnum.SaveUser, HttpPostType.AsynchronousJson, tempUser, null, null);
-				            		}
-				        			else{
-				        				showLogsDialog("¥ÌŒÛ", "”√ªß≤ª¥Ê‘⁄£¨«ÎºÏ≤È£°");
-				        			}
-				        		}
-								break;
 							case ReadAllDepartment:
 								List<Department> departments = message.getObj();
 								GB_UserDepartmentCombox.getItems().setAll(departments);
@@ -281,9 +263,9 @@ public class UserListHandler extends Activity {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
+		super.onStart(object);
 		itsMe = userSession.getUser();
-		
-		setMyMessagesList(FXCollections.observableArrayList());
+
 		getMyMessagesList().addListener(myMessageListChangeListener);
 		
 		startHttpWork(ServiceEnum.ReadAllOtherUser, HttpPostType.AsynchronousJson, itsMe, null, null);
@@ -298,32 +280,7 @@ public class UserListHandler extends Activity {
 		
 		GB_UserListView.getSelectionModel().selectFirst();
 	}
-	
-	private void setUserInfoInStatus(MyUserActionEnum status){
-		GB_UserAccountTextField.setEditable(status.equals(MyUserActionEnum.ADD));
-		GB_UserPassWordPassWordField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserNameTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserAgeTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserSexTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserPhoneTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserJobTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserDescTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
 		
-		GB_UserDepartmentCombox.setDisable(status.equals(MyUserActionEnum.NONE));
-		GB_UserManageToggle.setDisable(status.equals(MyUserActionEnum.NONE));
-		GB_ReportManageToggle.setDisable(status.equals(MyUserActionEnum.NONE));
-		GB_DeviceManageToggle.setDisable(status.equals(MyUserActionEnum.NONE));
-		GB_CardManageToggle.setDisable(status.equals(MyUserActionEnum.NONE));
-		
-		GB_SaveUserInfoButton.setVisible(!status.equals(MyUserActionEnum.NONE));
-		
-		GB_EditUserImageView.setVisible(status.equals(MyUserActionEnum.NONE));
-		GB_CancelEditUserImageView.setVisible(status.equals(MyUserActionEnum.EDIT));
-		GB_AddUserImageView.setVisible(status.equals(MyUserActionEnum.NONE));
-		GB_CancelAddUserImageView.setVisible(status.equals(MyUserActionEnum.ADD));
-	}
-
-	
 	private void clearUserInfo() {
 		GB_UserAccountTextField.clear();;
 		GB_UserPassWordPassWordField.clear();
@@ -380,11 +337,9 @@ public class UserListHandler extends Activity {
 			imageView.setFitHeight(25);
 			imageView.setCursor(Cursor.HAND);
 			imageView.setOnMouseClicked((e)->{
-				GB_ActionType = MyUserActionEnum.DELETE;
+	    		currentUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
 
-	    		tempUser = (User) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-
-    			startHttpWork(ServiceEnum.DeleteUser, HttpPostType.AsynchronousJson, tempUser, null, null);
+    			startHttpWork(ServiceEnum.DeleteUser, HttpPostType.AsynchronousJson, currentUser, null, null);
 			});
 			AnchorPane.setTopAnchor(imageView, 0.0);
 	        AnchorPane.setBottomAnchor(imageView, 0.0);
@@ -410,9 +365,10 @@ public class UserListHandler extends Activity {
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		getMyMessagesList().removeListener(myMessageListChangeListener);
-		setMyMessagesList(null);
 		
 		itsMe = null;
+		
+		super.onDestroy();
 	}
 
 	@Override

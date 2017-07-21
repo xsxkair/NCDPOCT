@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXRadioButton?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ScrollPane fitToWidth="true" maxHeight="-Infinity" pannable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <AnchorPane>
+               <children>
+                  <VBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <GridPane fx:id="repertoryGridPane" gridLinesVisible="true" prefWidth="1225.0">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="仓库" />
+                              <Label text="试剂卡种类" GridPane.columnIndex="1" />
+                              <Label text="库存（人/份）" GridPane.columnIndex="2" />
+                              <Label text="总仓库" GridPane.rowIndex="1" />
+                              <JFXListView fx:id="summyRepertoryListView" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
+                        <HBox>
+                           <children>
+                              <Label text="试剂数据分析" />
+                           </children>
+                        </HBox>
+                        <VBox>
+                           <children>
+                              <Label text="科室" />
+                              <FlowPane fx:id="departmentFlowPane" />
+                           </children>
+                        </VBox>
+                        <VBox>
+                           <children>
+                              <Label text="设备" />
+                              <FlowPane fx:id="deviceFlowPane" />
+                           </children>
+                        </VBox>
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label text="视图：" />
+                              <JFXRadioButton fx:id="yearViewToggle" text="年">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="viewToggleGroup" />
+                                 </toggleGroup></JFXRadioButton>
+                              <JFXRadioButton fx:id="monthViewToggle" text="月" toggleGroup="$viewToggleGroup" />
+                           </children>
+                        </HBox>
+                        <LineChart fx:id="cardDetailLineChart" animated="false">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                     </children>
+                  </VBox>
+                  <HBox spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                     <children>
+                        <JFXButton fx:id="CardInStorageButton" text="入库">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </JFXButton>
+                        <JFXButton fx:id="CardOutStorageButton" text="出库">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

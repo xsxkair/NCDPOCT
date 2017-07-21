@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -11,6 +12,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import com.xsx.ncd.define.ActivityStatusEnum;
@@ -19,22 +22,31 @@ import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.QualityRecordItem;
 import com.xsx.ncd.define.RecordJson;
 import com.xsx.ncd.define.ServiceEnum;
+import com.xsx.ncd.define.ValueDefine;
 import com.xsx.ncd.spring.ActivitySession;
 import com.xsx.ncd.tool.HttpClientTool;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 @Component
 public class QualityRecordHandler extends Activity {
@@ -43,13 +55,11 @@ public class QualityRecordHandler extends Activity {
 	@FXML JFXTextField QualityOperatorTextfield;
 	@FXML JFXTextField QualityDeviceTextField;
 	@FXML JFXTextField QualityItemTextField;
-	@FXML JFXTextField QualityResultTextField;
 	
 	@FXML TableView<QualityRecordItem> QualityTableView;
 	@FXML TableColumn<QualityRecordItem, Timestamp> QualityTimeTableColumn;
 	@FXML TableColumn<QualityRecordItem, String> QualityItemTableColumn;
 	@FXML TableColumn<QualityRecordItem, Float> QualityNormalValueTableColumn;
-	@FXML TableColumn<QualityRecordItem, Float> QualityMeasureValueTableColumn;
 	@FXML TableColumn<QualityRecordItem, String> QualityResultTableColumn;
 	@FXML TableColumn<QualityRecordItem, String> QualityDeviceTableColumn;
 	@FXML TableColumn<QualityRecordItem, String> QualityOperatorTableColumn;
@@ -62,9 +72,11 @@ public class QualityRecordHandler extends Activity {
 	private Map<String, String> formParm = null;
 	private QueryErrorRecordService queryErrorRecordService = null;
 	private ChangeListener<RecordJson<QualityRecordItem>> queryErrorRecordServiceListener = null;
+	private static final PseudoClass myErrorPseudoClass = PseudoClass.getPseudoClass("error");
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired HttpClientTool httpClientTool;
+	@Autowired QualityDetailHandler qualityDetailHandler;
 	
 	@PostConstruct
 	@Override
@@ -85,11 +97,35 @@ public class QualityRecordHandler extends Activity {
         QualityTimeTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, Timestamp>("testtime"));
         QualityItemTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, String>("itemName"));
         QualityNormalValueTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, Float>("theoreticalValue"));
-        QualityMeasureValueTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, Float>("measuredValue"));
-        QualityResultTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, String>("result"));
+        QualityResultTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, String>("resultstr"));
         QualityDeviceTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, String>("deviceId"));
         QualityOperatorTableColumn.setCellValueFactory(new PropertyValueFactory<QualityRecordItem, String>("operatorName"));
 
+        QualityTableView.setRowFactory(tv -> {
+			TableRow<QualityRecordItem> row = new TableRow<QualityRecordItem>();
+
+			row.setOnMouseClicked((e)->{
+				if(e.getClickCount() == 2){
+					activitySession.startActivity(qualityDetailHandler, row.getItem());
+				}
+			});
+
+			row.itemProperty().addListener((o, oldValue, newValue) -> {
+				
+				if(newValue == null) {
+					row.pseudoClassStateChanged(myErrorPseudoClass, false);
+				}
+				else if(newValue.getResult()){
+					row.pseudoClassStateChanged(myErrorPseudoClass, false);
+				}
+				else{
+					row.pseudoClassStateChanged(myErrorPseudoClass, true);
+				}
+            });
+            
+            return row;
+		});
+        
     	QualityDateChoose.valueProperty().addListener((o, oldValue, newValue)->{
         	queryErrorRecordService.restart();
         });
@@ -103,10 +139,6 @@ public class QualityRecordHandler extends Activity {
         });
         
     	QualityItemTextField.lengthProperty().addListener((o, oldValue, newValue)->{
-        	queryErrorRecordService.restart();
-        });
-    	
-    	QualityResultTextField.lengthProperty().addListener((o, oldValue, newValue)->{
         	queryErrorRecordService.restart();
         });
         
@@ -215,10 +247,7 @@ public class QualityRecordHandler extends Activity {
 				if(QualityOperatorTextfield.getLength() > 0)
 					formParm.put("operatorName", QualityOperatorTextfield.getText());
 				
-				if(QualityResultTextField.getLength() > 0)
-					formParm.put("result", QualityResultTextField.getText());
-				
-				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("startIndex", String.valueOf(GB_Pagination.getCurrentPageIndex()));
 				formParm.put("size", String.valueOf(50));
 				
 				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceQualityRecord, HttpPostType.SynchronousForm, null, formParm);

@@ -1,6 +1,7 @@
 package com.xsx.ncd.define;
 
 import java.util.List;
+import java.util.Map;
 
 public class RecordJson<T> {
 	
@@ -9,6 +10,7 @@ public class RecordJson<T> {
 	private Long parm1;
 	
 	private List<T> Records;
+
 
 	public RecordJson() {
 

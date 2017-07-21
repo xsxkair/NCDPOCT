@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="765.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #dfdbd4;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="设备类型：" textFill="#1b3f82" />
+                  <JFXComboBox fx:id="deviceTypeCombobox" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="测试设备：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="GB_TestDeviceFilterTextField" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="测试项目：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="GB_TestItemFilterTextfield" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="测试时间：" textFill="#1b3f82" />
+                  <JFXDatePicker fx:id="GB_TestTimeFilterDateChoose" prefWidth="130.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="测试人员：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="GB_TesterFilterTextfield" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label text="测试样本：" textFill="#1b3f82" />
+                  <JFXTextField fx:id="GB_TestSampleFilterTextField" prefWidth="100.0" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+         </padding>
+      </HBox>
+      <TableView fx:id="GB_TableView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
+        <columns>
+          <TableColumn fx:id="TableColumn1" editable="false" prefWidth="50.0" sortable="false" text="索引" />
+            <TableColumn fx:id="TableColumn2" editable="false" prefWidth="100.0" sortable="false" text="项目名称" />
+            <TableColumn fx:id="TableColumn3" editable="false" prefWidth="100.0" sortable="false" text="检测时间" />
+            <TableColumn fx:id="TableColumn4" editable="false" prefWidth="75.0" sortable="false" text="结       果" />
+            <TableColumn fx:id="TableColumn5" editable="false" prefWidth="117.0" sortable="false" text="操作人" />
+            <TableColumn fx:id="TableColumn6" editable="false" prefWidth="158.0" sortable="false" text="设备编号" />
+            <TableColumn fx:id="TableColumn7" editable="false" prefWidth="75.0" sortable="false" text="样品编号" />
+            <TableColumn fx:id="TableColumn8" editable="false" prefWidth="75.0" sortable="false" text="报告状态" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <Pagination fx:id="GB_Pagination" maxPageIndicatorCount="20" styleClass="bullet" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <VBox fx:id="GB_FreshPane" alignment="CENTER" layoutX="20.0" layoutY="20.0" spacing="10.0" style="-fx-background-color: rgba(0, 0, 0, 0.2);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXSpinner radius="30.0" startingAngle="0.0" style="-fx-radius: 50;" />
+            <Label text="正在加载数据，请稍后" />
+         </children>
+         <cursor>
+            <Cursor fx:constant="WAIT" />
+         </cursor>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -251,7 +251,7 @@ public class CardOutStoragePage extends Activity {
 							}
 							break;
 						case QueryRepertoryNumByCard:
-							GB_CardStorageNumLabel.setText(message.getObj());
+							GB_CardStorageNumLabel.setText(message.getObj().toString());
 							break;
 						default:
 							break;

@@ -65,7 +65,6 @@ public class LoginHandler {
 	private User tempuser = null;
 	
 	private LoginService loginService = null;
-	private ObjectMapper mapper = null;
 	
 	@Autowired HttpClientTool httpClientTool;;
 	@Autowired private UserSession userSession;
@@ -169,8 +168,6 @@ public class LoginHandler {
 			s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
 			s_Stage.setResizable(false);
 			s_Stage.setScene(s_Scene);
-			
-			mapper = new ObjectMapper();
 		}
 
 		UserPasswordText.setText(null);

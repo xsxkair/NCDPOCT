@@ -1,15 +1,13 @@
 package com.xsx.ncd.entity;
 
 
-
 public class DeviceQualityRecord {
-
 
 	private Integer id;
 	
-	private Float normalv;
+	private Float normalv;										//标准值
 	
-	private Float measurev;
+	private String measurev;									//测量值json
 	
 	private java.sql.Timestamp testtime;
 	
@@ -19,7 +17,7 @@ public class DeviceQualityRecord {
 	
 	private Operator operator;
 	
-	private String result;
+	private Boolean result;
 	
 	private String dsc;
 
@@ -39,11 +37,11 @@ public class DeviceQualityRecord {
 		this.normalv = normalv;
 	}
 
-	public Float getMeasurev() {
+	public String getMeasurev() {
 		return measurev;
 	}
 
-	public void setMeasurev(Float measurev) {
+	public void setMeasurev(String measurev) {
 		this.measurev = measurev;
 	}
 
@@ -79,11 +77,11 @@ public class DeviceQualityRecord {
 		this.operator = operator;
 	}
 
-	public String getResult() {
+	public Boolean getResult() {
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(Boolean result) {
 		this.result = result;
 	}
 
@@ -94,6 +92,4 @@ public class DeviceQualityRecord {
 	public void setDsc(String dsc) {
 		this.dsc = dsc;
 	}
-	
-	
 }

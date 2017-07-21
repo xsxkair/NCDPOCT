@@ -68,6 +68,7 @@ public class UIFrameworkHandler implements Observer{
 	@FXML Label leftMenuItem7;
 	@FXML Label leftMenuItem8;
 	@FXML Label leftMenuItem9;
+	@FXML Label leftMenuItem10;
 	
 	@FXML HBox leftMenuLogoHbox;
 	@FXML ImageView leftMenuLogoImageView;
@@ -99,7 +100,7 @@ public class UIFrameworkHandler implements Observer{
 	@Autowired LoginHandler loginHandler;
 	@Autowired ActivitySession activitySession;
 	@Autowired MyInfoHandler myInfoHandler;
-	@Autowired RepertoryPage repertoryPage;
+	@Autowired CardManageHandler cardManageHandler;
 	@Autowired DeviceManageHandler deviceManageHandler;
 	@Autowired ErrorRecordHandler errorRecordHandler;
 	@Autowired AdjustRecordHandler adjustRecordHandler;
@@ -107,6 +108,7 @@ public class UIFrameworkHandler implements Observer{
 	@Autowired MaintenanceRecordHandler maintenanceRecordHandler;
 	@Autowired WorkSpaceHandler workSpaceHandler;
 	@Autowired HttpClientTool httpClientTool;
+	@Autowired ReportQueryHandler reportQueryHandler;
 
 	@PostConstruct
 	public void onCreate() {
@@ -161,19 +163,18 @@ public class UIFrameworkHandler implements Observer{
         leftMenuItem7.opacityProperty().bind(leftMenuItem1.opacityProperty());
         leftMenuItem8.opacityProperty().bind(leftMenuItem1.opacityProperty());
         leftMenuItem9.opacityProperty().bind(leftMenuItem1.opacityProperty());
+        leftMenuItem10.opacityProperty().bind(leftMenuItem1.opacityProperty());
         
         leftMenuLogoImageView.fitWidthProperty().bind(leftMenuItem1.opacityProperty().multiply(81).add(2));
         leftMenuLogoImageView.visibleProperty().bind(leftMenuListView.maxWidthProperty().isEqualTo(200));
         
+        leftMenuExpandeImageView.visibleProperty().bind(leftMenuItem1.opacityProperty().isEqualTo(0));
+        leftMenuUnExpandeImageView.visibleProperty().bind(leftMenuExpandeImageView.visibleProperty().not());
         leftMenuExpandeImageView.setOnMouseClicked((e)->{
-        	leftMenuExpandeImageView.setVisible(false);
-        	leftMenuUnExpandeImageView.setVisible(true);
         	leftMenuExpande(true);
         });
         
         leftMenuUnExpandeImageView.setOnMouseClicked((e)->{
-        	leftMenuUnExpandeImageView.setVisible(false);
-        	leftMenuExpandeImageView.setVisible(true);
         	leftMenuExpande(false);
         });
         
@@ -201,7 +202,7 @@ public class UIFrameworkHandler implements Observer{
         	if(newValue != null)
         		NotHandledReportNumLabel.setText(String.valueOf(newValue));
         	else
-        		NotHandledReportNumLabel.setText("");
+        		NotHandledReportNumLabel.setText(null);
         };
         
         GB_MyInfoHBox.setOnMouseClicked((e)->{
@@ -227,16 +228,20 @@ public class UIFrameworkHandler implements Observer{
     	   else if(newValue.equals(1))
        			activitySession.clearAndSetOriginActivityAs(deviceManageHandler, null);
        		else if(newValue.equals(2))
-       			activitySession.clearAndSetOriginActivityAs(repertoryPage, null);
+       			activitySession.clearAndSetOriginActivityAs(cardManageHandler, null);
        		else if(newValue.equals(3))
-       			activitySession.clearAndSetOriginActivityAs(maintenanceRecordHandler, null);
+       			;//activitySession.clearAndSetOriginActivityAs(maintenanceRecordHandler, null);
        		else if(newValue.equals(4))
-       			activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
+       			activitySession.clearAndSetOriginActivityAs(reportQueryHandler, null);
        		else if(newValue.equals(5))
        			activitySession.clearAndSetOriginActivityAs(myInfoHandler, null);
        		else if(newValue.equals(6))
        			activitySession.clearAndSetOriginActivityAs(qualityRecordHandler, null);
        		else if(newValue.equals(7))
+       			activitySession.clearAndSetOriginActivityAs(adjustRecordHandler, null);
+       		else if(newValue.equals(8))
+       			activitySession.clearAndSetOriginActivityAs(maintenanceRecordHandler, null);
+       		else if(newValue.equals(9))
        			activitySession.clearAndSetOriginActivityAs(errorRecordHandler, null);
         });
 
@@ -249,7 +254,7 @@ public class UIFrameworkHandler implements Observer{
 			s_Stage = new Stage();
 			s_Stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/RES/logo.png")));
 		    s_Stage.setScene(s_Scene);
-		    s_Stage.setMinWidth(1280);
+		    s_Stage.setMinWidth(1300);
 		    s_Stage.setMinHeight(800);
 		    
 		    s_Stage.setOnCloseRequest((e)->{
@@ -321,6 +326,7 @@ public class UIFrameworkHandler implements Observer{
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
+		int size = 0;
 		GB_RootPane.getChildren().clear();
     	
 		GB_RootPane.getChildren().add(activitySession.getActivityStack().peek().getRootPane());
@@ -338,7 +344,8 @@ public class UIFrameworkHandler implements Observer{
 			i++;
 		}
 		
-		for(;i<topMenuHBox.getChildren().size()/2; i++){
+		size = topMenuHBox.getChildren().size()/2;
+		for(;i<size; i++){
 			topMenuHBox.getChildren().get(i*2).setUserData(null);
 			((JFXButton) topMenuHBox.getChildren().get(i*2)).setText(null);
 		}

@@ -34,15 +34,15 @@
                      <children>
                         <ImageView fx:id="leftMenuExpandeImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" visible="false">
                            <image>
-                              <Image url="@../../../../RES/addUserIco.png" />
+                              <Image url="@../../../../RES/explane.png" />
                            </image>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <ImageView fx:id="leftMenuUnExpandeImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="leftMenuUnExpandeImageView" fitHeight="24.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" >
                            <image>
-                              <Image url="@../../../../RES/close2.png" />
+                              <Image url="@../../../../RES/unexplane.png" />
                            </image>
                            <cursor>
                               <Cursor fx:constant="HAND" />
@@ -82,7 +82,7 @@
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/deviceMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -107,7 +107,7 @@
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/cardMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -132,7 +132,7 @@
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/sampleMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -157,7 +157,7 @@
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/reportMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -182,7 +182,7 @@
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/userMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -207,7 +207,7 @@
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/qualityMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -226,13 +226,13 @@
 	                              </HBox>
 				               </children>
 				            </AnchorPane>
-							<AnchorPane mouseTransparent="true">
+				            <AnchorPane mouseTransparent="true">
 								<children>
 				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 	                                 <children>
 	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
 						                     <image>
-						                        <Image url="@../../../../RES/gzt.png" />
+						                        <Image url="@../../../../RES/qualityMenuIco.png" />
 						                     </image>
 						                     <HBox.margin>
 												<Insets left="10.0" />
@@ -242,7 +242,7 @@
 	                              </HBox>
 	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 	                                 <children>
-	                                    <Label fx:id="leftMenuItem8" ellipsisString="" text="异常查询" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+	                                    <Label fx:id="leftMenuItem8" ellipsisString="" text="校准记录" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
 				                     		<font>
 				                        		<Font size="18.0" />
 				                     		</font>
@@ -267,7 +267,32 @@
 	                              </HBox>
 	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 	                                 <children>
-	                                    <Label fx:id="leftMenuItem9" ellipsisString="" text="微信平台" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+	                                    <Label fx:id="leftMenuItem9" ellipsisString="" text="维护记录" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+				                     		<font>
+				                        		<Font size="18.0" />
+				                     		</font>
+				                  		</Label>
+	                                 </children>
+	                              </HBox>
+				               </children>
+							</AnchorPane>
+							<AnchorPane mouseTransparent="true">
+								<children>
+				                  <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <ImageView fitHeight="78.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="12.0">
+						                     <image>
+						                        <Image url="@../../../../RES/errorMenuIco.png" />
+						                     </image>
+						                     <HBox.margin>
+												<Insets left="10.0" />
+											</HBox.margin>
+										</ImageView>
+	                                 </children>
+	                              </HBox>
+	                              <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+	                                 <children>
+	                                    <Label fx:id="leftMenuItem10" ellipsisString="" text="异常查询" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
 				                     		<font>
 				                        		<Font size="18.0" />
 				                     		</font>
@@ -295,7 +320,7 @@
                      <children>
                         <HBox fx:id="topMenuHBox" alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <JFXButton fx:id="activity1Button" text="rootActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity1Button" styleClass="TopMenu" stylesheets="@MainUI.css" text="rootActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -305,10 +330,10 @@
                               </JFXButton>
                               <ImageView fx:id="topMenuDivideImageview1" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../../../RES/min.png" />
+                                    <Image url="@../../../../RES/jiantou.png" />
                                  </image>
                               </ImageView>
-                              <JFXButton fx:id="activity2Button" text="fatherActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity2Button" styleClass="TopMenu" text="fatherActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -318,10 +343,10 @@
                               </JFXButton>
                               <ImageView fx:id="topMenuDivideImageview2" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../../../RES/min.png" />
+                                    <Image url="@../../../../RES/jiantou.png" />
                                  </image>
                               </ImageView>
-                              <JFXButton fx:id="activity3Button" text="childActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity3Button" styleClass="TopMenu" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -331,10 +356,10 @@
                               </JFXButton>
                               <ImageView fx:id="topMenuDivideImageview3" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../../../RES/min.png" />
+                                    <Image url="@../../../../RES/jiantou.png" />
                                  </image>
                               </ImageView>
-                              <JFXButton fx:id="activity4Button" text="childActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity4Button" styleClass="TopMenu" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -344,10 +369,10 @@
                               </JFXButton>
                               <ImageView fx:id="topMenuDivideImageview4" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../../../RES/min.png" />
+                                    <Image url="@../../../../RES/jiantou.png" />
                                  </image>
                               </ImageView>
-                              <JFXButton fx:id="activity5Button" text="childActivityName" textFill="WHITE">
+                              <JFXButton fx:id="activity5Button" styleClass="TopMenu" text="childActivityName" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -355,9 +380,9 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </JFXButton>
-                              <ImageView fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                              <ImageView fx:id="topMenuDivideImageview5" fitHeight="150.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true" visible="false">
                                  <image>
-                                    <Image url="@../../../../RES/min.png" />
+                                    <Image url="@../../../../RES/jiantou.png" />
                                  </image>
                               </ImageView>
                            </children>

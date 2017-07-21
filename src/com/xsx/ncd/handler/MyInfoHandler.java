@@ -183,6 +183,7 @@ public class MyInfoHandler extends Activity {
 						for (Message message : c.getAddedSubList()) {
 							switch (message.getWhat()) {
 							
+								case Login:
 								case SaveUser:
 									userSession.setUser(message.getObj());
 									break;
@@ -196,7 +197,6 @@ public class MyInfoHandler extends Activity {
 					}
 				}
 			}
-        	
         };
         
         GB_OperatorManageButton.setOnAction((e)->{
@@ -265,13 +265,12 @@ public class MyInfoHandler extends Activity {
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		setMyMessagesList(FXCollections.observableArrayList());
+		super.onStart(object);
 		getMyMessagesList().addListener(myMessageListChangeListener);
 		
 		userSession.getUserProperty().addListener(myUserListener);
-		itsMe = userSession.getUser();
-		setEditable(false);
-		upUserInfo();
+
+		startHttpWork(ServiceEnum.Login, HttpPostType.AsynchronousJson, userSession.getUser(), null, GB_FreshPane);
 	}
 
 	@Override
@@ -285,8 +284,9 @@ public class MyInfoHandler extends Activity {
 		// TODO Auto-generated method stub
 		userSession.getUserProperty().removeListener(myUserListener);
 		getMyMessagesList().removeListener(myMessageListChangeListener);
-		setMyMessagesList(null);
 		itsMe = null;
+		
+		super.onDestroy();
 	}
 	
 	@Override

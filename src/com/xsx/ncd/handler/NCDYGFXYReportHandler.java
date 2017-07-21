@@ -101,24 +101,24 @@ public class NCDYGFXYReportHandler extends Activity {
 		}
         
         GB_ReportOKToggleButton.setUserData(true);
-        GB_ReportOKToggleButton.setUserData(false);
+        GB_ReportErrorToggleButton.setUserData(false);
         
         GB_TestLineChart.getData().add(reportSeries);
         
         GB_EditReportButton.setOnAction((e)->{
         	if(GB_EditReportButton.getText().equals("编辑报告")){
         		GB_ReportOKToggleButton.setDisable(false);
-        		GB_ReportOKToggleButton.setDisable(false);
+        		GB_ReportErrorToggleButton.setDisable(false);
 	        	GB_ReportDescTextField.setEditable(true);
         		GB_EditReportButton.setText("取消编辑");
-        		GB_ReportControlHBox.getChildren().setAll(GB_EditReportButton, GB_CommitReportButton);
+        		GB_CommitReportButton.setDisable(false);
         	}
         	else{
         		GB_ReportOKToggleButton.setDisable(true);
 	        	GB_ReportErrorToggleButton.setDisable(true);
 	        	GB_ReportDescTextField.setEditable(false);
         		GB_EditReportButton.setText("编辑报告");
-        		GB_ReportControlHBox.getChildren().setAll(GB_EditReportButton);
+        		GB_CommitReportButton.setDisable(true);
         	}
         });
         
@@ -137,9 +137,14 @@ public class NCDYGFXYReportHandler extends Activity {
 					for (Message message : c.getAddedSubList()) {
 						switch (message.getWhat()) {
 							case QueryNcdYGFXYReportById:
-								tempNCD_YGFXY = message.getObj();
+								reportData = message.getObj();
 								
-								showReportInfo(tempNCD_YGFXY);
+								if(reportData.getReportisok() == null)
+									GB_EditReportButton.setVisible(false);
+								else
+									GB_EditReportButton.setVisible(true);
+								
+								showReportInfo(reportData);
 
 								break;
 								
@@ -204,9 +209,8 @@ public class NCDYGFXYReportHandler extends Activity {
 
 	private void showReportInfo(NCD_YGFXY report) {
 		StringBuffer stringBuffer = new StringBuffer();
-		
-		reportData = report;
-		if(reportData == null){
+
+		if(report == null){
 			GB_TestTimeLabel.setText(StringDefine.EmptyString);
 			GB_EnvironmentTemperatureLabel.setText(StringDefine.EmptyString);
 			GB_CardTemperatureLabel.setText(StringDefine.EmptyString);
@@ -218,35 +222,35 @@ public class NCDYGFXYReportHandler extends Activity {
 			reportSeries.getData().clear();
 		}
 		else{
-			GB_TestTimeLabel.setText((reportData.getTesttime() == null)?StringDefine.EmptyString:reportData.getTesttime().toString());
-			GB_EnvironmentTemperatureLabel.setText((reportData.getAmbienttemp() == null)?StringDefine.EmptyString:reportData.getAmbienttemp().toString());
-			GB_CardTemperatureLabel.setText((reportData.getCardtemp() == null)?StringDefine.EmptyString:reportData.getCardtemp().toString());
+			GB_TestTimeLabel.setText((report.getTesttime() == null)?StringDefine.EmptyString:report.getTesttime().toString());
+			GB_EnvironmentTemperatureLabel.setText((report.getAmbienttemp() == null)?StringDefine.EmptyString:report.getAmbienttemp().toString());
+			GB_CardTemperatureLabel.setText((report.getCardtemp() == null)?StringDefine.EmptyString:report.getCardtemp().toString());
 			
 			stringBuffer.setLength(0);
-			stringBuffer.append(reportData.getDevice().getAddr());
+			stringBuffer.append(report.getDevice().getAddr());
 			stringBuffer.append("(");
-			stringBuffer.append(reportData.getDevice().getDid());
+			stringBuffer.append(report.getDevice().getDid());
 			stringBuffer.append(")");
 			GB_DeviceLabel.setText(stringBuffer.toString());
 			
 			stringBuffer.setLength(0);
-			stringBuffer.append(reportData.getItem().getName());
+			stringBuffer.append(report.getItem().getName());
 			stringBuffer.append("(");
-			stringBuffer.append(reportData.getCardlot());
+			stringBuffer.append(report.getCardlot());
 			stringBuffer.append("-");
-			stringBuffer.append(reportData.getCardnum());
+			stringBuffer.append(report.getCardnum());
 			stringBuffer.append(")");
 			GB_CardLabel.setText(stringBuffer.toString());
 			
-			GB_SampleIDLabel.setText(reportData.getSampleid());
-			GB_TesterLabel.setText(reportData.getOperator().getName());
+			GB_SampleIDLabel.setText(report.getSampleid());
+			GB_TesterLabel.setText(report.getOperator().getName());
 			
 			if(reportData.getT_isok()){
 				stringBuffer.setLength(0);
-				stringBuffer.append(reportData.getTestv());
+				stringBuffer.append(report.getTestv());
 				stringBuffer.append(' ');
 				if(reportData.getItem() != null)
-					stringBuffer.append(reportData.getItem().getUnit());
+					stringBuffer.append(report.getItem().getUnit());
 				GB_TestResultLabel.setText(stringBuffer.toString());
 				GB_TestResultLabel.setStyle("-fx-text-fill: #1a3f83");
 			}
@@ -258,11 +262,11 @@ public class NCDYGFXYReportHandler extends Activity {
 			ObjectMapper mapper = new ObjectMapper();
 			JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, Integer.class);
 			try {
-				List<Integer> series = mapper.readValue(reportData.getSeries(), javaType);
+				List<Integer> series = mapper.readValue(report.getSeries(), javaType);
 				
-				Integer t = reportData.getTline();
-		        Integer b = reportData.getBline();
-		        Integer c = reportData.getCline();
+				Integer t = report.getTline();
+		        Integer b = report.getBline();
+		        Integer c = report.getCline();
 				int length = series.size();
 				for (int i=0; i<length; i++) {
 					Data<Number, Number> data = new Data<Number, Number>(i, series.get(i));
@@ -295,7 +299,7 @@ public class NCDYGFXYReportHandler extends Activity {
 			mapper = null;
 			javaType = null;
 			
-			showReportHandleInfo(reportData);
+			showReportHandleInfo(report);
 		}
 	}
 	
@@ -331,7 +335,7 @@ public class NCDYGFXYReportHandler extends Activity {
 	        	GB_ReportDescTextField.setEditable(false);
 	        	GB_EditReportButton.setText("编辑报告");
 	        	GB_EditReportButton.setDisable(false);
-	        	GB_CommitReportButton.setDisable(false);
+	        	GB_CommitReportButton.setDisable(true);
 	        }
 	        else {
 	        	S_ReportToogleGroup.selectToggle(GB_ReportErrorToggleButton);
@@ -340,13 +344,12 @@ public class NCDYGFXYReportHandler extends Activity {
 	        	GB_ReportDescTextField.setEditable(false);
 	        	GB_EditReportButton.setText("编辑报告");
 	        	GB_EditReportButton.setDisable(false);
-	        	GB_CommitReportButton.setDisable(false);
+	        	GB_CommitReportButton.setDisable(true);
 	        }
 			
 			GB_ManagerNameLabel.setText((report.getUser() == null) ? StringDefine.EmptyString : report.getUser().getName());
         	GB_ManagTimeLabel.setText((report.getHandltime() == null) ? StringDefine.EmptyString : report.getHandltime().toString());
         	GB_ReportDescTextField.setText((report.getReportdsc() == null) ? StringDefine.EmptyString : report.getReportdsc());
 		}
-		
 	}
 }

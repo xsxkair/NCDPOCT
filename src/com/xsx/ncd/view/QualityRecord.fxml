@@ -41,12 +41,6 @@
                   <JFXTextField fx:id="QualityItemTextField" prefWidth="100.0" />
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="5.0">
-               <children>
-                  <Label text="质控结论：" textFill="#1b3f82" />
-                  <JFXTextField fx:id="QualityResultTextField" prefWidth="100.0" />
-               </children>
-            </HBox>
          </children>
          <padding>
             <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -57,7 +51,6 @@
             <TableColumn fx:id="QualityTimeTableColumn" editable="false" prefWidth="100.0" sortable="false" text="质控时间" />
             <TableColumn fx:id="QualityItemTableColumn" editable="false" prefWidth="50.0" sortable="false" text="质控项目" />
             <TableColumn fx:id="QualityNormalValueTableColumn" editable="false" prefWidth="50.0" sortable="false" text="理论值" />
-            <TableColumn fx:id="QualityMeasureValueTableColumn" editable="false" prefWidth="50.0" sortable="false" text="校准值" />
           <TableColumn fx:id="QualityResultTableColumn" editable="false" prefWidth="50.0" sortable="false" text="质控结论" />
             <TableColumn fx:id="QualityDeviceTableColumn" editable="false" prefWidth="158.0" sortable="false" text="质控设备" />
             <TableColumn fx:id="QualityOperatorTableColumn" editable="false" prefWidth="100.0" sortable="false" text="操作人" />

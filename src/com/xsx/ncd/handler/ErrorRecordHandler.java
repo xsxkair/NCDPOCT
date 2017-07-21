@@ -207,7 +207,7 @@ public class ErrorRecordHandler extends Activity {
 				if(ErrorCodeTextField.getLength() > 0)
 					formParm.put("errorCode", ErrorCodeTextField.getText());
 				
-				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("startIndex", String.valueOf(GB_Pagination.getCurrentPageIndex()));
 				formParm.put("size", String.valueOf(50));
 				
 				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceErrorRecord, HttpPostType.SynchronousForm, null, formParm);

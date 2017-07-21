@@ -1,10 +1,7 @@
 package com.xsx.ncd.tool;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Set;
@@ -14,8 +11,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
@@ -40,11 +35,9 @@ public class HttpClientTool {
 	private ObjectMapper mapper = new ObjectMapper();
 	private String jsonString = null;
 	
-	//private final String ServerUrlHead = "http://192.168.0.56:8080/NCDPOCT_Server";
-	private final String ServerUrlHead = "http://116.62.108.201:8080/NCDPOCT_Server";
+	private final String ServerUrlHead = "http://192.168.0.15:8080/NCDPOCT_Server";
 	
 	private final MediaType mediaJsonType = MediaType.parse("application/json; charset=utf-8");
-	private final MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
 	private final OkHttpClient client = new OkHttpClient();
 	
 	public static final String ServiceDeviceIcoUrl = "http://116.62.108.201:8080/ico/";
@@ -134,26 +127,17 @@ public class HttpClientTool {
 				@Override
 				public void onResponse(Call arg0, Response arg1){
 					// TODO Auto-generated method stub
-					try {
-												
-						if(serviceEnum.getClass1() == null){
-							if(serviceEnum.getClass0().equals(String.class))
-								message.setObj(arg1.body().string());
-							else
-								message.setObj(mapper.readValue(arg1.body().string(), serviceEnum.getClass0()));
+					if(arg1.isSuccessful()) {
+						try {
+							message.setObj(mapper.readValue(arg1.body().string(), serviceEnum.getValueTypeRef()));
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-						else{
-							JavaType javaType = mapper.getTypeFactory().constructParametricType(serviceEnum.getClass0(), serviceEnum.getClass1()); 
-							message.setObj(mapper.readValue(arg1.body().string(), javaType));
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						activity.PostMessageToThisActivity(message);
 					}
 					
 					arg1.body().close();
-					
-					activity.PostMessageToThisActivity(message);
 				}
 				
 				@Override
@@ -170,14 +154,7 @@ public class HttpClientTool {
 				Response response = client.newCall(request).execute();
 				
 				if(response.isSuccessful()) {
-					
-					if(serviceEnum.getClass1() == null){
-						value = (T) mapper.readValue(response.body().string(), serviceEnum.getClass0());
-					}
-					else{
-						JavaType javaType = mapper.getTypeFactory().constructParametricType(serviceEnum.getClass0(), serviceEnum.getClass1()); 
-						value = mapper.readValue(response.body().string(), javaType);
-					}
+					value = mapper.readValue(response.body().string(), serviceEnum.getValueTypeRef());
 				}
 				
 				response.body().close();

@@ -3,6 +3,84 @@
 	src: url('STXINGKA.TTF');
 }
 
+/*顶部菜单*/
+.TopMenu:hover{
+-fx-underline : true;
+}
+
+/*通用表格*/
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view:focused{
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background .filler{
+ 	visibility: true ;
+}
+
+.table-view .column-header-background .label {
+  -fx-text-fill: #1b3f82;
+  -fx-background-color : #e0dbd5;
+  -fx-font-weight : bold;
+  -fx-font-size : 20;
+  -fx-border-width: 0px;
+}
+
+.table-view .column-header {
+ 	-fx-background-color : white;
+	-fx-size : 35;
+	-fx-padding: 1px; /* 0 */
+}
+
+.table-view .table-cell {
+	-fx-text-fill: #1b3f82;
+	-fx-text-alignment: CENTER;
+	-fx-border-width : 1px;
+	-fx-border-color : white;
+}
+
+.table-view .table-column{
+	-fx-alignment: CENTER;
+}
+
+.table-row-cell{
+	-fx-background-color: -fx-table-cell-border-color, #eeeff1;
+	-fx-background-insets: 0, 0 0 1 0;
+	-fx-padding: 0.0em; /* 0 */
+}
+
+.table-row-cell:odd {
+  	-fx-background-color: -fx-table-cell-border-color, #eeeff1;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em; /* 0 */
+}
+
+.table-row-cell:selected {
+    -fx-background-color: paleturquoise ;
+    -fx-background-insets: 0;
+    -fx-background-radius: 1;
+}
+
+.table-row-cell:filled:hover{
+	-fx-background-color: -fx-table-cell-border-color, AQUA ;
+}
+
+.table-view > .virtual-flow > .scroll-bar:vertical,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track-background, 
+.table-view > .virtual-flow > .scroll-bar:horizontal,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+    -fx-background-color: transparent;
+}
+
+.table-view > .virtual-flow > .scroll-bar > .increment-button, 
+.table-view > .virtual-flow > .scroll-bar > .decrement-button {
+    -fx-opacity: 0;
+}
 
 /*左侧菜单*/
 #leftMenuListView .list-cell:filled:selected:focused,
@@ -114,66 +192,10 @@
 }
 
 /*工作台中设备报告列表*/
-#DeviceReportTable{
-	-fx-background-color: transparent ;
+
+
+/*设备质控表*/
+#QualityTableView .table-row-cell:error{
+	-fx-background-color: -fx-table-cell-border-color, indianred   ;
 }
 
-#DeviceReportTable:focused{
-    -fx-background-color: transparent;
-}
-
-#DeviceReportTable .column-header-background .label {
-  -fx-text-fill: #1b3f82;
-  -fx-background-color : #e0dbd5;
-  -fx-font-weight : bold;
-  -fx-font-size : 20;
-  -fx-border-width: 0px;
-}
-
-#DeviceReportTable .column-header {
- 	-fx-background-color : white;
-	-fx-size : 35;
-	-fx-padding: 1px; /* 0 */
-}
-
-#DeviceReportTable .table-cell {
-	-fx-text-fill: #1b3f82;
-	-fx-border-width : 1px;
-	-fx-border-color : white;
-}
-
-#DeviceReportTable .table-row-cell{
-	-fx-background-color: -fx-table-cell-border-color, #eeeff1;
-	-fx-background-insets: 0, 0 0 1 0;
-	-fx-padding: 0.0em; /* 0 */
-}
-
-#DeviceReportTable .table-row-cell:odd {
-  	-fx-background-color: -fx-table-cell-border-color, #eeeff1;
-    -fx-background-insets: 0, 0 0 1 0;
-    -fx-padding: 0.0em; /* 0 */
-}
-
-#DeviceReportTable .table-row-cell:selected {
-    -fx-background-color: paleturquoise ;
-    -fx-background-insets: 0;
-    -fx-background-radius: 1;
-}
-
-#DeviceReportTable .table-row-cell:hover{
-	-fx-background-color: -fx-table-cell-border-color, AQUA ;
-}
-
-#DeviceReportTable > .virtual-flow > .scroll-bar:vertical,
-#DeviceReportTable > .virtual-flow > .scroll-bar:vertical > .track,
-#DeviceReportTable > .virtual-flow > .scroll-bar:vertical > .track-background, 
-#DeviceReportTable > .virtual-flow > .scroll-bar:horizontal,
-#DeviceReportTable > .virtual-flow > .scroll-bar:horizontal > .track,
-#DeviceReportTable > .virtual-flow > .scroll-bar:horizontal > .track-background {
-    -fx-background-color: transparent;
-}
-
-#DeviceReportTable > .virtual-flow > .scroll-bar > .increment-button, 
-#DeviceReportTable > .virtual-flow > .scroll-bar > .decrement-button {
-    -fx-opacity: 0;
-}

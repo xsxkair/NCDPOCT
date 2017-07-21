@@ -77,14 +77,13 @@ public class OperatorListHandler extends Activity{
 	
 	@FXML VBox GB_FreshPane;
 
-	private MyUserActionEnum GB_ActionType = MyUserActionEnum.NONE;
-	private Operator tempOperator = null;
+	private Operator currentOperator = null;
+	private Operator tempOperator2 = null;
 	private User itsMe = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 
 	@Autowired HttpClientTool httpClientTool;
 	@Autowired private UserSession userSession;
-	@Autowired private ActivitySession activitySession;
 	
 	@PostConstruct
 	@Override
@@ -105,26 +104,50 @@ public class OperatorListHandler extends Activity{
         deleteUserIco = new Image(this.getClass().getResourceAsStream("/RES/deleteUserIco.png"));
         rootStackPane.getChildren().remove(LogDialog);
         
+        GB_UserNameTextField.editableProperty().bind(GB_CancelAddUserImageView.visibleProperty());
+        GB_UserAgeTextField.editableProperty().bind(GB_CancelAddUserImageView.visibleProperty().or(GB_CancelEditUserImageView.visibleProperty()));
+        GB_UserSexTextField.editableProperty().bind(GB_UserAgeTextField.editableProperty());
+        GB_UserPhoneTextField.editableProperty().bind(GB_UserAgeTextField.editableProperty());
+        GB_UserJobTextField.editableProperty().bind(GB_UserAgeTextField.editableProperty());
+        GB_UserDescTextField.editableProperty().bind(GB_UserAgeTextField.editableProperty());
+        GB_UserDepartmentCombox.disableProperty().bind(GB_CancelAddUserImageView.visibleProperty().not());
+        GB_OperatorRightToggle.disableProperty().bind(GB_CancelAddUserImageView.visibleProperty().or(GB_CancelEditUserImageView.visibleProperty()).not());
+        GB_SaveUserInfoButton.visibleProperty().bind(GB_CancelAddUserImageView.visibleProperty().or(GB_CancelEditUserImageView.visibleProperty()));
+
         GB_EditUserImageView.disableProperty().bind(GB_UserListView.getSelectionModel().selectedItemProperty().isNull());
         GB_EditUserImageView.setOnMouseClicked((e)->{
-        	setUserInfoInStatus(MyUserActionEnum.EDIT);
+        	GB_EditUserImageView.setVisible(false);
+        	GB_CancelEditUserImageView.setVisible(true);
+        	GB_AddUserImageView.setVisible(false);
+        	GB_CancelAddUserImageView.setVisible(false);
+        	currentOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
         	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
-            GB_ActionType = MyUserActionEnum.EDIT;
         });
         
         GB_CancelEditUserImageView.setOnMouseClicked((e)->{
-        	GB_ActionType = MyUserActionEnum.NONE;
         	startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
+        	currentOperator = null;
+        	GB_EditUserImageView.setVisible(true);
+        	GB_CancelEditUserImageView.setVisible(false);
+        	GB_AddUserImageView.setVisible(true);
+        	GB_CancelAddUserImageView.setVisible(false);
         });
         
         GB_AddUserImageView.setOnMouseClicked((e)->{
-        	setUserInfoInStatus(MyUserActionEnum.ADD);
         	clearUserInfo();
-        	GB_ActionType = MyUserActionEnum.ADD;
+        	GB_EditUserImageView.setVisible(false);
+        	GB_CancelEditUserImageView.setVisible(false);
+        	GB_AddUserImageView.setVisible(false);
+        	GB_CancelAddUserImageView.setVisible(true);
+        	currentOperator = new Operator();
         	startHttpWork(ServiceEnum.ReadAllDepartment, HttpPostType.AsynchronousJson, null, null, null);
         });
         GB_CancelAddUserImageView.setOnMouseClicked((e)->{
-        	GB_ActionType = MyUserActionEnum.NONE;
+        	GB_EditUserImageView.setVisible(true);
+        	GB_CancelEditUserImageView.setVisible(false);
+        	GB_AddUserImageView.setVisible(true);
+        	GB_CancelAddUserImageView.setVisible(false);
+        	currentOperator = null;
         	startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
         });
         
@@ -144,48 +167,18 @@ public class OperatorListHandler extends Activity{
 		        			}
 							break;
 						case SaveOperator:
-							tempOperator = message.getObj();
+							tempOperator2 = message.getObj();
 		            		
-		            		if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-		            			if(tempOperator == null){
-		            				showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
-		            			}
-		            			else{
-		            				startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
-		            			}
-		            			
+		            		if(tempOperator2 == null){
+		            			showLogsDialog("¥ÌŒÛ", "ÃÌº” ß∞‹£°");
 		            		}
-		            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-		            			if(tempOperator == null){
-		            				showLogsDialog("¥ÌŒÛ", "–ﬁ∏ƒ ß∞‹£°");
-		            			}
-		            			else{
-		            				startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
-		            			}
+		            		else{
+		            			startHttpWork(ServiceEnum.ReadAllOperator, HttpPostType.AsynchronousJson, null, null, null);
 		            		}
+		            		
 							break;
 						case ReadAllOperator:
 							upUserList(message.getObj());
-							setUserInfoInStatus(MyUserActionEnum.NONE);
-							break;
-						case CheckOperatorIsExist:
-							boolean result1 = message.getObj();
-							if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-		            			if(result1){
-		            				showLogsDialog("¥ÌŒÛ", "”√ªß“—¥Ê‘⁄£¨«ÎºÏ≤È£°");
-		                		}
-		            			else{
-		            				startHttpWork(ServiceEnum.SaveOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
-		            			}
-		            		}
-		            		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-		            			if(result1){
-		            				startHttpWork(ServiceEnum.SaveOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
-		                		}
-		            			else{
-		            				showLogsDialog("¥ÌŒÛ", "”√ªß≤ª¥Ê‘⁄£¨«ÎºÏ≤È£°");
-		            			}
-		            		}
 							break;
 						case ReadAllDepartment:
 							List<Department> departments = message.getObj();
@@ -210,34 +203,20 @@ public class OperatorListHandler extends Activity{
         GB_SaveUserInfoButton.disableProperty().bind(GB_UserNameTextField.lengthProperty().lessThan(1).
         		or(GB_UserDepartmentCombox.getSelectionModel().selectedItemProperty().isNull()));
         GB_SaveUserInfoButton.setOnAction((e)->{
-        	if(GB_ActionType.equals(MyUserActionEnum.ADD)){
-    			tempOperator = new Operator();
-    				
-    			tempOperator.setName(GB_UserNameTextField.getText());
-    			tempOperator.setAge(GB_UserAgeTextField.getText());
-    			tempOperator.setSex(GB_UserSexTextField.getText());
-    			tempOperator.setPhone(GB_UserPhoneTextField.getText());
-    			tempOperator.setJob(GB_UserJobTextField.getText());
-    			tempOperator.setDes(GB_UserDescTextField.getText());
-    			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-    			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
-
-    			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
-    		}
-    		else if(GB_ActionType.equals(MyUserActionEnum.EDIT)){
-    			tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-				
-    			tempOperator.setName(GB_UserNameTextField.getText());
-    			tempOperator.setAge(GB_UserAgeTextField.getText());
-    			tempOperator.setSex(GB_UserSexTextField.getText());
-    			tempOperator.setPhone(GB_UserPhoneTextField.getText());
-    			tempOperator.setJob(GB_UserJobTextField.getText());
-    			tempOperator.setDes(GB_UserDescTextField.getText());
-    			tempOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
-    			tempOperator.setChecked(GB_OperatorRightToggle.isSelected());
-
-    			startHttpWork(ServiceEnum.CheckOperatorIsExist, HttpPostType.AsynchronousJson, tempOperator, null, null);
-    		}
+        	if(currentOperator == null){
+        		showLogsDialog("¥ÌŒÛ", "∂‘œÛŒ™ø’");
+        	}
+        	else{
+        		currentOperator.setName(GB_UserNameTextField.getText());
+        		currentOperator.setAge(GB_UserAgeTextField.getText());
+        		currentOperator.setSex(GB_UserSexTextField.getText());
+        		currentOperator.setPhone(GB_UserPhoneTextField.getText());
+        		currentOperator.setJob(GB_UserJobTextField.getText());
+        		currentOperator.setDes(GB_UserDescTextField.getText());
+        		currentOperator.setDepartment(GB_UserDepartmentCombox.getSelectionModel().getSelectedItem());
+        		currentOperator.setChecked(GB_OperatorRightToggle.isSelected());
+        	}
+        	startHttpWork(ServiceEnum.SaveOperator, HttpPostType.AsynchronousJson, currentOperator, null, null);
         });
         
         GB_UserListView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue)->{
@@ -245,6 +224,11 @@ public class OperatorListHandler extends Activity{
         	if(newValue != null){
         		newValue.setDeleteIcoVisible(true);
         		showSelectUserInfo();
+        		
+        		GB_EditUserImageView.setVisible(true);
+            	GB_CancelEditUserImageView.setVisible(false);
+            	GB_AddUserImageView.setVisible(true);
+            	GB_CancelAddUserImageView.setVisible(false);
         	}
         	
         	if(oldValue != null)
@@ -266,7 +250,7 @@ public class OperatorListHandler extends Activity{
 	@Override
 	public void onStart(Object object) {
 		// TODO Auto-generated method stub
-		setMyMessagesList(FXCollections.observableArrayList());
+		super.onStart(object);
 		getMyMessagesList().addListener(myMessageListChangeListener);
 		
 		itsMe = userSession.getUser();
@@ -282,26 +266,6 @@ public class OperatorListHandler extends Activity{
 		}
 
 		GB_UserListView.getSelectionModel().selectFirst();
-	}
-	
-	private void setUserInfoInStatus(MyUserActionEnum status){
-		GB_UserNameTextField.setEditable(status.equals(MyUserActionEnum.ADD));
-		GB_UserAgeTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserSexTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserPhoneTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserJobTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		GB_UserDescTextField.setEditable(!status.equals(MyUserActionEnum.NONE));
-		
-		GB_UserDepartmentCombox.setDisable(!status.equals(MyUserActionEnum.ADD));
-		GB_OperatorRightToggle.setDisable(status.equals(MyUserActionEnum.NONE));
-		
-		GB_SaveUserInfoButton.setVisible(!status.equals(MyUserActionEnum.NONE));
-		
-		GB_EditUserImageView.setVisible(status.equals(MyUserActionEnum.NONE));
-		GB_CancelEditUserImageView.setVisible(status.equals(MyUserActionEnum.EDIT));
-		GB_AddUserImageView.setVisible(status.equals(MyUserActionEnum.NONE));
-		GB_CancelAddUserImageView.setVisible(status.equals(MyUserActionEnum.ADD));
-
 	}
 	
 	private void clearUserInfo() {
@@ -350,10 +314,8 @@ public class OperatorListHandler extends Activity{
 			imageView.setFitHeight(25);
 			imageView.setCursor(Cursor.HAND);
 			imageView.setOnMouseClicked((e)->{
-				GB_ActionType = MyUserActionEnum.DELETE;
-				tempOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
-
-    			startHttpWork(ServiceEnum.DeleteOperator, HttpPostType.AsynchronousJson, tempOperator, null, null);
+				currentOperator = (Operator) GB_UserListView.getSelectionModel().getSelectedItem().getUserData();
+    			startHttpWork(ServiceEnum.DeleteOperator, HttpPostType.AsynchronousJson, currentOperator, null, null);
 			});
 			AnchorPane.setTopAnchor(imageView, 0.0);
 	        AnchorPane.setBottomAnchor(imageView, 0.0);
@@ -380,7 +342,8 @@ public class OperatorListHandler extends Activity{
 		itsMe = null;
 		
 		getMyMessagesList().removeListener(myMessageListChangeListener);
-		setMyMessagesList(null);
+		
+		super.onDestroy();
 	}
 
 	@Override

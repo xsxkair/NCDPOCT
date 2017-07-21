@@ -2,6 +2,7 @@ package com.xsx.ncd.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +20,9 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.jfoenix.svg.SVGGlyphLoader;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.xsx.ncd.define.ActivityStatusEnum;
+import com.xsx.ncd.define.DeviceTypeJson;
 import com.xsx.ncd.define.HttpPostType;
 import com.xsx.ncd.define.Message;
 import com.xsx.ncd.define.MyUserActionEnum;
@@ -83,12 +86,14 @@ public class DeviceInfoHandler extends Activity {
 	private Device device = null;
 	private ListChangeListener<Message> myMessageListChangeListener = null;
 	private Map<String, String> formParm = null;
+	private Map<String, Object> activityParm = null;
 	
 	@Autowired ActivitySession activitySession;
 	@Autowired MaintenanceRecordHandler maintenanceRecordHandler;
 	@Autowired ErrorRecordHandler errorRecordHandler;
 	@Autowired AdjustRecordHandler adjustRecordHandler;
 	@Autowired QualityRecordHandler qualityRecordHandler;
+	@Autowired ReportQueryHandler reportQueryHandler;
 	
 	@PostConstruct
 	@Override
@@ -133,6 +138,13 @@ public class DeviceInfoHandler extends Activity {
         	startHttpWork(ServiceEnum.QueryOperatorByDepartment, HttpPostType.AsynchronousJson, device.getDepartment(), null, GB_FreshPane);
         	
         	addOperatorDialog.show(rootStackPane);
+        });
+        
+        deviceUseRecordButton.setOnAction((e)->{
+        	activityParm.clear();
+        	activityParm.put("DeviceType", new DeviceTypeJson(device.getDeviceType()));
+        	activityParm.put("DeviceId", device.getDid());
+        	activitySession.startActivity(reportQueryHandler, activityParm);
         });
         
         deviceMaintenanceRecordButton.setOnAction((e)->{
@@ -196,6 +208,8 @@ public class DeviceInfoHandler extends Activity {
 		// TODO Auto-generated method stub
 		deviceId = (String) object;
 		
+		activityParm = new HashMap<>();
+		
 		formParm = new HashMap<>();
 		formParm.put("deviceId", deviceId);
 		
@@ -238,6 +252,8 @@ public class DeviceInfoHandler extends Activity {
 		deviceId = null;
 		
 		formParm = null;
+		
+		activityParm = null;
 	}
 
 	private void showDeviceInfo(Device device){

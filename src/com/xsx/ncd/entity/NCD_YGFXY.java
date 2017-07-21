@@ -8,6 +8,8 @@ public class NCD_YGFXY {
 	
 	private Device device;
 	
+	private Department department;
+	
 	private Item item;
 	
 	private Operator operator;
@@ -64,6 +66,14 @@ public class NCD_YGFXY {
 
 	public void setDevice(Device device) {
 		this.device = device;
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 
 	public Item getItem() {

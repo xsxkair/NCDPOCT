@@ -1,8 +1,8 @@
 package com.xsx.ncd.entity;
 
+import com.xsx.ncd.define.StringDefine;
 
 public class DeviceMaintenanceRecord {
-
 
 	private Integer id;
 
@@ -12,6 +12,8 @@ public class DeviceMaintenanceRecord {
 	
 	private Operator operator;
 	
+	private Boolean result;
+
 	private String dsc;
 
 	public Integer getId() {
@@ -46,6 +48,14 @@ public class DeviceMaintenanceRecord {
 		this.operator = operator;
 	}
 
+	public Boolean getResult() {
+		return result;
+	}
+
+	public void setResult(Boolean result) {
+		this.result = result;
+	}
+
 	public String getDsc() {
 		return dsc;
 	}
@@ -53,6 +63,5 @@ public class DeviceMaintenanceRecord {
 	public void setDsc(String dsc) {
 		this.dsc = dsc;
 	}
-	
-	
+
 }

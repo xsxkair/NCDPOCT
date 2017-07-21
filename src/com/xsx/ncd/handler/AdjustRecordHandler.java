@@ -62,6 +62,7 @@ public class AdjustRecordHandler extends Activity {
 	private ChangeListener<RecordJson<AdjustRecordItem>> queryErrorRecordServiceListener = null;
 	private Map<String, String> formParm = null;
 	
+	
 	@Autowired ActivitySession activitySession;
 	@Autowired HttpClientTool httpClientTool;
 	
@@ -210,7 +211,7 @@ public class AdjustRecordHandler extends Activity {
 				if(AdjustResultTextField.getLength() > 0)
 					formParm.put("result", AdjustResultTextField.getText());
 				
-				formParm.put("startIndex", String.valueOf((50*GB_Pagination.getCurrentPageIndex())));
+				formParm.put("startIndex", String.valueOf(GB_Pagination.getCurrentPageIndex()));
 				formParm.put("size", String.valueOf(50));
 				
 				return httpClientTool.myHttpPost(null, ServiceEnum.QueryDeviceAdjustRecord, HttpPostType.SynchronousForm, null, formParm);

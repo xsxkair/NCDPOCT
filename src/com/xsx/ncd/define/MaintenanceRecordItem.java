@@ -11,7 +11,9 @@ public class MaintenanceRecordItem {
 
 	private String userName;
 	
-	private String result;
+	private Boolean result;
+	
+	private String resultstr;
 	
 	private String dsc;
 
@@ -19,7 +21,7 @@ public class MaintenanceRecordItem {
 
 	}
 
-	public MaintenanceRecordItem(Integer id, Timestamp testtime, String deviceId, String userName, String result, String dsc) {
+	public MaintenanceRecordItem(Integer id, Timestamp testtime, String deviceId, String userName, Boolean result, String dsc) {
 		super();
 		this.id = id;
 		this.testtime = testtime;
@@ -61,11 +63,11 @@ public class MaintenanceRecordItem {
 		this.userName = userName;
 	}
 
-	public String getResult() {
+	public Boolean getResult() {
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(Boolean result) {
 		this.result = result;
 	}
 
@@ -77,5 +79,10 @@ public class MaintenanceRecordItem {
 		this.dsc = dsc;
 	}
 	
-	
+	public String getResultstr() {
+		if(this.result)
+			return StringDefine.ReportPass;
+		else
+			return StringDefine.ReportError;
+	}
 }

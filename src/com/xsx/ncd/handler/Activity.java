@@ -10,6 +10,7 @@ import com.xsx.ncd.spring.SpringFacktory;
 import com.xsx.ncd.tool.HttpClientTool;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Pane;
 
@@ -25,13 +26,17 @@ public abstract class Activity {
 
 	public abstract void onCreate();
 
-	public abstract void onStart(Object object);
+	public void onStart(Object object){
+		myMessagesList = FXCollections.observableArrayList();
+	}
 	
 	public abstract void onPause();
 	
 	public abstract void onResume();
 	
-	public abstract void onDestroy();
+	public void onDestroy(){
+		myMessagesList = null;
+	}
 	
 	public Pane getRootPane() {
 		return rootPane;

@@ -3,6 +3,7 @@ package com.xsx.ncd.define;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.xsx.ncd.entity.Card;
 import com.xsx.ncd.entity.Department;
 import com.xsx.ncd.entity.Device;
@@ -23,73 +24,73 @@ import javafx.scene.image.Image;
  * 4, 代表返回数据为image的二进制数据流
  */
 public enum ServiceEnum {
-	Error("Error", null, null), 
-	NONE("None", null, null), 
-	ReadAllDepartment("/readAllDepartment", List.class, Department.class),
+	ReadAllDepartment("/readAllDepartment", new TypeReference<List<Department>>(){}),
 	
-	Login("/Login", User.class, null), 
-	SaveUser("/SaveUser", User.class, null), 
-	DeleteUser("/DeleteUser", Boolean.class, null), 
-	CheckUserIsExist("/CheckUserIsExist", Boolean.class, null),
-	ReadAllOtherUser("/ReadAllOtherUser", List.class, User.class),
-	ReadAllUser("/ReadAllUser", List.class, User.class),
+	Login("/Login", new TypeReference<User>(){}), 
+	SaveUser("/SaveUser", new TypeReference<User>(){}), 
+	DeleteUser("/DeleteUser", new TypeReference<Boolean>(){}), 
+	CheckUserIsExist("/CheckUserIsExist", new TypeReference<Boolean>(){}),
+	ReadAllOtherUser("/ReadAllOtherUser", new TypeReference<List<User>>(){}),
+	ReadAllUser("/ReadAllUser", new TypeReference<List<User>>(){}),
 	
-	ReadAllOperator("/ReadAllOperator", List.class, Operator.class), 
-	SaveOperator("/SaveOperator", Operator.class, null),
-	DeleteOperator("/DeleteOperator", Boolean.class, null), 
-	CheckOperatorIsExist("/CheckOperatorIsExist", Boolean.class, null),
-	ReadOneOperatorById("/ReadOneOperatorById", Operator.class, null),
-	QueryOperatorByDepartment("/QueryOperatorByDepartment", List.class, Operator.class),
+	ReadAllOperator("/ReadAllOperator", new TypeReference<List<Operator>>(){}), 
+	SaveOperator("/SaveOperator", new TypeReference<Operator>(){}),
+	DeleteOperator("/DeleteOperator", new TypeReference<Boolean>(){}), 
+	CheckOperatorIsExist("/CheckOperatorIsExist", new TypeReference<Boolean>(){}),
+	ReadOneOperatorById("/ReadOneOperatorById",  new TypeReference<Operator>(){}),
+	QueryOperatorByDepartment("/QueryOperatorByDepartment",  new TypeReference<List<Operator>>(){}),
 	
-	ReadAllItems("/ReadAllItems", List.class, Item.class),
+	ReadAllItems("/ReadAllItems", new TypeReference<List<Item>>(){}),
 	
-	SaveRepertoryRecord("/SaveRepertoryRecord", Repertory.class, null),
-	QueryRepertoryNumByCard("/QueryRepertoryNumByCard", Long.class, null),
+	SaveRepertoryRecord("/SaveRepertoryRecord", new TypeReference<Repertory>(){}),
+	QueryRepertoryNumByCard("/QueryRepertoryNumByCard", new TypeReference<Long>(){}),
 	
-	QueryCardLotNumLikeThis("/QueryCardLotNumLikeThis", List.class, String.class),
-	QueryCardByLotNum("/QueryCardByLotNum", Card.class, null),
+	QueryCardLotNumLikeThis("/QueryCardLotNumLikeThis", new TypeReference<List<String>>(){}),
+	QueryCardByLotNum("/QueryCardByLotNum", new TypeReference<Card>(){}),
 	
-	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", String.class, null),
-	QueryAllDeviceType("/QueryAllDeviceType", List.class, DeviceType.class),
+	SaveDeviceTypeAndIco("/SaveDeviceTypeAndIco", new TypeReference<String>(){}),
+	QueryAllDeviceType("/QueryAllDeviceType", new TypeReference<List<DeviceType>>(){}),
+	QueryAllDeviceTypeJson("/QueryAllDeviceTypeJson", new TypeReference<List<DeviceTypeJson>>(){}),
 	
-	QueryDeviceByDeviceId("/QueryDeviceByDeviceId", Device.class, null),
-	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", List.class, Device.class),
-	AddNewDevice("/AddNewDevice", String.class, null),
-	UpDateDevice("/UpDateDevice", String.class, null),
-	QueryAllDeviceInSample("/QueryAllDeviceInSample", List.class, DeviceJson.class),
-	QueryAllDeviceByDepartmentInSample("/QueryAllDeviceByDepartmentInSample", List.class, DeviceJson.class),
+	QueryDeviceByDeviceId("/QueryDeviceByDeviceId", new TypeReference<Device>(){}),
+	QueryThisDepartmentAllDeviceList("/QueryThisDepartmentAllDeviceList", new TypeReference<List<Device>>(){}),
+	AddNewDevice("/AddNewDevice", new TypeReference<String>(){}),
+	UpDateDevice("/UpDateDevice", new TypeReference<String>(){}),
+	QueryAllDeviceInSample("/QueryAllDeviceInSample", new TypeReference<List<DeviceJson>>(){}),
+	QueryAllDeviceByDepartmentInSample("/QueryAllDeviceByDepartmentInSample", new TypeReference<List<DeviceJson>>(){}),
 	
-	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", RecordJson.class, ErrorRecordItem.class),
-	QueryDeviceAdjustRecord("/QueryDeviceAdjustRecord", RecordJson.class, AdjustRecordItem.class),
-	QueryDeviceMaintenanceRecord("/QueryDeviceMaintenanceRecord", RecordJson.class, MaintenanceRecordItem.class),
-	QueryDeviceQualityRecord("/QueryDeviceQualityRecord", RecordJson.class, QualityRecordItem.class),
+	QueryDeviceErrorRecord("/QueryDeviceErrorRecord", new TypeReference<RecordJson<ErrorRecordItem>>(){}),
+	QueryDeviceAdjustRecord("/QueryDeviceAdjustRecord", new TypeReference<RecordJson<AdjustRecordItem>>(){}),
+	QueryDeviceMaintenanceRecord("/QueryDeviceMaintenanceRecord", new TypeReference<RecordJson<MaintenanceRecordItem>>(){}),
+	QueryDeviceQualityRecord("/QueryDeviceQualityRecord", new TypeReference<RecordJson<QualityRecordItem>>(){}),
 	
-	QueryThisDeviceNotHandledReportNumAndLastTime("/QueryThisDeviceNotHandledReportNumAndLastTime", List.class, Long.class),
-	QueryAllNotHandledReportNum("/QueryAllNotHandledReportNum", Long.class, null),
-	QueryDeviceReportNotHandled("/QueryDeviceReportNotHandled", RecordJson.class, DeviceReportItem.class),
-	QueryNcdYGFXYReportById("/QueryNcdYGFXYReportById", NCD_YGFXY.class, null),
-	SaveNcdYGFXYReport("/SaveNcdYGFXYReport",String.class, null);
+	QueryThisDeviceNotHandledReportNumAndLastTime("/QueryThisDeviceNotHandledReportNumAndLastTime", new TypeReference<List<Long>>(){}),
+	QueryAllNotHandledReportNum("/QueryAllNotHandledReportNum", new TypeReference<Long>(){}),
+	QueryDeviceReportNotHandled("/QueryDeviceReportNotHandled", new TypeReference<RecordJson<DeviceReportItem>>(){}),
+	QueryReportJsonByFilter("/QueryReportJsonByFilter", new TypeReference<RecordJson<DeviceReportItem>>(){}),
+	QueryNcdYGFXYReportById("/QueryNcdYGFXYReportById", new TypeReference<NCD_YGFXY>(){}),
+	SaveNcdYGFXYReport("/SaveNcdYGFXYReport",new TypeReference<NCD_YGFXY>(){}),
+	
+	QueryAllCardRepertory("/QueryAllCardRepertory", new TypeReference<Map<String,Long>>(){}),
+	QueryDepartmentAllCardRepertory("/QueryDepartmentAllCardRepertory", new TypeReference<List<DataJson<String, Department, String, String, Long>>>(){}),
+	QueryDeviceActivity("/QueryDeviceActivity", new TypeReference<List<DataJson<String, String, String, String, Long>>>(){})
+	
+	;
 	
 	private final String url;
-	private final Class<?> class0;
-	private final Class<?> class1;
+	private final TypeReference<?> valueTypeRef;
 	
-	private ServiceEnum(String url, Class<?> class0, Class<?> class1) {
+	private ServiceEnum(String url, TypeReference<?> valueTypeRef) {
 		this.url = url;
-		this.class0 = class0;
-		this.class1 = class1;
+		this.valueTypeRef = valueTypeRef;
 	}
 
 	public String getUrl() {
 		return url;
 	}
 
-	public Class<?> getClass0() {
-		return class0;
-	}
-
-	public Class<?> getClass1() {
-		return class1;
+	public TypeReference<?> getValueTypeRef() {
+		return valueTypeRef;
 	}
 	
 }
